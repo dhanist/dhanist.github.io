@@ -42,7 +42,12 @@ ARTICLE_SAVE_AS = '{category}/{slug}.html'
 
 PLUGIN_PATHS = ['./plugins']
 PLUGINS = ['extract_toc', 'share_post']
-MARKDOWN = ['codehilite','extra','smarty', 'toc']
+MARKDOWN = {
+    'extensions': ['codehilite','extra','smarty', 'toc'],
+    'extension_configs': {
+            'markdown.extensions.codehilite': {'css_class': 'codehilite'},
+        },
+}
 OUTPUT_PATH = 'output/'
 THEME = 'themes/me'
 

@@ -5,7 +5,6 @@
     {{ super() }}
     <meta name="author"   content="{{ article.author or DEFAULT_AUTHOR }}" />
     <meta name="keywords" content="{{ article.tags|join(', ') }}" />
-    <link rel="stylesheet" media="not print" type="text/css" href="{{ SITEURL }}/theme/css/pygments.css" /> 
 {% endblock %}
 
 {% block title %}{{ article.title }} — {{ super() }}{% endblock %}
