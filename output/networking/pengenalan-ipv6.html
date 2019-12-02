@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>"Hampir" Semua Tentang IPv6 — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="../theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="../theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic|Open+Sans:300italic,300,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="../theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="../theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="../favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="networking, ipv6" />
+    <link rel="stylesheet" media="not print" type="text/css" href="../theme/css/pygments.css" /> 
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="../index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="../networking/pengenalan-ipv6.html"
+             title="Bookmarks «"Hampir" Semua Tentang IPv6»">
+             "Hampir" Semua Tentang IPv6
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="../author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-05-27T00:00:00+08:00">Fri 27 May 2016</time>
+            <br />Filed under: <a href="../category/networking.html">Networking</a>              Tags:              <a rel="tag" href="../tag/networking.html">networking</a>,               <a rel="tag" href="../tag/ipv6.html">ipv6</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+    <img src="//devnull.web.id/images/networking/ipv6-logo.png" alt="World IPv6 Launch" title="World IPv6 Launch" />
+    <p>Image: www.worldipv6launch.org</p>
+</div>
+
+<p>Jaringan komputer awalnya dulu lahir di ARPANET (Advanced Research Projects Agency Network), ARPANET ini organisasi networking yang dibiayai sama Departemen Pertahanan Amerika Serikat <sup>[1]</sup> waktu itu.</p>
+<p>Di ARPANET waktu itu, protokol komunikasi perangkat jaringan pakai protokol yang namanya NCP (Network Control Program). Terus di tanggal 1 Januari 1983, NCP ini dirubah ke protokol yang baru, namanya TCP/IP, Protokol baru pengganti NCP yang lebih baik. Transisi ini dikenal dengan &ldquo;Flag Day&rdquo; <sup>[2]</sup>.</p>
+<p>Lahirnya protokol IP ini mulainya era Internet modern, protokol IP ini juga yang kita pakai sampai sekarang.</p>
+<p>Awal-awal tahun 90-an waktu Internet mulai dipakai publik dan bukan lagi proyek militer, disini kelihatan kalau IPv4 address yang 4 milyar itu bakalan tidak cukup buat semua perangkat yang terhubung ke Internet nantinya.</p>
+<p>&nbsp;</p>
+<h3 id="internet-kehabisan-ip-address">Internet kehabisan IP Address</h3>
+<p>Begitu Internet ini dilepas ke publik, jaringan Internet ini jadi booming. Salah satu aplikasi Internet yang populer waktu itu yang sampai sekarang juga masih populer, seperti WWW (World Wide Web). Boomingnya Internet ini jadi masalah sendiri, IP address yang 4 milyar yang awalnya untuk militer itu begitu dipakai publik jadi kelihatan kalau ini nanti bakalan kurang.</p>
+<p>Selain karena populernya Internet, ada satu hal lagi yang bikin Internet cepat sekali kehabisan IP address. Pada waktu itu, IP address dibagi menurut kelas-kelas, atau istilahnya Classful Network.</p>
+<p>Kenapa ini jadi masalah? Mari kita lihat gambar ini.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/classful-network.png" alt="Classful Network" title="Classful Network" />
+</div>
+
+<ul>
+<li>Class A: 2<sup>24</sup> = 16.777.216 alamat.</li>
+<li>Class B: 2<sup>16</sup> = 65.536 alamat.</li>
+<li>Class C: 2<sup>8</sup> = 256 alamat.</li>
+</ul>
+<p>Jadi di Classful Network, subnet bit kelipatan 8.</p>
+<p>Ini masalahnya, kalau misalnya ada satu organisasi yang perlu 200 IP address, maka dia dialokasikan IP address kelas C yang isinya 256 IP address. Tapi kalau perlunya 500, dia dialokasikan address kelas B yang isinya 65 ribu ip address. Artinya? Itu berarti lebih dari 60 ribu IP address sia-sia tidak terpakai.</p>
+<p>Tentu saja para engineer tidak tinggal diam melihat ini. Supaya borosnya IP address ini bisa direm sedikit, ada dua metode yang efektif dipakai; <em>Classless Inter-Domain Routing</em> (CIDR) sama <em>Network Address Translation</em> (NAT).</p>
+<p>&nbsp;</p>
+<h2 id="cidr">CIDR</h2>
+<p><em>Classless Inter-Domain Routing</em> (CIDR), dibaca <em>&ldquo;sidr&rdquo;</em> atau <em>&ldquo;saidr&rdquo;</em>. CIDR ini muncul di tahun 1993 menggantikan pembagian kelas-kelas IP address atau Classful Network di atas.<sup>[3]</sup> Jadi, seharusnya pembagian IP address berdasarkan kelas-kelas A, B, C, D, dan E itu sudah tidak dipakai dan diajarkan lagi. Kalau Anda ketemu tutorial yang mengajarkan kelas-kelas IP address, abaikan saja karena kemungkinan itu ditulis sebelum tahun 1993.</p>
+<p>Lalu apa bedanya CIDR sama Classful Network?<br />
+Kalau Classful Network subnet bit di kelipatan 8, CIDR subnet bitnya bisa di bit ke berapa saja.</p>
+<p>Penulisan CIDR dengan menambahkan tanda <code>slash (/)</code> diikuti network bit, misalnya 192.168.0.1/24. 192.168.0.1/24 berarti 24 bit diawal adalah network, sisanya yang 8 bit host nya.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/cidr-24.png" alt="CIDR 24" title="CIDR 24" />
+</div>
+
+<p>Nah kalau misalnya perlu IP address lebih dari 256, 300 misalnya; tidak perlu langsung ke bit 16 seperti class B, tapi cukup di bit ke 23, penulisannya 192.168.0.1/23.<br />
+/23 menyisakan 9 bit untuk host, 9 bit ini maksimal bisa 510 host.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/cidr-23.png" alt="CIDR 23" title="CIDR 23" />
+</div>
+
+<p>Atau /22 yang menyisakan 10 bit buat host. 10 bit berarti maksimal 1022 host.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/cidr-22.png" alt="CIDR 22" title="CIDR 22" />
+</div>
+
+<p>Bahkan untuk subnet yang lebih kecil yang cuma perlu 10 IP address, kita bisa pakai /28 yang maksimal 14 IP address.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/cidr-28.png" alt="CIDR 28" title="CIDR 28" />
+</div>
+
+<p>Jadi bedanya CIDR ini sama Classful Network, pakai CIDR subnet bisa di bit ke berapa saja tergantung kebutuhan, jadinya lebih hemat.</p>
+<p>&nbsp;</p>
+<h2 id="nat">NAT</h2>
+<p><em>Network Address Translation</em> (NAT) ini juga salah satu cara penghematan IP address. Pakai NAT, satu IP address bisa dibagi ke banyak host.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/nat.png" alt="Network Address Translation" title="Network Address Translation" />
+</div>
+
+<p>Di gambar itu ada 10 host tapi IP address yang dipakai buat koneksi Internet cukup dua saja, 1.1.1.1 dan 2.2.2.2. Dua IP address ini dipakai bersama oleh para host yang ada di belakang NAT.<br />
+Host yang ada di belakang NAT, kita bebas pakai IP address private berapa saja karena IP address private tidak terlihat dari Internet. Di gambar itu juga ada host yang sama-sama punya IP address 192.168.0.2, tapi tidak masalah karena mereka ada di belakang NAT.</p>
+<p>Kelemahan kalau pakai NAT, host yang ada di belakang NAT itu tersembunyi dari Internet. Jadi dari sudut pandang Internet, mereka ini tidak ada. Internet cuma bisa lihat IP address 1.1.1.1 dan 2.2.2.2 saja.</p>
+<p>Ini biasanya bukan masalah kalau para host itu cuma perlu akses email atau browsing web. Tapi kalau seperti server yang IP addressnya harus terlihat dari Internet, NAT tidak bisa dipakai. Biarpun sekarang sudah ada cara-cara supaya NAT bisa dipakai buat server, tapi tetap saja caranya ribet dibanding tanpa NAT.</p>
+<p>&ndash;
+&nbsp;</p>
+<p>Dua metode di atas, CIDR dan NAT sedikit bisa membantu mengurangi pemborosan IP address. Sedikit artinya IP address exhaustion tetap tidak bisa dihindari, cepat atau lambat IP address ini nantinya bakal habis juga.</p>
+<p>Mereka para engineer di <em>Internet Engineering Task Force</em> (IETF) sudah menyadari ini dari lama. Mereka kemudian merumuskan tipe IP baru yang jumlahnya banyak, IP baru ini namanya <em>Internet Protocol Next Generation</em> (IPng) yang kemudian menjadi IPv6 yang kita kenal sekarang.</p>
+<p>IPv6 adalah <em>Internet Protocol</em> (IP) jenis baru penerus versi 4 yang hampir habis itu. Jadi sekarang Internet punya dua IP, IP yang lama disebut IPv4 dan IP yang baru disebut IPv6.</p>
+<p>Tapi biarpun IPv4 sama IPv6 ini sama-sama IP, ternyata mereka ini berbicara dengan bahasa berbeda. IPv6 yang baru ini tidak bisa berkomunikasi dengan IPv4 yang lama.</p>
+<p>&nbsp;</p>
+<h2 id="internet-menjadi-ipv6">Internet menjadi IPv6</h2>
+<p>Mengapa Internet perlu beralih ke IPv6?</p>
+<ol>
+<li>IPv4 address cuma 32 bit atau 4 milyar, ini tidak cukup buat semua perangkat di dunia.</li>
+<li>IPv6 lebih secure.</li>
+<li>Metode routing IPv6 lebih efisien.</li>
+<li>Tidak perlu alasan lagi.</li>
+</ol>
+<p>IPv6 sepanjang 128 bit, jumlahnya 3,4x10<sup>38</sup>. Jumlah ini lebih dari cukup untuk semua bintang yang ada di langit, mungkin saja.<br />
+Buat Anda yang tidak terbiasa dengan notasi ilmiah 3,4x10<sup>38</sup>, jumlah 2<sup>128</sup> adalah:</p>
+<div class="codehilite"><pre><span></span><span class="err">340.282.366.920.938.463.463.374.607.431.768.211.456</span>
+</pre></div>
+
+
+<p>Saya bahkan tidak tahu bagaimana cara membaca angka itu.</p>
+<p>Jaringan IP adalah jaringan yang sangat tidak aman. Kalau kita akses Internet pakai protokol yang tidak terenkripsi, bisa jadi paket IP yang kita kirim dan terima itu dilihat, dimonitor, bahkan sampai level yang ekstrem paket IP itu dimodifikasi tanpa kita sadar. <em>Virtual Private Network</em> (VPN) muncul karena adanya problem ini, VPN dipakai buat enkripsi paket IP.</p>
+<p>Protokol IPSec<sup>[4]</sup> banyak dipakai buat VPN yang biasanya buat komunikasi kantor pusat dan cabangnya, atau buat komunikasi data yang sifatnya sensitif. Di IPv4, kalau mau pakai IPSec ini kita perlu konfigurasi tambahan di router atau host dan biasanya tidak gampang.</p>
+<p>Di IPv6 IPsec ini bagian dari protokol, jadi kalau kita pakai IPv6 secara otomatis sudah pakai IPSec tanpa perlu konfigurasi apa-apa. Ini karena memang dari awalnya IPSec ini didesain untuk IPv6.</p>
+<p>IPSec memastikan enkripsi paket IP secara end-to-end. Artinya paket itu dienkripsi oleh host pengirim, terus di-decrypt oleh penerima. Siapa saja diantara pengirim dan penerima tidak ada yang bisa melihat, merubah, atau mengacaukan paket IP itu.</p>
+<p>Dari segi routing, IPv6 juga lebih efisien dibanding IPv4. Karena itu, routing IPv6 jadi lebih cepat.<br />
+Di IPv4, setiap router yang melakukan forward paket IP harus menghitung IP checksum untuk memastikan paket yang diterima itu utuh dan tidak rusak. Di IPv6 tidak ada IP checksum, IPv6 mengatakan bahwa kewajiban pemeriksaan paket ada di layer di atasnya, bukan di IP.</p>
+<p>Di protokol IP juga ada yang namanya packet fragmentation. Ini terjadi kalau paket yang akan dikirim lebih besar dari <em>Maximum Transmission Unit</em> (MTU) di network interface. Jadi paket IP harus dipotong-potong jadi kecil supaya muat di MTU, terus potongan-potongan ini dikirim berulang-ulang sampai habis.<br />
+Si penerima yang menerima paket yang terpotong-potong ini harus menunggu sampai semua potongan terkumpul, terus potongan-potongan itu digabungkan lagi jadi satu paket IP yang utuh.</p>
+<p>Di IPv4, tugas memotong-motong paket dan menggabungkan paket ada di host dan router. Jadi, router sebelum meneruskan paket itu menunggu sampai semua potongan terkumpul terus menggabungkannya. Proses itu dilakukan semua router yang dilewati paket IP itu kalau MTU tidak cukup besar buat paket.</p>
+<p>Kelebihan IPv6, IPv6 menangani packet fragmentation ini dengan lebih cerdas, router tidak ikut-ikutan memotong-motong paket IP. Misalnya router menerima potongan paket IPv6, router tidak menunggu tapi dia langsung teruskan potongan paket itu ke hop berikutnya. Begitu seterusnya sampai potongan paket itu diterima di host terakhir.</p>
+<p>Host penerima yang terakhir inilah yang bertugas mengumpulkan potongan-potongan paket dan menggabungkannya jadi satu paket IPv6 yang utuh. Jadi proses fragmentasi itu ada di ujung-ujungnya saja. Dengan begini, proses routing lebih cepat dan efisien.</p>
+<p>&nbsp;</p>
+<h2 id="ipv6-address">IPv6 Address</h2>
+<p>IPv6 address sepanjang 128 bit, ditulis dengan karakter Heksadesimal.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/ipv6.png" alt="IPv6 Address" title="IPv6 Address" />
+</div>
+
+<p>Satu karakter heksadesimal itu sama dengan 4 bit biner, dan setiap 16 bit dipisahkan dengan titik dua.</p>
+<p>Angka <code>nol</code> yang berdekatan bisa diringkas pakai dua titik dua <code>(::)</code>, Misalnya <code>2001:db8:0:0:82c1:6eff:fe59:2e43</code> menjadi <code>2001:db8::82c1:6eff:fe59:2e43</code>.<br />
+Tapi kalau ada dua grup angka <code>nol</code>, penulisan ringkas cuma bisa di salah satunya saja. Misalnya <code>2001:db8:0:0:82c1:0:0:2e43</code> bisa ditulis <code>2001:db8::82c1:0:0:2e43</code> atau <code>2001:db8:0:0:82c1::2e43</code> tapi tidak <code>2001:db8::82c1::2e43</code>.</p>
+<p>Seperti di gambar itu, IPv6 yang 128 bit itu dibagi 2. 64 bit yang awal adalah bit untuk network, 64 bit yang terakhir untuk host.</p>
+<p>Penggunaan 64 bit untuk host ini diatur di RFC 5375<sup>[5]</sup>. Jadi di IPv6, tidak ada subnet lebih kecil dari /64. Misalnya di satu jaringan cuma ada 10 host, network yang dipakai tetap /64.</p>
+<p>Ada satu pengecualian penggunaan network yang lebih kecil dari /64. Untuk link inter-router, link yang isinya cuma ada dua router dianjurkan pakai /127. Penggunaan /127 untuk link inter-router ditulis di RFC 6164<sup>[6]</sup>.</p>
+<p>&nbsp;</p>
+<p><strong>EUI-64</strong><br />
+EUI-64<sup>[7]</sup> dipakai buat generate 64 bit host atau 64 bit terakhir IPv6 address berdasarkan MAC address. Cara penomoran alamat host bisa saja kita atur berurutan seperti waktu IPv4, alamat host 1, 2, 3 dan seterusnya, atau bisa acak diambilkan dari alamat MAC. Metode yang terakhir inilah yang namanya EUI-64.</p>
+<p>Tapi ada problemnya, alamat MAC itu cuma 48 bit, host IPv6 64 bit. Supaya bisa jadi 64 bit, ditambahkan 16 bit angka hex <code>0xfffe</code> di tengah-tengah MAC address.</p>
+<p>Selain itu, bit ke tujuh juga harus dirubah ke 1 supaya menandakan bahwa EUI-64 ini diatur secara lokal.</p>
+<p>Saya pakai contoh buat EUI-64 dari MAC <code>80:c1:6e:59:2e:43</code>. Step untuk membuat EUI-64 kurang lebih seperti di bawah:</p>
+<p><strong>1) Ambil MAC address dan bagi dua.</strong><br />
+MAC address dibagi jadi dua bagian, 24 bit <em>Organizationally Unique Identifier</em> (OIU) dan 24 bit <em>Network Interface Card</em> ID (NIC).</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/mac-addr.png" alt="MAC Address" title="MAC Address" />
+</div>
+
+<p><strong>2) Tempatkan 16 bit hex <code>0xfffe</code> di tengah-tengah MAC address.</strong>  </p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/fffe.png" alt="eui-64" title="eui-64" />
+</div>
+
+<p><strong>3) Rubah bit ke 7 ke angka 1 untuk menandakan universal atau local.</strong><br />
+Setiap MAC address yang terdaftar dan di-assign oleh <em>Institute of Electrical and Electronics Engineers</em> (IEEE), bit ke 7 pasti <code>0</code> yang menandakan bahwa ini alamat yang universal. Di EUI-64, bit ke 7 ini harus dirubah ke <code>1</code> yang menandakan bahwa alamat ini diadministrasi secara lokal.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/ul.png" alt="eui-64" title="eui-64" />
+</div>
+
+<p>Jadinya, 64 bit host EUI-64 dari MAC address <code>80:c1:6e:59:2e:43</code> adalah <code>82c1:6eff:fe59:2e43</code>. Tinggal digabungkan dengan 64 bit networknya, untuk link-local misalnya <code>fe80::82c1:6eff:fe59:2e43</code>.</p>
+<p>Sebenarnya EUI-64 ini kerjaannya software, bukan orang. Di OS router misalnya, kalau kita set EUI-64 software yang bakal hitung sama setting itu. Di OS modern seperti Linux juga, EUI-64 ini juga otomatis ter-set tanpa ada campur tangan user.</p>
+<p>Tapi biarpun begitu, saya rasa tidak ada salahnya kan memahami teori dibalik EUI-64 ini?</p>
+<p>&nbsp;</p>
+<h2 id="tipe-ipv6-address">Tipe IPv6 address</h2>
+<p>Sama seperti IPv4, IPv6 address juga dibagi ke beberapa tipe <sup>[8]</sup> di bawah:</p>
+<ol>
+<li>Unicast.</li>
+<li>Multicast.</li>
+<li>Anycast.</li>
+</ol>
+<h3 id="unicast">Unicast</h3>
+<p>IPv6 Unicast address adalah tipe IPv6 address yang dipakai buat komunikasi satu lawan satu. Misalnya Anda ngobrol berdua dengan teman Anda secara privat, jenis obrolan seperti ini kalau di protokol IP namanya unicast.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/unicast.png" alt="IPv6 Unicast" title="IPv6 Unicast" />
+</div>
+
+<p>Dalam obrolan unicast, pihak yang tidak berkepentingan tidak bisa mendengar obrolan itu, apalagi ikut menjawab.</p>
+<p>Di IPv6, unicast address ini dibagi lagi jadi tiga, <em>Global Unicast Address</em>, <em>Link-local Address</em>, sama <em>Unique Local Address</em>.</p>
+<p><strong>A) Global Unicast Address</strong><br />
+Global Unicast Address ini jenis IPv6 unicast yang dipakai buat komunikasi di Internet, kalau di IPv4 namanya ip address publik. Ini jenis IP address yang diatur sama <em>Regional Internet Registry</em> (RIR). Kalau kita di Indonesia, yang kelola IP address jenis ini ada di APNIC, RIR untuk wilayah Asia Pasifik.</p>
+<p>APNIC alokasikan alamat IPv6 tipe ini ke organisasi sama ISP, terus para ISP ini mendistribusikan IPv6 address ini ke pelanggan-pelanggan mereka.<br />
+Untuk di awal, biasanya alokasi IPv6 address untuk ISP sebanyak /32.</p>
+<p><strong>B) Link-local Address</strong><br />
+Link-local address dipakai buat komunikasi unicast yang sifatnya lokal dan cuma sebatas link, jadi link-local ini tidak bisa melewati router. Block alamat IPv6 address yang dialokasikan untuk jenis ini adalah <code>fe80::/10</code>.</p>
+<p>Beda sama IPv4, kalau di IPv6 link-local ini wajib ada di setiap interface, IPv6 bakalan tidak berfungsi kalau jenis link-local ini tidak ada.<br />
+IPv6 address jenis ini biasanya di-set secara otomatis oleh OS pakai EUI-64, jadi user tidak perlu konfigurasi apa-apa.</p>
+<p>Kalau Anda punya mesin Linux yang modern, bisa dicek pakai command <code>ip</code>.</p>
+<div class="codehilite"><pre><span></span><span class="err"># ip addr show wlan0</span>
+<span class="c">3: wlan0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP group default qlen 1000</span>
+<span class="c">    link/ether 18:4f:32:59:88:33 brd ff:ff:ff:ff:ff:ff</span>
+<span class="c">    inet 10.10.10.11/28 brd 10.10.10.15 scope global wlan0</span>
+<span class="c">        valid_lft forever preferred_lft forever</span>
+<span class="c">    inet6 2xxx:exxx:0:a:1a4f:32ff:fe59:8833/64 scope global mngtmpaddr dynamic </span>
+<span class="c">        valid_lft 7180sec preferred_lft 1780sec</span>
+<span class="c">    inet6 fe80::1a4f:32ff:fe59:8833/64 scope link </span>
+<span class="c">        valid_lft forever preferred_lft forever</span>
+</pre></div>
+
+
+<p>IPv6 yang paling bawah <code>fe80::1a4f:32ff:fe59:8833/64</code> dengan scope link itu alamat link-local.</p>
+<p>IPv6 address jenis ini dipakai buat neighbor discovery, buat cari tahu ada router atau tidak, kalau ada router dimana alamat IPv6 nya. IPv6 address jenis ini juga dipakai protokol dynamic routing OSPFv3. Jadi IPv6 address unicast yang jenis ini penting sekali.</p>
+<p><strong>C) Unique Local Address</strong><br />
+Kalau di IPv4 kita punya blok private IP address, salah satunya seperti <code>192.168.0.0/16</code> yang kita bebas pakai di mana saja, di IPv6 juga ada. Alokasi IPv6 address untuk unicast jenis ini adalah <code>fc00::/7</code>. Jadi buat jaringan yang sifatnya lokal, kita bisa pakai IP address jenis ini.</p>
+<p>Tapi ada bedanya sama IPv4, IPv6 address jenis ini tidak bisa dipakai buat Internet, cuma bisa lokal saja. Jadinya router kalau terima paket dari IPv6 address jenis ini, dia tidak mau meneruskan paket kalau tujuannya jenis Global Unicast, tapi paket diforward kalau tujuannya juga jenis Unique Local.</p>
+<p>Dulu ada satu lagi jenis unicast address, namanya site-local dengan blok address <code>fec0::/10</code>. Tapi jenis yang ini tidak lagi dipakai dan digantikan Unique Local.</p>
+<p>&nbsp;</p>
+<h3 id="multicast">Multicast</h3>
+<p>Multicast adalah metode komunikasi one-to-many dan many-to-many, multicast ini ada grup-grup. Misalnya kalau Anda ngobrol sama sekelompok orang di satu ruangan, komunikasi ini namanya multicast. Mungkin di ruangan itu juga ada kelompok yang lain lagi, tapi karena Anda tidak bicara sama mereka, grup itu juga tidak akan merespon Anda. Jadi cuma grup yang dituju saja yang merespon.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/multicast.png" alt="IPv6 Multicast" title="IPv6 Multicast" />
+</div>
+
+<p>Jenis komunikasi multicast ini banyak dipakai buat tv broadcasting atau streaming. Pakai multicast, server tidak perlu buat banyak koneksi secara bersamaan, cukup satu koneksi saja.</p>
+<p>Di IPv6, blok untuk alamat multicast adalah <code>ff00::/8</code>.</p>
+<p>&nbsp;</p>
+<h3 id="anycast">Anycast</h3>
+<p>Kalau multicast ke satu grup, anycast ke salah satu member dari grup.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/anycast.png" alt="IPv6 Anycast" title="IPv6 Anycast" />
+</div>
+
+<p>Paket IP yang ditujukan ke alamat anycast akan dikirim ke salah satu member dari grup anycast itu, tidak semua.</p>
+<p>Contoh penggunaan anycast misalnya di DNS root server. Root server ini di dunia ada 13 alamat IP nya, tapi jumlah fisiknya lebih dari itu.</p>
+<p>Misalnya kita query dns ke salah satu root server <code>a.root-servers.net</code> yang IPv6 address-nya <code>2001:503:ba3e::2:30</code>. User di belahan dunia lain yang juga query ke alamat IPv6 <code>2001:503:ba3e::2:30</code> bisa jadi servernya tidak sama dengan kita biarpun IPv6 address-nya sama-sama <code>2001:503:ba3e::2:30</code>.</p>
+<p>Jadi, IP address anycast ini adalah IP address yang sama tapi ditempatkan di node yang berbeda. Paket IP yang ditujukan ke alamat anycast akan dikirim ke salah satu saja dari grup anycast dan biasanya yang paling dekat.</p>
+<p>IPv6 anycast ini juga bisa dipakai buat failover kalau misalnya salah satu node down, bisa digantikan yang lain secara otomatis.</p>
+<p>&nbsp;</p>
+<h2 id="apa-yang-tidak-ada-di-ipv6">Apa yang tidak ada di IPv6?</h2>
+<p>Bukan cuma ada penambahan, di IPv6 juga ada pengurangan.</p>
+<p><strong>Broadcast</strong><br />
+Tidak ada lagi komunikasi broadcast di IPv6, begitu juga tidak ada IPv6 address jenis broadcast. Broadcast ini komunikasi satu ke banyak. Kalau unicast Anda ambil ponsel dan telepon ke orang yang dituju, tapi kalau broadcast Anda ambil speaker supaya orang satu RT bisa dengar semua.</p>
+<p>Di IPv6, broadcast tidak ada tapi diganti sama multicast.</p>
+<p><strong>NAT</strong><br />
+Dengan jumlah IP address sebanyak 3,4x10<sup>38</sup>, apakah kita masih perlu NAT? tentu saja tidak.</p>
+<p>Setiap perangkat yang terhubung ke Internet, apakah itu server, desktop, laptop sampai smartphone kalau terhubung lewat IPv6 semua terekspos ke Internet.</p>
+<p>Mungkin juga ada yang berpendapat dengan tidak adanya NAT, perangkat yang ber-IPv6 itu jadi tidak aman karena terekspos ke Internet.<br />
+Ini mungkin betul tapi juga salah. NAT, biarpun bisa menyembunyikan host di belakangnya tapi NAT ini bukanlah firewall, jadi jangan dianggap NAT ini seperti firewall.</p>
+<p>Jadi biarpun perangkat yang pakai IPv6 terekspos ke Internet, ini tanggung jawab administrator bagaimana mengatur firewall IPv6 supaya bisa secure.</p>
+<p>&nbsp;</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Mungkin, mungkin saja IPv6 ini terlihat lebih horor daripada IPv4. Ini juga yang dulu saya pikirkan, dan Saya yakin banyak yang sependapat. Alasannya mungkin saja karena:</p>
+<ol>
+<li>128 bit, ini panjang sekali.</li>
+<li>Ditulis pakai heksadesimal, angka yang saya tidak pernah diajarkan waktu di SD.</li>
+<li>Karena bukan IPv4.</li>
+</ol>
+<p>Tapi apakah benar IPv6 ini susah?<br />
+Coba kita lihat kenapa Luke Skywalker gagal mengangkat pesawat X-wing.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/networking/yoda.png" alt="Yoda" />
+    <p style="font-size:13px;color:#a4a4a4;">Image source: picturequotes.com</p>
+</div>
+
+<p>Karena menurutnya, X-wing itu terlalu besar.</p>
+<p>&nbsp;</p>
+<p><strong>Refs:</strong></p>
+<ol>
+<li><a href="https://en.wikipedia.org/wiki/ARPANET">Wikipedia - ARPANET</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Network_Control_Program#Transition_to_TCP.2FIP">Wikipedia - Network Control Program - Transition to TCP/IP</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Classful_network#Replacement_of_classes">Wikipedia - Classful Network - Replacement of classes</a></li>
+<li><a href="https://www.ietf.org/rfc/rfc2401.txt">IETF - IPSec</a></li>
+<li><a href="https://tools.ietf.org/html/rfc5375#section-3.1">IETF - RFC5375</a></li>
+<li><a href="https://tools.ietf.org/html/rfc6164">IETF - RFC6164</a></li>
+<li><a href="http://tools.ietf.org/html/rfc4291#appendix-A">IETF - RFC4291  Appendix A - EUI-64</a></li>
+<li><a href="http://www.cidr-report.org/v6/as2.0/reserved-ipv6.html">CIDR Report - Reserved IPv6 Address</a></li>
+</ol>
+<p>&nbsp;</p>
+<p><strong>Artikel Berkaitan:</strong><br />
+<a href="//devnull.web.id/networking/subnetting-ipv6-mudah.html">Subnetting IPv6 bisa semudah IPv4, bahkan lebih mudah.</a><br />
+<em>Cara menghitung subnetting IPv6 dengan mudah.</em></p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'%22Hampir%22%20Semua%20Tentang%20IPv6%20https%3A//devnull.web.id/networking/pengenalan-ipv6.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=https%3A//devnull.web.id/networking/pengenalan-ipv6.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=https%3A//devnull.web.id/networking/pengenalan-ipv6.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=%22Hampir%22%20Semua%20Tentang%20IPv6&amp;body=https%3A//devnull.web.id/networking/pengenalan-ipv6.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="../category/networking.html">Networking</a>» 
+            by <a href="../author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="../tag/networking.html">networking</a> #<a href="../tag/ipv6.html">ipv6</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="..">Accueil</a></li> -->
+              <li><a href="../categories.html">Categories</a></li>
+              <li><a href="../tags.html">Tags</a></li>
+              <li><a href="../archives.html">Archives</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="../category/debian.html">Debian</a></li>
+              <li><a href="../category/esai.html">Esai</a></li>
+              <li><a href="../category/how-to.html">How-to</a></li>
+              <li><a href="../category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="../category/misc.html">Misc</a></li>
+              <li class="active"><a href="../category/networking.html">Networking</a></li>
+              <li><a href="../category/openstack.html">OpenStack</a></li>
+              <li><a href="../category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="http://devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

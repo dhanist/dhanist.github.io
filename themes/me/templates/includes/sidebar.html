@@ -1,0 +1,62 @@
+
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+            {% if MENUITEMS %}
+              {% for name, uri in MENUITEMS %}
+                {% if name != "Berlangganan Artikel" %}
+                        <li><a href="{{ uri|format(SITEURL)}}">{{ name }}</a></li>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% if DISPLAY_PAGES_ON_MENU %}
+              {% for p in PAGES %}
+                {% if p.title != "Berlangganan Artikel" %}
+                        <li><a href="{{ SITEURL}}/{{ p.url }}"{% if p == page %} class="active"{% endif %}>{{ p.title }}</a></li>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+<!--              <li><a href="{{ SITEURL }}">Accueil</a></li> -->
+              <li><a href="{{ SITEURL }}/categories.html">Categories</a></li>
+              <li><a href="{{ SITEURL }}/tags.html">Tags</a></li>
+              <li><a href="{{ SITEURL }}/archives.html">Archives</a></li>
+            </ul>
+          </nav>
+
+          {% if categories %}
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+            {% for cat, null in categories %}
+              <li{%- if cat == category %} class="active"{% endif -%}><a href="{{ SITEURL }}/{{ cat.url }}">{{ cat }}</a></li>
+            {% endfor %}
+            </ul>
+          </nav>
+          {% endif %}
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+            {% if FEED_ATOM %}
+              <li><a href="{{ FEED_DOMAIN }}/feed">Subscribe</a></li>
+            {% endif %}
+-->
+                <li><a href="{{ SITE_URL }}/pages/subscribe.html">Berlangganan artikel</a></li>
+            {% if FEED_RSS %}
+              <li><a href="{{ FEED_DOMAIN }}/{{ FEED_RSS }}">Feed rss</a></li>
+            {% endif %}
+            {% if SOCIAL %}
+              {% for name, url, target in SOCIAL %}
+              <li><a href="{{ url }}" target="{{ target }}">{{ name }}</a></li>
+              {% endfor %}
+            {% endif %}
+            {% if LINKS %}
+              {% for name, url, target in LINKS %}
+              <li><a href="{{ url }}" target="{{ target }}">{{ name }}</a></li>
+              {% endfor %}
+            {% endif %}
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html -->

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Cara Kerja OpenStack Networking - Memahami Network Namespace — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="../theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="../theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic|Open+Sans:300italic,300,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="../theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="../theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="../favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Linux, OpenStack, Networking" />
+    <link rel="stylesheet" media="not print" type="text/css" href="../theme/css/pygments.css" /> 
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="../index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="../openstack/openstack-network-namespace.html"
+             title="Bookmarks «Cara Kerja OpenStack Networking - Memahami Network Namespace»">
+             Cara Kerja OpenStack Networking - Memahami Network Namespace
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="../author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-05-09T20:02:00+08:00">Mon 09 May 2016</time>
+            <br />Filed under: <a href="../category/openstack.html">OpenStack</a>              Tags:              <a rel="tag" href="../tag/linux.html">Linux</a>,               <a rel="tag" href="../tag/openstack.html">OpenStack</a>,               <a rel="tag" href="../tag/networking.html">Networking</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+  <img src="//devnull.web.id/images/openstack/netns.png" alt="OpenStack" title="OpenStack" />
+</div>
+
+<p>Melanjutkan tentang OpenStack Networking di tulisan yang lalu dengan judul <a href="//devnull.web.id/openstack/memahami-networking-openstack-neutron.html">Memahami OpenStack Neutron lebih dalam</a>, ada salah satu fitur Linux yang dipakai OpenStack Networking dan belum dibahas, fitur Linux itu namanya network namespace.</p>
+<p>Mungkin di antara Anda para pembaca ada yang punya background networking. Di dunia networking ada istilah yang dikenal dengan VRF (<em>Virtual Routing and Forwarding</em>). VRF ini memungkinkan lebih dari satu routing table coexist dalam satu router fisik, artinya dalam satu router ada banyak router virtual dengan routing table yang independen dan terpisah dari yang lain. Nah di Linux, fitur ini dinamakan network namespace.</p>
+<p>Masing-masing network namespace di Linux punya routing table sendiri-sendiri, interface sendiri-sendiri dan juga firewall yang terpisah. Fitur ini yang dipakai OpenStack untuk membuat virtual network dan virtual router.</p>
+<p>Seperti router dan network pada umumnya, di network namespace juga ada interface, routing table, firewall, dan ip address. Bedanya, di network namespace kita tidak bisa pakai interface fisik, kita cuma bisa pakai interface virtual. Jadi tidak ada eth0 atau eth1 atau wlan0 di network namespace.  </p>
+<p>Karena tidak bisa pakai interface fisik, maka network virtual ini secara default juga tidak bisa berkomunikasi dengan jaringan fisik, seperti Internet misalnya. Dan untuk mengatasi batasan itu, biasanya digunakan bridge untuk menjembatani antara jaringan fisik dan jaringan virtual.<br />
+OpenStack Neutron atau networking juga menggunakan bridge Open vSwitch untuk menjembatani dua jaringan ini.</p>
+<p>&nbsp;</p>
+<h3 id="command-command-namespace">Command-command namespace</h3>
+<p>Di contoh ini saya pakai banyak command <em>ip</em>. Kalau Anda masih sering pakai command <em>ifconfig</em> dan command <em>route</em>, saran Saya segera saja tinggalkan karena dua command itu dari zaman batu. Gantinya, pelajari command <em>ip</em> dari package <em>iproute2</em> karena yang ini lebih modern.</p>
+<p>Karena network namespace sama seperti network biasa, maka command ip juga bisa dipakai di namespace.</p>
+<p>Menambahkan network namespace:</p>
+<div class="codehilite"><pre><span></span><span class="err">ip netns add test-netns</span>
+</pre></div>
+
+
+<p>Command ini untuk membuat network namespace baru dengan nama <em>test-netns</em>.</p>
+<p>Untuk melihat semua netns</p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip netns show</span>
+<span class="err">test-netns</span>
+<span class="err">root@DEATH-STAR:~#</span>
+</pre></div>
+
+
+<p>Untuk mengeksekusi command dalam netns, pakai <em>ip netns exec &lt;nama netns&gt; &lt;command&gt;</em>.
+Contoh untuk eksekusi command <em>ip link show</em> di netns <em>test-netns</em></p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip netns exec test-netns ip link show</span>
+<span class="c">1: lo: &lt;LOOPBACK&gt; mtu 65536 qdisc noop state DOWN mode DEFAULT group default </span>
+<span class="c">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span>
+<span class="err">root@DEATH-STAR:~#</span>
+</pre></div>
+
+
+<p>Kalau command di atas dibagi jadi tiga bagian, maka seperti ini:</p>
+<ol>
+<li><strong>ip netns exec</strong> : Ini dipakai untuk eksekusi command dalam network namespace.</li>
+<li><strong>test-netns</strong> : <em>test-netns</em> adalah nama network namespace.</li>
+<li><strong>ip link show</strong> : Ini command yang dieksekusi di dalam netns.</li>
+</ol>
+<p>Seperti terlihat di output, waktu kita buat namespace atau netns baru, di netns baru itu langsung ada interface loopback (lo) tapi dengan status down, jadi tidak bisa kita ping.</p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip netns exec test-netns ping localhost</span>
+<span class="err">PING localhost (127.0.0.1) 56(84) bytes of data.</span>
+<span class="err">^C</span>
+<span class="err">--- localhost ping statistics ---</span>
+<span class="err">4 packets transmitted, 0 received, 100% packet loss, time 3024ms</span>
+</pre></div>
+
+
+<p>Kita harus up-kan dulu interface loopback <em>lo</em> baru kemudian loopback tersebut bisa berfungsi.<br />
+Supaya interface lo bisa up, pakai command <em>ip link set lo up</em>. Di dalam netns tentu saja.</p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip netns exec test-netns ip link set lo up</span>
+<span class="err">root@DEATH-STAR:~# ip netns exec test-netns ping localhost</span>
+<span class="err">PING localhost (127.0.0.1) 56(84) bytes of data.</span>
+<span class="err">64 bytes from localhost (127.0.0.1): icmp_req=1 ttl=64 time=0.126 ms</span>
+<span class="err">64 bytes from localhost (127.0.0.1): icmp_req=2 ttl=64 time=0.066 ms</span>
+<span class="err">64 bytes from localhost (127.0.0.1): icmp_req=3 ttl=64 time=0.057 ms</span>
+<span class="err">^C</span>
+<span class="err">--- localhost ping statistics ---</span>
+<span class="err">3 packets transmitted, 3 received, 0% packet loss, time 1998ms</span>
+<span class="err">rtt min/avg/max/mdev = 0.057/0.083/0.126/0.030 m</span>
+</pre></div>
+
+
+<p>Netns ini belum bisa berkomunikasi dengan dunia luar. Supaya bisa maka harus kita buat bridge untuk menjembatani itu.</p>
+<p>Di Debian yang saya pakai untuk percobaan ini nama interface-nya <em>eth0</em>. Kemudian Saya akan coba buat sepasang Linux Veth, salah satu veth di assign ke netns <em>test-netns</em>, satunya lagi dijadikan member bridge <em>br0</em> bersama <em>eth0</em>. <em>eth0</em> ini tersambung dengan kabel ke jaringan fisik external termasuk jaringan Internet.</p>
+<p>Buat bridge <em>br0</em> dengan member <em>eth0</em>, request ip address ke server DHCP dan test ping ke Google dns.</p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# brctl addbr br0</span>
+<span class="err">root@DEATH-STAR:~# brctl addif br0 eth0</span>
+<span class="err">root@DEATH-STAR:~# brctl show br0</span>
+<span class="err">bridge name bridge id               STP enabled     interfaces</span>
+<span class="err">br0         8000.80c16e592e43       no              eth0</span>
+<span class="err">root@DEATH-STAR:~#</span>
+<span class="err">root@DEATH-STAR:~# dhclient br0</span>
+<span class="err">Restarting ntp (via systemctl): ntp.service.</span>
+<span class="err">root@DEATH-STAR:~# ip addr show br0</span>
+<span class="c">4: br0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default </span>
+<span class="c">    link/ether 80:c1:6e:59:2e:43 brd ff:ff:ff:ff:ff:ff</span>
+<span class="c">    inet 10.10.10.10/27 brd 10.10.10.31 scope global br0</span>
+<span class="c">            valid_lft forever preferred_lft forever</span>
+<span class="err">root@DEATH-STAR:~#</span>
+<span class="err">root@DEATH-STAR:~# ping 8.8.8.8</span>
+<span class="err">PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.</span>
+<span class="err">64 bytes from 8.8.8.8: icmp_req=1 ttl=55 time=47.2 ms</span>
+<span class="err">64 bytes from 8.8.8.8: icmp_req=2 ttl=55 time=48.5 ms</span>
+<span class="err">64 bytes from 8.8.8.8: icmp_req=3 ttl=55 time=44.0 ms</span>
+<span class="err">^C</span>
+<span class="err">--- 8.8.8.8 ping statistics ---</span>
+<span class="err">3 packets transmitted, 3 received, 0% packet loss, time 2003ms</span>
+<span class="err">rtt min/avg/max/mdev = 44.051/46.605/48.540/1.900 ms</span>
+<span class="err">root@DEATH-STAR:~#</span>
+</pre></div>
+
+
+<p>Selanjutnya buat sepasang Linux Veth dengan nama veth1 dan veth2</p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip link add veth1 type veth peer name veth2</span>
+<span class="err">root@DEATH-STAR:~#</span>
+<span class="err">root@DEATH-STAR:~# ip link show | grep veth</span>
+<span class="c">5: veth2: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000</span>
+<span class="c">6: veth1: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000</span>
+<span class="err">root@DEATH-STAR:~#</span>
+</pre></div>
+
+
+<p>Seperti yang sudah dijelaskan di artikel sebelumnya, Linux Virtual Ethernet (Veth) adalah sepasang interface yang kalau ada paket masuk lewat salah satu interface maka paket itu akan keluar lewat interface lainnya.</p>
+<p>Berikutnya, assign interface veth1 ke namespace <em>test-netns</em> dan veth2 ke bridge <em>br0</em>.</p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# brctl addif br0 veth2</span>
+<span class="err">root@DEATH-STAR:~# brctl show br0</span>
+<span class="err">bridge name bridge id               STP enabled     interfaces</span>
+<span class="err">br0         8000.80c16e592e43       no              eth0</span>
+<span class="err">                                                    veth2</span>
+<span class="err">root@DEATH-STAR:~# ip link set veth1 netns test-netns</span>
+</pre></div>
+
+
+<p>Kalau kita cek lagi dengan <em>ip link show</em>, veth1 sudah hilang karena sudah ada di namespace <em>test-netns</em></p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip link show | grep veth</span>
+<span class="c">5: veth2: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000</span>
+</pre></div>
+
+
+<p>Cek <em>ip link show</em> di <em>test-netns</em></p>
+<div class="codehilite"><pre><span></span><span class="err">root@DEATH-STAR:~# ip netns exec test-netns ip link show</span>
+<span class="c">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default </span>
+<span class="c">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span>
+<span class="c">6: veth1: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000</span>
+<span class="c">    link/ether 26:e1:4d:ee:33:ef brd ff:ff:ff:ff:ff:ff</span>
+<span class="err">root@DEATH-STAR:~#</span>
+</pre></div>
+
+
+<p>Perlu juga diperhatikan bahwa nomor index interface tidak berubah biarpun interface ada di netns. Di namespace <em>test-netns</em> nomor interface 1 untuk <em>lo</em> dan 6 untuk <em>veth1</em> karena nomor index interface <em>veth1</em> adalah 6.</p>
+<p>Coba dihidupkan interface veth1 dan veth2 kemudian request ip address ke DHCP server di <em>test-netns</em> dan coba ping ke Google.</p>
+<div class="codehilite"><pre><span></span><span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">link</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">veth2</span><span class="w"> </span><span class="n">up</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">netns</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">netns</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">link</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">veth1</span><span class="w"> </span><span class="n">up</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">netns</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">netns</span><span class="w"> </span><span class="n">dhclient</span><span class="w"> </span><span class="n">veth1</span><span class="w"> </span><span class="o">&gt;/</span><span class="n">dev</span><span class="o">/</span><span class="k">null</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">netns</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">netns</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="n">show</span><span class="w"></span>
+<span class="mi">1</span><span class="err">:</span><span class="w"> </span><span class="nl">lo</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">LOOPBACK</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">LOWER_UP</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mtu</span><span class="w"> </span><span class="mi">65536</span><span class="w"> </span><span class="n">qdisc</span><span class="w"> </span><span class="n">noqueue</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="k">UNKNOWN</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">default</span><span class="w"> </span>
+<span class="w">    </span><span class="n">link</span><span class="o">/</span><span class="n">loopback</span><span class="w"> </span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="w"> </span><span class="n">brd</span><span class="w"> </span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="err">:</span><span class="mi">00</span><span class="w"></span>
+<span class="w">    </span><span class="n">inet</span><span class="w"> </span><span class="mf">127.0.0.1</span><span class="o">/</span><span class="mi">8</span><span class="w"> </span><span class="k">scope</span><span class="w"> </span><span class="k">host</span><span class="w"> </span><span class="n">lo</span><span class="w"></span>
+<span class="w">        </span><span class="n">valid_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"> </span><span class="n">preferred_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"></span>
+<span class="w">    </span><span class="n">inet6</span><span class="w"> </span><span class="o">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span><span class="w"> </span><span class="k">scope</span><span class="w"> </span><span class="k">host</span><span class="w"> </span>
+<span class="w">        </span><span class="n">valid_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"> </span><span class="n">preferred_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"></span>
+<span class="mi">6</span><span class="err">:</span><span class="w"> </span><span class="nl">veth1</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">BROADCAST</span><span class="p">,</span><span class="n">MULTICAST</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">LOWER_UP</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mtu</span><span class="w"> </span><span class="mi">1500</span><span class="w"> </span><span class="n">qdisc</span><span class="w"> </span><span class="n">pfifo_fast</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="n">UP</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="n">qlen</span><span class="w"> </span><span class="mi">1000</span><span class="w"></span>
+<span class="w">    </span><span class="n">link</span><span class="o">/</span><span class="n">ether</span><span class="w"> </span><span class="mi">26</span><span class="err">:</span><span class="nl">e1</span><span class="p">:</span><span class="mi">4</span><span class="nl">d</span><span class="p">:</span><span class="nl">ee</span><span class="p">:</span><span class="mi">33</span><span class="err">:</span><span class="n">ef</span><span class="w"> </span><span class="n">brd</span><span class="w"> </span><span class="nl">ff</span><span class="p">:</span><span class="nl">ff</span><span class="p">:</span><span class="nl">ff</span><span class="p">:</span><span class="nl">ff</span><span class="p">:</span><span class="nl">ff</span><span class="p">:</span><span class="n">ff</span><span class="w"></span>
+<span class="w">    </span><span class="n">inet</span><span class="w"> </span><span class="mf">10.10.10.25</span><span class="o">/</span><span class="mi">27</span><span class="w"> </span><span class="n">brd</span><span class="w"> </span><span class="mf">10.10.10.31</span><span class="w"> </span><span class="k">scope</span><span class="w"> </span><span class="k">global</span><span class="w"> </span><span class="n">veth1</span><span class="w"></span>
+<span class="w">        </span><span class="n">valid_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"> </span><span class="n">preferred_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"></span>
+<span class="w">    </span><span class="n">inet6</span><span class="w"> </span><span class="nl">fe80</span><span class="p">:</span><span class="err">:</span><span class="mf">24e1</span><span class="err">:</span><span class="mi">4</span><span class="nl">dff</span><span class="p">:</span><span class="nl">feee</span><span class="p">:</span><span class="mi">33</span><span class="n">ef</span><span class="o">/</span><span class="mi">64</span><span class="w"> </span><span class="k">scope</span><span class="w"> </span><span class="n">link</span><span class="w"> </span>
+<span class="w">        </span><span class="n">valid_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"> </span><span class="n">preferred_lft</span><span class="w"> </span><span class="n">forever</span><span class="w"></span>
+
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="err">###</span><span class="w"> </span><span class="n">Cek</span><span class="w"> </span><span class="n">routing</span><span class="w"> </span><span class="nc">table</span><span class="w"> </span><span class="n">di</span><span class="w"> </span><span class="n">netns</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">netns</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">netns</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">netns</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">route</span><span class="w"> </span><span class="n">show</span><span class="w"></span>
+<span class="k">default</span><span class="w"> </span><span class="n">via</span><span class="w"> </span><span class="mf">10.10.10.28</span><span class="w"> </span><span class="n">dev</span><span class="w"> </span><span class="n">veth1</span><span class="w"> </span>
+<span class="mf">10.10.10.0</span><span class="o">/</span><span class="mi">27</span><span class="w"> </span><span class="n">dev</span><span class="w"> </span><span class="n">veth1</span><span class="w">  </span><span class="n">proto</span><span class="w"> </span><span class="n">kernel</span><span class="w">  </span><span class="k">scope</span><span class="w"> </span><span class="n">link</span><span class="w">  </span><span class="n">src</span><span class="w"> </span><span class="mf">10.10.10.25</span><span class="w"> </span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"> </span><span class="n">ip</span><span class="w"> </span><span class="n">netns</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="n">test</span><span class="o">-</span><span class="n">netns</span><span class="w"> </span><span class="n">ping</span><span class="w"> </span><span class="mf">8.8.8.8</span><span class="w"></span>
+<span class="n">PING</span><span class="w"> </span><span class="mf">8.8.8.8</span><span class="w"> </span><span class="p">(</span><span class="mf">8.8.8.8</span><span class="p">)</span><span class="w"> </span><span class="mi">56</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">data</span><span class="p">.</span><span class="w"></span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="mf">8.8.8.8</span><span class="err">:</span><span class="w"> </span><span class="n">icmp_req</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">55</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">40.8</span><span class="w"> </span><span class="n">ms</span><span class="w"></span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="mf">8.8.8.8</span><span class="err">:</span><span class="w"> </span><span class="n">icmp_req</span><span class="o">=</span><span class="mi">2</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">55</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">40.8</span><span class="w"> </span><span class="n">ms</span><span class="w"></span>
+<span class="mi">64</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="mf">8.8.8.8</span><span class="err">:</span><span class="w"> </span><span class="n">icmp_req</span><span class="o">=</span><span class="mi">3</span><span class="w"> </span><span class="n">ttl</span><span class="o">=</span><span class="mi">55</span><span class="w"> </span><span class="nc">time</span><span class="o">=</span><span class="mf">42.3</span><span class="w"> </span><span class="n">ms</span><span class="w"></span>
+<span class="o">^</span><span class="n">C</span><span class="w"></span>
+<span class="c1">--- 8.8.8.8 ping statistics ---</span>
+<span class="mi">3</span><span class="w"> </span><span class="n">packets</span><span class="w"> </span><span class="n">transmitted</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">received</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">%</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="n">loss</span><span class="p">,</span><span class="w"> </span><span class="nc">time</span><span class="w"> </span><span class="mi">2003</span><span class="n">ms</span><span class="w"></span>
+<span class="n">rtt</span><span class="w"> </span><span class="nf">min</span><span class="o">/</span><span class="nf">avg</span><span class="o">/</span><span class="nf">max</span><span class="o">/</span><span class="n">mdev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">40.817</span><span class="o">/</span><span class="mf">41.328</span><span class="o">/</span><span class="mf">42.347</span><span class="o">/</span><span class="mf">0.720</span><span class="w"> </span><span class="n">ms</span><span class="w"></span>
+<span class="n">root</span><span class="nv">@DEATH</span><span class="o">-</span><span class="nl">STAR</span><span class="p">:</span><span class="o">~</span><span class="err">#</span><span class="w"></span>
+</pre></div>
+
+
+<p>Network namespace <em>test-netns</em> sudah berhasil terkoneksi dengan Internet.</p>
+<p>Untuk menghapus namespace, pakai perintah <em>ip netns del &lt;nama netns&gt;</em></p>
+<div class="codehilite"><pre><span></span><span class="err">ip netns del test-netns</span>
+</pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="openstack-jaringan-virtual">OpenStack &amp; jaringan virtual</h3>
+<p>Setelah memahami sedikit tentang network namespace, kita akan lihat bagaimana OpenStack membangun jaringan virtual dengan network namespace.</p>
+<div class="aimg">
+    <img src="//devnull.web.id/images/openstack/openstack-network-namespace.png" alt="OpenStack Network Namespace" title="OpenStack network Namespace" />
+</div>
+
+<p>Gambar di atas adalah perbandingan antara netns dan Open vSwitch.<br />
+Bagian gambar di sebelah kanan adalah network namespace, bagaimana masing-masing tenant OpenStack melihat jaringannya sebagai jaringan yang independen dan terpisah dengan jaringan tenant lainnya.  </p>
+<p>Di Open vSwitch, bagian jaringan di gambar yang sebelah kiri itu jaringan sebenarnya, tidak terpisah secara fisik. Jaringan masing-masing tenant jadi satu hanya saja dipisahkan dengan apapun mode yang dipilih oleh administrator, vlan contohnya. Silahkan lihat kembali artikel sebelumnya untuk mode-mode yang lain.</p>
+<p>Kalau di tulisan yang lalu kita tahu OpenStack membuat penamaan interface dengan prefix <strong>qbr</strong>, <strong>qvo</strong>, <strong>qvb</strong> dengan masing-masing penggunaannya, di sini juga ada tiga lagi yaitu <strong>qg</strong>, <strong>qrouter</strong>, dan <strong>qr</strong>.<br />
+Mari kita lihat masing-masing nama prefix ini.</p>
+<ul>
+<li><strong>qrouter</strong> : Ini adalah prefix untuk network namespace</li>
+<li><strong>qg</strong> : Ini nama interface di namespace untuk interface yang terhubung ke jaringan luar, gampangnya kita sebut gateway.</li>
+<li><strong>qr</strong> : Ini adalah nama interface yang terhubung ke jaringan internal vm.</li>
+</ul>
+<p>Di instalasi OpenStack di contoh ini, saya ambil salah satu namespace bernama qrouter-3b71f8b1-4f6f-4647-abd3-bac4b1aebe7d</p>
+<div class="codehilite"><pre><span></span><span class="err">ip netns show</span>
+<span class="err">qrouter-3b71f8b1-4f6f-4647-abd3-bac4b1aebe7d</span>
+</pre></div>
+
+
+<p>Sedangkan untuk interface di netns tersebut:</p>
+<div class="codehilite"><pre><span></span><span class="err">root@Controller:~# ip netns exec qrouter-3b71f8b1-4f6f-4647-abd3-bac4b1aebe7d ip link show</span>
+<span class="c">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default </span>
+<span class="c">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span>
+<span class="c">7: qg-25efe5e5-07: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default </span>
+<span class="c">    link/ether fa:16:3e:84:ca:5c brd ff:ff:ff:ff:ff:ff</span>
+<span class="c">9: qr-6d6d8407-22: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default </span>
+<span class="c">    link/ether fa:16:3e:7f:a5:23 brd ff:ff:ff:ff:ff:ff</span>
+<span class="c">12: qr-c5ad4b75-f0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default </span>
+<span class="c">    link/ether fa:16:3e:69:23:ee brd ff:ff:ff:ff:ff:ff</span>
+<span class="err">root@Controller:~#</span>
+</pre></div>
+
+
+<p>Seperti terlihat, saya punya satu interface gateway qg-25efe5e5-07 dan 2 interface ke jaringan internal dengan prefix qr.</p>
+<p>&nbsp;</p>
+<p>Saya harap tulisan ini bisa memberikan gambaran untuk para administrator bagaimana OpenStack networking itu dibangun.<br />
+Salah satu hal yang kompleks di OpenStack menurut saya adalah networking ini, rumit dan banyak sekali komponennya.</p>
+<p>&nbsp;</p>
+<p><strong>Artikel Berkaitan:</strong><br />
+<a href="//devnull.web.id/openstack/pengenalan-openstack.html">Membumikan OpenStack</a><br />
+<em>Pengenalan yang &ldquo;ramah&rdquo; tentang OpenStack, ditulis dengan bahasa yang sederhana dan gampang dipahami</em></p>
+<p><a href="//devnull.web.id/openstack/memahami-networking-openstack-neutron.html">Memahami OpenStack Neutron lebih dalam</a><br />
+<em>Memahami bagaimana OpenStack menggunakan Open vSwitch, bridge, dan mengatur flow packet</em></p>
+<p><a href="//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html">Convert Database OpenStack Cinder dari Sqlite3 ke MySQL - Debian Jessie</a><br />
+<em>Kesalahan konfigurasi default OpenStack Cinder di Debian 8, dan bagaimana cara konversi database dari Sqlite3 ke MySQL</em></p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Cara%20Kerja%20OpenStack%20Networking%20-%20Memahami%20Network%20Namespace%20https%3A//devnull.web.id/openstack/openstack-network-namespace.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=https%3A//devnull.web.id/openstack/openstack-network-namespace.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=https%3A//devnull.web.id/openstack/openstack-network-namespace.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Cara%20Kerja%20OpenStack%20Networking%20-%20Memahami%20Network%20Namespace&amp;body=https%3A//devnull.web.id/openstack/openstack-network-namespace.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="../category/openstack.html">OpenStack</a>» 
+            by <a href="../author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="../tag/linux.html">Linux</a> #<a href="../tag/openstack.html">OpenStack</a> #<a href="../tag/networking.html">Networking</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="..">Accueil</a></li> -->
+              <li><a href="../categories.html">Categories</a></li>
+              <li><a href="../tags.html">Tags</a></li>
+              <li><a href="../archives.html">Archives</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="../category/debian.html">Debian</a></li>
+              <li><a href="../category/esai.html">Esai</a></li>
+              <li><a href="../category/how-to.html">How-to</a></li>
+              <li><a href="../category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="../category/misc.html">Misc</a></li>
+              <li><a href="../category/networking.html">Networking</a></li>
+              <li class="active"><a href="../category/openstack.html">OpenStack</a></li>
+              <li><a href="../category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="http://devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

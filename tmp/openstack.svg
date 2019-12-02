@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="21cm" height="15cm" viewBox="26 16 416 290" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #e5e5e5" x="284.618" y="17.1468" width="157.779" height="178.893"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #e5e5e5" x="284.618" y="17.1468" width="157.779" height="178.893"/>
+  </g>
+  <g>
+    <rect style="fill: #e5e5e5" x="26.5264" y="16.5232" width="199.575" height="178.893"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #e5e5e5" x="26.5264" y="16.5232" width="199.575" height="178.893"/>
+  </g>
+  <text font-size="8.28604" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="63.235" y="27.7966">
+    <tspan x="63.235" y="27.7966">OpenStack Compute 1</tspan>
+  </text>
+  <text font-size="6.02827" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="170.336" y="189.382">
+    <tspan x="170.336" y="189.382">eth0</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffa500" x="61.479" y="48.855" width="37.4992" height="24.1055"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="61.479" y="48.855" width="37.4992" height="24.1055"/>
+  </g>
+  <text font-size="6.02827" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="75.7394" y="54.53">
+    <tspan x="75.7394" y="54.53">VM 1</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="75.8522" y="71.371">
+    <tspan x="75.8522" y="71.371">eth0</tspan>
+  </text>
+  <g>
+    <rect style="fill: #00ff00" x="46.8414" y="83.5472" width="49.2612" height="26.5052"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="46.8414" y="83.5472" width="49.2612" height="26.5052"/>
+  </g>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="107.728" y="97.6132">
+    <tspan x="107.728" y="97.6132">Linux bridge</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="51.9185" y="107.917">
+    <tspan x="51.9185" y="107.917">qvbba904441-04</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="51.4896" y="89.6918">
+    <tspan x="51.4896" y="89.6918">tapba904441-04</tspan>
+  </text>
+  <g>
+    <rect style="fill: #bfbfbf" x="48.4119" y="120.809" width="160" height="22.9752"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="48.4119" y="120.809" width="160" height="22.9752"/>
+  </g>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="51.5608" y="126.674">
+    <tspan x="51.5608" y="126.674">qvoba904441-04</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="59.5801" y="116.69">
+    <tspan x="59.5801" y="116.69">Linux veth</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="117.985" y="129.214">
+    <tspan x="117.985" y="129.214">br-int</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="93.4545" y="141.892">
+    <tspan x="93.4545" y="141.892">int-br-vm</tspan>
+  </text>
+  <g>
+    <rect style="fill: #bfbfbf" x="68.9938" y="154.433" width="72.9661" height="36.9919"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="68.9938" y="154.433" width="72.9661" height="36.9919"/>
+  </g>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="91.9605" y="160.778">
+    <tspan x="91.9605" y="160.778">phy-br-vm</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="98.6823" y="175.982">
+    <tspan x="98.6823" y="175.982">br-vm</tspan>
+  </text>
+  <text font-size="6.02827" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="97.119" y="188.494">
+    <tspan x="97.119" y="188.494">eth1</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" x1="82.4119" y1="70.9436" x2="71.472" y2="83.5472"/>
+  <text font-size="8.28604" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="320.048" y="28.2084">
+    <tspan x="320.048" y="28.2084">OpenStack Compute 2</tspan>
+  </text>
+  <text font-size="6.02827" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="402.846" y="191.795">
+    <tspan x="402.846" y="191.795">eth0</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffa500" x="347.76" y="48.5209" width="37.4992" height="24.1055"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="347.76" y="48.5209" width="37.4992" height="24.1055"/>
+  </g>
+  <text font-size="6.02827" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="362.522" y="53.6959">
+    <tspan x="362.522" y="53.6959">VM 3</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="360.134" y="70.0369">
+    <tspan x="360.134" y="70.0369">eth0</tspan>
+  </text>
+  <g>
+    <rect style="fill: #00ff00" x="310.624" y="87.0686" width="49.2612" height="26.5052"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="310.624" y="87.0686" width="49.2612" height="26.5052"/>
+  </g>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="363.52" y="97.3504">
+    <tspan x="363.52" y="97.3504">Linux bridge</tspan>
+    <tspan x="363.52" y="103.475">qbr3d75a51d-13</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="316.406" y="111.438">
+    <tspan x="316.406" y="111.438">qvb3d75a51d-13</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="315.272" y="93.2132">
+    <tspan x="315.272" y="93.2132">tap3d75a51d-13</tspan>
+  </text>
+  <g>
+    <rect style="fill: #bfbfbf" x="309.974" y="127.602" width="49.15" height="22.9752"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="309.974" y="127.602" width="49.15" height="22.9752"/>
+  </g>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="316.67" y="132.581">
+    <tspan x="316.67" y="132.581">qvo3d75a51d-13</tspan>
+  </text>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" points="362.006,128.521 373.63,120.463 361.953,111.841 "/>
+    <polygon style="fill: #000000" points="359.54,130.23 361.688,126.307 362.006,128.521 363.967,129.595 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" points="359.54,130.23 361.688,126.307 362.006,128.521 363.967,129.595 "/>
+    <polygon style="fill: #000000" points="359.54,110.059 363.946,110.826 361.953,111.841 361.57,114.044 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" points="359.54,110.059 363.946,110.826 361.953,111.841 361.57,114.044 "/>
+  </g>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="377.22" y="122.443">
+    <tspan x="377.22" y="122.443">Pasangan Linux veth</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="359.124" y="139.09">
+    <tspan x="359.124" y="139.09">openvswitch</tspan>
+    <tspan x="359.124" y="145.214">br-int</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="326.856" y="148.438">
+    <tspan x="326.856" y="148.438">int-br-vm</tspan>
+  </text>
+  <g>
+    <rect style="fill: #bfbfbf" x="309.952" y="163.2" width="50.3765" height="27.4178"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="309.952" y="163.2" width="50.3765" height="27.4178"/>
+  </g>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="326.612" y="168.704">
+    <tspan x="326.612" y="168.704">phy-br-vm</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="360.329" y="176.909">
+    <tspan x="360.329" y="176.909">openvswitch</tspan>
+    <tspan x="360.329" y="183.033">br-vm</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="381.564" y="157.963">
+    <tspan x="381.564" y="157.963">Pasangan Linux veth</tspan>
+  </text>
+  <text font-size="6.02827" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="330.508" y="189.365">
+    <tspan x="330.508" y="189.365">eth1</tspan>
+  </text>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" points="357.419,166.007 379.408,156.26 357.81,148.176 "/>
+    <polygon style="fill: #000000" points="354.676,167.223 357.522,163.774 357.419,166.007 359.143,167.431 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" points="354.676,167.223 357.522,163.774 357.419,166.007 359.143,167.431 "/>
+    <polygon style="fill: #000000" points="355,147.124 359.447,146.653 357.81,148.176 358.045,150.399 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" points="355,147.124 359.447,146.653 357.81,148.176 358.045,150.399 "/>
+  </g>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" x1="366.51" y1="72.6264" x2="335.255" y2="87.0686"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" x1="335.013" y1="113.582" x2="334.758" y2="127.609"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" x1="334.729" y1="150.585" x2="334.926" y2="163.198"/>
+  <g>
+    <path style="fill: #3cafe4" d="M 204.938 277.821 L 218.643,266.672 L 250.281,266.672 L 238.936,277.821 L 204.938,277.821z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #add6e7" d="M 204.938 277.821 L 218.618,266.697"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #add6e7" d="M 250.25 266.697 L 238.936,277.821 L 204.938,277.821"/>
+    <path style="fill: #076086" d="M 238.936 292.052 L 250.281,280.428 L 250.281,266.685 L 238.936,277.821 L 238.936,292.052z"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #add6e7" d="M 238.936 292.052 L 250.281,280.428 L 250.281,266.697"/>
+    <path style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #add6e7" d="M 250.262 266.697 L 238.936,277.821 L 238.936,292.052"/>
+    <path style="fill: #1c97cd" d="M 238.936 292.071 L 238.936,277.821 L 204.982,277.821 L 204.982,292.071 L 238.936,292.071z"/>
+    <path style="fill: #add6e7" d="M 238.936 277.663 L 238.778,277.821 L 238.778,292.071 L 239.094,292.071 L 239.094,277.821 L 238.936,277.663 L 239.094,277.821 L 239.094,277.663 L 238.936,277.663z"/>
+    <path style="fill: #add6e7" d="M 204.824 277.821 L 204.982,277.979 L 238.936,277.979 L 238.936,277.663 L 204.982,277.663 L 204.824,277.821 L 204.982,277.663 L 204.824,277.663 L 204.824,277.821z"/>
+    <path style="fill: #add6e7" d="M 204.982 292.229 L 205.14,292.071 L 205.14,277.821 L 204.824,277.821 L 204.824,292.071 L 204.982,292.229 L 204.824,292.071 L 204.824,292.229 L 204.982,292.229z"/>
+    <path style="fill: #add6e7" d="M 239.094 292.071 L 238.936,291.913 L 204.982,291.913 L 204.982,292.229 L 238.936,292.229 L 239.094,292.071 L 238.936,292.229 L 239.094,292.229 L 239.094,292.071z"/>
+    <path style="fill: #000000" d="M 224.357 268.596 L 231.419,267.893 L 230.052,270.171 L 228.255,269.817 L 217.694,273.828 L 215.802,273.303 L 226.142,269.342 L 224.357,268.596z"/>
+    <path style="fill: #000000" d="M 232.526 271.108 L 239.581,270.412 L 238.234,272.683 L 236.418,272.323 L 225.857,276.341 L 223.965,275.828 L 234.304,271.867 L 232.526,271.108z"/>
+    <path style="fill: #ffffff" d="M 224.395 268.95 L 231.45,268.254 L 230.09,270.519 L 228.287,270.177 L 217.713,274.183 L 215.834,273.664 L 226.18,269.709 L 224.395,268.95z"/>
+    <path style="fill: #ffffff" d="M 232.558 271.468 L 239.619,270.772 L 238.259,273.044 L 236.455,272.69 L 225.882,276.701 L 224.003,276.182 L 234.348,272.221 L 232.558,271.468z"/>
+    <path style="fill: #000000" d="M 216.112 283.358 L 216.112,280.681 L 210.974,280.681 L 210.974,283.358 L 216.112,283.358z"/>
+    <path style="fill: #000000" d="M 227.856 283.358 L 227.856,280.681 L 232.982,280.681 L 232.982,283.358 L 227.856,283.358z"/>
+    <path style="fill: #000000" d="M 216.112 290.09 L 216.112,287.401 L 210.974,287.401 L 210.974,290.09 L 216.112,290.09z"/>
+    <path style="fill: #000000" d="M 227.856 290.09 L 227.856,287.401 L 232.982,287.401 L 232.982,290.09 L 227.856,290.09z"/>
+    <path style="fill: #000000" d="M 230.235 281.833 L 214.467,281.833 L 214.467,282.219 L 230.235,282.219 L 230.235,281.833z"/>
+    <path style="fill: #000000" d="M 230.235 288.521 L 214.467,288.521 L 214.467,288.907 L 230.235,288.907 L 230.235,288.521z"/>
+    <path style="fill: #000000" d="M 230.166 281.845 L 213.48,288.572 L 213.619,288.926 L 230.311,282.2 L 230.166,281.845z"/>
+    <path style="fill: #000000" d="M 230.311 288.572 L 213.619,281.845 L 213.48,282.2 L 230.166,288.926 L 230.311,288.572z"/>
+    <path style="fill: #ffffff" d="M 215.897 283.124 L 215.897,280.441 L 210.753,280.441 L 210.753,283.124 L 215.897,283.124z"/>
+    <path style="fill: #ffffff" d="M 227.635 283.124 L 227.635,280.441 L 232.766,280.441 L 232.766,283.124 L 227.635,283.124z"/>
+    <path style="fill: #ffffff" d="M 215.897 289.844 L 215.897,287.154 L 210.753,287.154 L 210.753,289.844 L 215.897,289.844z"/>
+    <path style="fill: #ffffff" d="M 227.635 289.844 L 227.635,287.154 L 232.766,287.154 L 232.766,289.844 L 227.635,289.844z"/>
+    <path style="fill: #ffffff" d="M 230.027 281.586 L 214.239,281.586 L 214.239,281.972 L 230.027,281.972 L 230.027,281.586z"/>
+    <path style="fill: #ffffff" d="M 230.027 288.274 L 214.239,288.274 L 214.239,288.667 L 230.027,288.667 L 230.027,288.274z"/>
+    <path style="fill: #ffffff" d="M 229.951 281.605 L 213.246,288.331 L 213.398,288.679 L 230.09,281.959 L 229.951,281.605z"/>
+    <path style="fill: #ffffff" d="M 230.09 288.331 L 213.398,281.605 L 213.246,281.959 L 229.951,288.679 L 230.09,288.331z"/>
+  </g>
+  <g>
+    <rect style="fill: #b3b3b3" x="126.811" y="226.008" width="200.243" height="14.1348"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="126.811" y="226.008" width="200.243" height="14.1348"/>
+    <rect style="fill: #000000" x="134.664" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="142.517" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="150.369" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="158.222" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="166.075" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="173.927" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="181.78" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="189.633" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="197.485" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="205.338" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="213.191" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="221.043" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="228.896" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="236.748" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="244.601" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="252.454" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="260.306" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="268.159" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="276.012" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="283.864" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="291.717" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="299.57" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="307.422" y="231.191" width="3.92632" height="3.76927"/>
+    <rect style="fill: #000000" x="315.275" y="231.191" width="3.92632" height="3.76927"/>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" points="204.435,226.012 167.938,214.553 105.477,191.425 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" points="284.459,226.014 321.878,199.98 335.65,189.255 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" points="227.724,266.669 227.434,249.948 227.142,240.144 "/>
+  <text font-size="7.15716" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="252.86" y="276.704">
+    <tspan x="252.86" y="276.704">OpenStack virtual router</tspan>
+    <tspan x="252.86" y="285.65">(Neutron Server)</tspan>
+  </text>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" points="411.228,193.392 411.228,212.482 177.904,212.045 178.09,193.739 "/>
+  <text font-size="6.02827" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="337.02" y="211.146">
+    <tspan x="337.02" y="211.146">Management Network</tspan>
+  </text>
+  <text font-size="7.15716" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="130.595" y="247.934">
+    <tspan x="130.595" y="247.934">Switch Fisik</tspan>
+  </text>
+  <text font-size="8.28604" style="fill: #bfbfbf;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="219.686" y="182.147">
+    <tspan x="219.686" y="182.147">devnull.web.id</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="52.6878" y="65.511">
+    <tspan x="52.6878" y="65.511">A</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="37.591" y="99.9482">
+    <tspan x="37.591" y="99.9482">B</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="36.8584" y="140.47">
+    <tspan x="36.8584" y="140.47">C</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="59.3764" y="179.214">
+    <tspan x="59.3764" y="179.214">D</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffa500" x="144.015" y="48.9937" width="37.4992" height="24.1055"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="144.015" y="48.9937" width="37.4992" height="24.1055"/>
+  </g>
+  <text font-size="6.02827" style="fill: #000099;text-anchor:start;font-family:monospace;font-style:normal;font-weight:normal" x="155.332" y="54.6687">
+    <tspan x="155.332" y="54.6687">VM 2</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="155.445" y="71.5096">
+    <tspan x="155.445" y="71.5096">eth0</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="133.542" y="65.2292">
+    <tspan x="133.542" y="65.2292">E</tspan>
+  </text>
+  <g>
+    <rect style="fill: #00ff00" x="158.462" y="83.926" width="49.2612" height="26.5052"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke: #000000" x="158.462" y="83.926" width="49.2612" height="26.5052"/>
+  </g>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="163.959" y="109.187">
+    <tspan x="163.959" y="109.187">qvb44fad193-32</tspan>
+  </text>
+  <text font-size="4.89938" style="fill: #000000;text-anchor:start;font-family:monospace;font-style:italic;font-weight:normal" x="163.11" y="90.0706">
+    <tspan x="163.11" y="90.0706">tap44fad193-32</tspan>
+  </text>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 2.35099e-37; stroke-dasharray: 2; stroke: #ff0000" x="49.974" y="101.83" width="44.5019" height="27.5289"/>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="162.74" y="126.542">
+    <tspan x="162.74" y="126.542">qvo44fad193-32</tspan>
+  </text>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 2.35099e-37; stroke-dasharray: 2; stroke: #ff0000" x="161.954" y="102.9" width="44.5019" height="26.2774"/>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="164.681" y="118.182">
+    <tspan x="164.681" y="118.182">Linux veth</tspan>
+  </text>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 2.35099e-37; stroke-dasharray: 2; stroke: #ff0000" x="85.2416" y="136.388" width="44.5019" height="27.5289"/>
+  <text font-size="4.89938" style="fill: #ff0000;text-anchor:start;font-family:monospace;font-style:normal;font-weight:700" x="94.071" y="151.029">
+    <tspan x="94.071" y="151.029">Linux veth</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="149.297" y="100.361">
+    <tspan x="149.297" y="100.361">F</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 2; stroke: #000000" x1="162.764" y1="73.0991" x2="171.936" y2="83.9631"/>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="336.781" y="65.8749">
+    <tspan x="336.781" y="65.8749">W</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="302.045" y="104.175">
+    <tspan x="302.045" y="104.175">X</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="299.864" y="145.068">
+    <tspan x="299.864" y="145.068">Y</tspan>
+  </text>
+  <text font-size="9.41493" style="fill: #000099;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="301.99" y="179.339">
+    <tspan x="301.99" y="179.339">Z</tspan>
+  </text>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 0.02; stroke-dasharray: 4; stroke: #ffa500" x="46.1641" y="43.6631" width="345.838" height="33.5428"/>
+  <text font-size="9.41493" style="fill: #ffa500;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:700" x="217.387" y="64.4037">
+    <tspan x="217.387" y="64.4037">Guest VM</tspan>
+  </text>
+</svg>

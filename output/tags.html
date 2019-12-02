@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>DevNull — Tags</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="./theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="./theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic|Open+Sans:300italic,300,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="./theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="./theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="./favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <script type="text/javascript" src="./theme/js/microTags.js"></script>
+    <script>
+      function tag_cloud_init() {
+        var ul = document.getElementById("tag-cloud");
+        window.tagCloud = new microTags(ul, {
+          'min-size': .95,
+          'max-size': 3.5,
+          'min-angle': -8,
+          'max-angle': 8
+        });
+      }
+      if (window.addEventListener) window.addEventListener("load", tag_cloud_init, false);
+      else if (window.attachEvent) window.attachEvent("onload", tag_cloud_init);
+      else window.onload = tag_cloud_init;
+    </script>
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="./index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <section id="page-main" role="main">
+      <h1>Tags</h1>
+      <ul id="tag-cloud">
+      <li data-count="3" title="3 article(s)"><a href="./tag/ipv6.html">IPv6</a></li>
+      <li data-count="17" title="17 article(s)"><a href="./tag/linux.html">Linux</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/red-hat.html">Red Hat</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/python.html">Python</a></li>
+      <li data-count="7" title="7 article(s)"><a href="./tag/debian.html">Debian</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/powerdns.html">Powerdns</a></li>
+      <li data-count="5" title="5 article(s)"><a href="./tag/networking.html">Networking</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/lua.html">Lua</a></li>
+      <li data-count="2" title="2 article(s)"><a href="./tag/programming.html">Programming</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/vyatta.html">Vyatta</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/systemd.html">systemd</a></li>
+      <li data-count="1" title="1 article(s)"><a href="./tag/vyos.html">VyOS</a></li>
+      <li data-count="6" title="6 article(s)"><a href="./tag/openstack.html">OpenStack</a></li>
+      </ul>
+      </section> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href=".">Accueil</a></li> -->
+              <li><a href="./categories.html">Categories</a></li>
+              <li><a href="./tags.html">Tags</a></li>
+              <li><a href="./archives.html">Archives</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="./category/debian.html">Debian</a></li>
+              <li><a href="./category/esai.html">Esai</a></li>
+              <li><a href="./category/how-to.html">How-to</a></li>
+              <li><a href="./category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="./category/misc.html">Misc</a></li>
+              <li><a href="./category/networking.html">Networking</a></li>
+              <li><a href="./category/openstack.html">OpenStack</a></li>
+              <li><a href="./category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="http://devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

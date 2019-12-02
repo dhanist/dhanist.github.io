@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Tentang SSL/TLS + sertifikat TLS gratis dari Let's Encrypt — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="../theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="../theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic|Open+Sans:300italic,300,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="../theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="../theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="../favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" media="not print" type="text/css" href="../theme/css/pygments.css" /> 
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="../index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="../misc/ssl-tls-letsencrypt.html"
+             title="Bookmarks «Tentang SSL/TLS + sertifikat TLS gratis dari Let's Encrypt»">
+             Tentang SSL/TLS + sertifikat TLS gratis dari Let's Encrypt
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="../author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-12-19T14:35:00+08:00">Mon 19 December 2016</time>
+            <br />Filed under: <a href="../category/misc.html">Misc</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <p>Kalau teman-teman lihat di address bar blog ini, protokolnya pakai https yang berarti koneksi ke blog ini pakai secure connection.<br />
+Atau coba cek pakai command</p>
+<div class="codehilite"><pre><span></span><span class="err">openssl s_client -connect devnull.web.id:443</span>
+</pre></div>
+
+
+<p>Aman tidak harus mahal. Sertifikat ssl yang dipakai blog ini gratis dari Let&rsquo;s Encrypt. 
+Beda sama sertifikat gratis lainnya yang mensyaratkan harus langganan hosting di provider tertentu, 
+Let&rsquo;s Encrypt tidak, kita cuma perlu membuktikan kalau kita owner website tersebut.</p>
+<p>Sebelum ke free certificate dari Let&rsquo;s Encrypt, kita pelajari dulu apa itu <strong>Public Key Infrastructure (PKI)</strong> dan <strong>SSL/TLS</strong>. 
+Buat teman-teman pembaca yang mau langsung lompat ke cara install sertifikat, silahkan langsung ke bagian <a href="#letsencrypt"><strong>Let&rsquo;s Encrypt</strong></a>.</p>
+<p><br />
+<strong>Pentingkah security?</strong><br />
+Kalau mau jawab pertanyaan ini, kita bisa bayangkan jaringan Internet itu seperti komunikasi yang sifatnya terbuka. 
+Bayangkan kita bicara satu lawan satu tapi di tengah-tengah kerumunan banyak orang, mereka bisa dengar apa yang kita bicarakan. <br />
+Kalau di jaringan, komunikasi satu lawan satu ini disebut unicast, beda sama broadcast yang komunikasinya satu ke banyak. 
+Jenis-jenis komunikasi ini ada saya bahas sedikit di artikel tentang IPv6, <a href="//devnull.web.id/networking/pengenalan-ipv6.html">&ldquo;Hampir&rdquo; Semua Tentang IPv6</a>.</p>
+<p>Tapi ceritanya jadi lain kalau pembicaraan ini sifatnya harus privat, yang tidak boleh ada yang tahu kecuali dua pihak unicast itu. 
+Dan di era Internet sekarang ini ada yang namanya e-commerce, Internet banking, dan lainnya yang sifat komunikasinya harus aman.</p>
+<p>Internet kita ini berjalan di atas protokol IP dan routing yang ada di layer 3 OSI. Routing artinya untuk bisa berkomunikasi secara unicast, kita tidak bisa 
+langsung bicara ke pihak yang dituju. Pesan kita itu dirouting seperti kalau kirim paket lewat jasa ekspedisi, pesan kita itu diserahkan secara 
+estafet dari hop ke hop sampai ke tujuan.</p>
+<p>Masalahnya adalah, di setiap hop itu siapapun yang berwenang bisa melihat isi pesan kita, bahkan bukan tidak mungkin mereka bisa merubah isinya. 
+Siapa mereka itu? Mereka itu adalah provider Internet kita, Telkom, Indosat, dll. saya juga bekerja di provider Internet dan paham sekali yang seperti ini, jadi jangan 
+percaya mereka.</p>
+<p>Praktik mendengarkan percakapan (eavesdropping) dan merubah pesan yang dikirim ini dalam bahasa security disebut <em>MITM</em> atau <em>Man-in-the-middle</em> attack.</p>
+<p><br /></p>
+<h3 id="public-key-infrastructure-pki">Public Key Infrastructure (PKI)</h3>
+<p>PKI ini seperti satu set aturan buat me-manage digital certificate. PKI memverifikasi identitas baik itu server atau client, 
+mengasosiasikan public key ke identitas tertentu. Gampangnya, PKI itu seperti password. Password itu cara sederhana buat memastikan identitas user, 
+artinya identitas user diproteksi dengan password yang password ini cuma user tersebut yang tahu.</p>
+<p>PKI juga kurang lebih seperti itu, memproteksi identitas, bukan pakai password tapi pakai encryption key.<br />
+Lebih dari itu, PKI menyelesaikan tiga problem komunikasi sekaligus:</p>
+<ol>
+<li><strong>Confidentiality.</strong></li>
+<li><strong>Authentication.</strong></li>
+<li><strong>Integrity.</strong></li>
+</ol>
+<p>Kita bahas satu-satu.</p>
+<p><strong>1) Confidentiality</strong><br />
+Confidentiality atau kerahasiaan data diatur dalam PKI. Bagaimana caranya kita berkomunikasi satu lawan satu secara rahasia? sementara Internet itu kan 
+jaringan publik, siapa saja bisa <em>eavesdropping</em> atau mendengarkan pembicaraan itu. Caranya, komunikasinya pakai kode atau bahasa yang cuma bisa dimengerti 
+dua pihak ini, yang lain bisa dengar tapi tidak paham maksudnya.</p>
+<p>Cara ini disebut encryption atau encipherment, istilah yang awal lebih umum dan sering dipakai. Encryption atau enkripsi ini caranya mengacak pesan digital, 
+bit-bit digital diacak dan dibuat jadi seolah-olah tidak beraturan. Data digital ini bisa dikembalikan lagi seperti aslinya sebelum diacak, prosesnya disebut decrypt. Proses decrypt ini 
+pakai kunci yang disebut encryption key. Jadi, cuma pemegang kunci saja yang bisa decrypt pesan itu.</p>
+<p>Ada dua metode enkripsi yang ada saat ini, metode simetris atau <em>symmetric encryption</em> sama metode asimetris atau <em>asymmetric encryption</em>.</p>
+<p><strong>Symmetric encryption</strong> menggunakan kunci atau key yang sama untuk encrypt atau decrypt. Jadi antara kedua pihak yang bertukar informasi key-nya sama. 
+Pesan di-<em>encrypt</em> pakai key itu, di-<em>decrypt</em> pakai key itu juga.</p>
+<p>Kelebihan enkripsi metode ini, lebih cepat dibanding asymmetric encryption. Enkripsi ini juga biasanya lebih secure. Key yang dipakai untuk enkripsi ini biasanya pendek, 
+cuma 128 bit atau 256 bit. Biarpun pendek tapi bisa lebih secure dari key asymmetric yang lebih panjang.<br />
+Algoritma enkripsi untuk tipe ini semisal <strong>AES (Advanced Encryption Standard)</strong> dan <strong>DES (Data Encryption Standard)</strong>.</p>
+<p>Kekurangannya, karena pihak yang berkomunikasi pakai key yang sama, distribusi key ini jadi problem sendiri. Karena kalau tidak hati-hati, key bisa jatuh ke tangan yang salah. 
+Supaya aman, distribusi key ini bisa pakai cara tradisional, misalnya key disimpan ke flash disk untuk kemudian dikirim fisiknya. Kalau key ditransfer lewat jaringan Internet, 
+ada kemungkinan key tersebut di hijack dan diterima orang yang salah.</p>
+<p><strong>Asymmetric encryption</strong> pakai key yang berbeda antara yang buat encrypt sama yang buat decrypt. Satu key bersifat publik yang disebut <em>public key</em> terus satunya lagi 
+disebut <em>private key</em> yang cuma owner nya saja yang bisa akses. Siapapun yang punya public key bisa meng-encrypt data pakai public key tersebut dan yang bisa decrypt cuma 
+pemilik private key nya.</p>
+<p>Kelebihan metode ini, tidak ada problem distribusi key karena cuma public key saja yang di distribusikan sedangkan private key tetap aman.</p>
+<p>Kekurangannya, biasanya metode enkripsi ini lebih lambat dari yang symmetric. Key nya juga biasanya panjang dari 1024 bit sampai 4096 bit. 
+Algoritma enkripsi untuk metode <em>asymmetric encryption</em> ini seperti <strong>RSA (Rivest-Shamir-Adleman)</strong> dan <strong>DSA (Digital Signature Algorithm)</strong>.</p>
+<p>Contoh penggunaan <em>asymmetric encryption</em> yang populer seperti <strong>PGP</strong>, <strong>OpenPGP</strong>, dan <strong>GPG</strong>. Siapa saja bisa download <em>public key</em> dari keyserver terus pakai key ini buat encrypt file. 
+File yang sudah terenkripsi ini kemudian bisa dikirim secara aman, seseorang bisa saja membajak file itu tapi karena dia tidak punya file <em>private key</em>-nya, file tidak bisa di-<em>decrypt</em>.</p>
+<p>Ini contoh <em>public key</em> GPG punya saya dengan id <code>0x2d6783968595c582</code> yang ada di keyserver <a href="https://sks-keyservers.net/pks/lookup?op=vindex&amp;search=0x2d6783968595c582">https://sks-keyservers.net/pks/lookup?op=vindex&amp;search=0x2d6783968595c582</a>.</p>
+<p><br /></p>
+<p><strong>2) Authentication</strong><br />
+Problem komunikasi berikutnya masalah autentikasi. Autentikasi ini buat memastikan bahwa lawan bicara kita adalah benar dia, bukan orang yang berpura-pura. 
+Dalam komunikasi IP begitu juga, user atau client yang berkomunikasi dengan situs online banking misalnya, 
+harus memastikan bahwa yang diaksesnya itu benar-benar situs bank yang dimaksud dan bukannya situs tiruan buatan pencuri.</p>
+<p>Teknik kejahatan cyber yang seperti ini, misalnya membuat halaman situs yang mirip situs resmi online banking supaya si user tidak sadar masuk 
+jebakan disebut teknik <em>phising</em>. Salah satu tujuan PKI untuk mencegah hal ini dengan cara memastikan identitas server dengan encryption key.</p>
+<p>Caranya, kembali ke asymmetric encryption. Selain untuk encrypt dan decrypt, metode asymmetric juga bisa buat tanda tangan digital atau istilahnya digital signature.<br />
+Kalau untuk encrypt dan decrypt, data digital di encrypt pakai public key kemudian pemilik private key yang bisa decrypt data itu. Untuk signing berlaku sebaliknya, 
+pemilik private key menandatangani atau sign data pakai private key, kemudian siapa saja yang punya public key bisa verifikasi tanda tangan tersebut dan memastikan
+keasliannya.</p>
+<p>Contoh saja, kita akses halaman situs https://www.google.com. Pertama, browser kita yang bertindak sebagai client download digital certificate dari website tersebut. 
+Di dalam digital certificate itu ada public key dengan identitas www.google.com. Dengan begitu, client bisa encrypt data pakai public key yang sudah didownload, terus 
+server yang bisa decrypt. Begitu juga server bisa tandatangani data digital dengan private key-nya dan client yang sudah punya public key bisa verifikasi signature tersebut.</p>
+<p>Nah, sampai sini timbul masalah. Bagaimana kita bisa memastikan bahwa digital certificate yang didownload tadi benar-benar dari Google dan bukan server yang mengaku sebagai Google?<br />
+Kita tidak bisa memastikan, karena siapa saja bisa mengaku sebagai Google dengan membuat certificate dengan identitas www.google.com.</p>
+<p>Terus solusinya bagaimana?<br />
+Setidaknya ada dua metode yang mengatasi problem ini, <strong>Certificate Authority (CA)</strong> dan <strong>Web of trust</strong>.</p>
+<p><strong>Certificate Authority</strong> atau <strong>CA</strong> ini berfungsi seperti organisasi yang punya otoritas menandatangani digital certificate. 
+Ada banyak organisasi CA, contoh saja seperti Comodo, GeoTrust, DigiCert, dan Symantec yang dulu namanya VeriSign. Digital certificate dari para CA ini secara default sudah dimasukkan di database 
+client, misal browser seperti Google Chrome atau Firefox. Certificate dari CA ini dianggap trusted atau terpercaya karena reputasi organisasi yang bagus dan mereka ini diaudit secara berkala.</p>
+<p>Para CA ini yang memastikan nama identitas di digital certificate itu valid atau tidak. Misalnya Google membuat digital certificate untuk domain www.google.com, kemudian Google 
+membuat file <em>Certificate Signing Request (CSR)</em> ke CA GeoTrust supaya GeoTrust menandatangani digital certificate-nya Google. Di sini GeoTrust melakukan verifikasi apakah request 
+itu benar-benar dari Google atau tidak. Caranya bisa bermacam-macam, mulai dari verifikasi website, telepon, sampai penggunaan legal dokumen buat membuktikan identitas.<br />
+Kemudian setelah GeoTrust memastikan validitas request tersebut, CA ini signing atau secara digital menandatangani digital certificate Google, certificate ini kemudian dipakai di 
+server Google.</p>
+<p>Nah waktu kita browsing Google misalnya, browser melihat bahwa digital certificate punya Google ini ditandatangani oleh GeoTrust. Karena certificate GeoTrust ada di database dan 
+dianggap terpercaya, maka digital certificate Google ini juga secara otomatis dipercaya oleh client atau browser.</p>
+<p>Tapi biarpun begitu, CA ini jadi <em>The weakest link</em> di PKI. Karena kalau misalnya private key punya CA berhasil dicuri, maka pencuri tersebut bisa seenaknya menandatangani atau signing certificate apa saja, 
+termasuk situs phising. Atau misalnya organisasi CA ini secara diam-diam bekerjasama atau berbagi private key dengan organisasi rahasia untuk memata-matai pengguna Internet, kita tidak akan tahu bedanya.</p>
+<p><strong>Web of trust</strong>. Ini alternatif lain selain CA. Web of trust ini dipakai di PGP/OpenPGP/GPG. Bedanya, tidak ada satupun otoritas di sini. Web of trust ini seperti jaring, misalnya 
+kita set public key teman kita si B sebagai trusted, dan si B juga mempercayai public key si C, maka public key punya si C juga dianggap trusted. Begitu seterusnya sampai membentuk jaringan kepercayaan.</p>
+<p><br /></p>
+<p><strong>3) Integrity</strong><br />
+Satu lagi masalah data integrity. Bagaimana PKI meyakinkan dua pihak yang berkomunikasi secara digital bahwa data atau pesan yang dikirim dan diterima itu tidak mengalami perubahan di tengah jalan, 
+bahwa data yang diterima itu benar data yang dikirim.</p>
+<p>Ada beberapa cara buat mengecek integritas data.</p>
+<ul>
+<li><strong>Digital Signature.</strong></li>
+<li><strong>Message digest atau Hash.</strong></li>
+<li><strong>Message Authentication code (MAC).</strong></li>
+</ul>
+<p><strong>Digital Signature</strong> seperti yang sudah dibahas di atas tentang autentikasi. Digital signing ini caranya si pengirim menggunakan private key-nya untuk sign data digital, tandatangan digital sama datanya 
+kemudian dikirim bersama. Si penerima yang sudah punya public key memeriksa validitas signature tersebut. Kalau misalnya di tengah jalan data ini mengalami perubahan, maka signature tersebut jadi tidak 
+valid dan si penerima tahu bahwa data ini tidak sama dengan data yang dikirim.</p>
+<p>Mari dicoba.<br />
+Misal saya buat file <code>text</code> yang isinya <em>&ldquo;abcde&rdquo;</em>, kemudian file tersebut Saya sign. File signature terpisah dengan nama <code>text.signature</code></p>
+<div class="codehilite"><pre><span></span><span class="o">[</span><span class="n">dhani: ~</span><span class="o">]</span><span class="w"> </span><span class="n">Endor</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="ss">&quot;abcde&quot;</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nc">text</span><span class="w"></span>
+<span class="o">[</span><span class="n">dhani: ~</span><span class="o">]</span><span class="w"> </span><span class="n">Endor</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">gpg</span><span class="w"> </span><span class="o">-</span><span class="n">u</span><span class="w"> </span><span class="n">dhani</span><span class="p">.</span><span class="n">stx</span><span class="nv">@gmail</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="c1">--armor --output text.signature --detach-sig text</span>
+
+<span class="n">You</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">passphrase</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">unlock</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">secret</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="k">for</span><span class="w"></span>
+<span class="k">user</span><span class="err">:</span><span class="w"> </span><span class="ss">&quot;Dhani Setiawan &lt;dhani.stx@gmail.com&gt;&quot;</span><span class="w"></span>
+<span class="mi">2048</span><span class="o">-</span><span class="nc">bit</span><span class="w"> </span><span class="n">RSA</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="mi">8595</span><span class="n">C582</span><span class="p">,</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="mi">2016</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">27</span><span class="w"></span>
+</pre></div>
+
+
+<p>Hasil signature seperti di bawah:</p>
+<div class="codehilite"><pre><span></span><span class="p">[</span><span class="n">dhani</span><span class="p">:</span> <span class="o">~</span><span class="p">]</span> <span class="n">Endor</span> <span class="o">&gt;</span> <span class="n">cat</span> <span class="nb">text</span><span class="p">.</span><span class="n">signature</span> 
+<span class="c1">-----BEGIN PGP SIGNATURE-----</span>
+<span class="k">Version</span><span class="p">:</span> <span class="n">GnuPG</span> <span class="n">v1</span>
+
+<span class="n">iQEcBAABAgAGBQJYU5YtAAoJEC1ng5aFlcWCrA8H</span><span class="o">/</span><span class="mi">3</span><span class="n">vZI0</span><span class="o">+</span><span class="n">CBAW0NwrewslSDmFi</span>
+<span class="n">WKvUiCV1JQQtZcjT6ljCFLIk7MvtN5s00aEgySTLKRbnOWeL4HO2oNaI0LgjCfB9</span>
+<span class="n">b46LO74Z</span><span class="o">+</span><span class="mi">2</span><span class="n">DSBattr5dWG</span><span class="o">+</span><span class="n">fusAcOQDblakSItHUG3BpeFQOaPhdjctk4hEm2FKmj</span>
+<span class="n">JVkbSqLWf6VOZe2</span><span class="o">+</span><span class="n">F0Zz81tYuJkVlIO7oxW6rzZCYucO98</span><span class="o">/</span><span class="n">piyoJQzrrupOio8jr</span>
+<span class="n">N9uxTeNJBuAKMprU9rEHf0VSwMw4baPKzgf</span><span class="o">/</span><span class="n">wGht7E</span><span class="o">/</span><span class="n">EQgkz9RVuN8zWNxpFgdDI</span>
+<span class="n">fbfCGgMvxxuC2</span><span class="o">+</span><span class="n">dzUASz6Ca2jZMOM6k8r8OXdtTpSd5erf1FI88U9df4oh2kDjs</span><span class="o">=</span>
+<span class="o">=</span><span class="n">K</span><span class="o">/</span><span class="n">SY</span>
+<span class="c1">-----END PGP SIGNATURE-----</span>
+</pre></div>
+
+
+<p>Coba diverifikasi signature itu.</p>
+<div class="codehilite"><pre><span></span><span class="err">[dhani: ~] Endor &gt; gpg --verify text.signature text</span>
+<span class="c">gpg: Signature made Fri 16 Dec 2016 03:22:21 PM WITA using RSA key ID 8595C582</span>
+<span class="c">gpg: Good signature from &quot;Dhani Setiawan &lt;dhani@deltatux.com&gt;&quot;</span>
+<span class="c">gpg:                 aka &quot;Dhani Setiawan &lt;dhani.stx@gmail.com&gt;&quot;</span>
+</pre></div>
+
+
+<p>Apa yang terjadi kalau isi file <code>text</code> dirubah, misalnya rubah huruf terakhir jadi huruf besar, kemudian verifikasi signature-nya.</p>
+<div class="codehilite"><pre><span></span><span class="err">[dhani: ~] Endor &gt; echo &quot;abcdE&quot; &gt; text</span>
+<span class="err">[dhani: ~] Endor &gt; gpg --verify text.signature text</span>
+<span class="c">gpg: Signature made Fri 16 Dec 2016 03:22:21 PM WITA using RSA key ID 8595C582</span>
+<span class="c">gpg: BAD signature from &quot;Dhani Setiawan &lt;dhani@deltatux.com&gt;&quot;</span>
+<span class="err">[dhani: ~] Endor &gt;</span>
+</pre></div>
+
+
+<p>Kalihatan antara file dengan signaturenya tidak cocok.</p>
+<p>Kelemahan metode ini, karena pakai public dan private key yang berarti asymmetric, maka prosesnya lebih lambat dibanding cara yang lain.</p>
+<p><br /></p>
+<p><strong>Message digest atau Hash</strong>. Hampir sama dengan digital signing, hanya saja tidak pakai encryption key apapun, cuma algoritma hashing. Data digital yang dikirim terlebih dulu di hash, kemudian data 
+sama hash-nya dikirm. Si penerima data juga kalkulasi hash data itu, terus membandingkan apa hash yang dihasilkan sama atau tidak. Kalau sama berarti data itu valid kalau tidak berarti data itu sudah 
+dimodifikasi.</p>
+<p>Beberapa algoritma hashing misalnya MD5, SHA1 dan SHA256. hash MD5 panjangnya 128 bit, SHA1 160 bit, dan SHA256 sepanjang 256 bit.</p>
+<p>Perhatikan hasil hash text &ldquo;abcde&rdquo; di bawah:</p>
+<div class="codehilite"><pre><span></span><span class="err">[dhani: ~] Endor &gt; echo &quot;abcde&quot; | md5sum</span>
+<span class="err">9b9af6945c95f1aa302a61acf75c9bd6  -</span>
+<span class="err">[dhani: ~] Endor &gt; echo &quot;abcde&quot; | sha1sum</span>
+<span class="err">ec11312386ad561674f724b8cca7cf1796e26d1d  -</span>
+<span class="err">[dhani: ~] Endor &gt; echo &quot;abcde&quot; | sha256sum</span>
+<span class="err">0283da60063abfb3a87f1aed845d17fe2d9ba8c780b478dc4ae048f5ee97a6d5  -</span>
+<span class="err">[dhani: ~] Endor &gt;</span>
+</pre></div>
+
+
+<p>Hash MD5 dan SHA1, sekarang ini sudah dianggap tidak lagi secure karena pendek. Artinya kemungkinan dua data yang berbeda menghasilkan hash yang sama lebih besar dibanding hash yang panjang.</p>
+<p>Kita ambil contoh hash SHA256, data &ldquo;abcde&rdquo; dirubah ke &ldquo;abcdE&rdquo;, cuma berubah di karakter terakhir.</p>
+<div class="codehilite"><pre><span></span><span class="err">[dhani: ~] Endor &gt; echo &quot;abcde&quot; | sha256sum</span>
+<span class="err">0283da60063abfb3a87f1aed845d17fe2d9ba8c780b478dc4ae048f5ee97a6d5  -</span>
+<span class="err">[dhani: ~] Endor &gt; echo &quot;abcdE&quot; | sha256sum</span>
+<span class="err">98f2c74c952a79ac39fffc5c6beb301c267cfeaeb898d840b1482350fc4e9b91  -</span>
+<span class="err">[dhani: ~] Endor &gt;</span>
+</pre></div>
+
+
+<p>Biarpun perbedaan itu cuma antara huruf kecil dan besar, hasil hash berbeda.</p>
+<p>Perlu diingat bahwa hash cuma berguna buat memastikan integritas data, tidak bisa memastikan identitas pengirim data.</p>
+<p><br /></p>
+<p><strong>Message Authentication Code (MAC)</strong>. Kurang lebih seperti digital signature, hanya saja key yang dipakai di sini shared key yang berarti symmetric encryption. Kalau hash inputnya cuma satu, data saja, 
+MAC inputnya dua, data sama key. MAC fungsinya hampir sama dengan digital signature, selain buat memastikan integritas data juga sebagai autentikasi bahwa data yang dikirim itu berasal dari pengirim 
+yang memegang key-nya. Penerima data digital menerima data bersamaan dengan kode MAC-nya, kalau data ini dibuat dari key yang berbeda maka kode MAC itu jadi tidak valid. Begitu juga kalau data 
+dimodifikasi di tengah jalan, kode MAC juga akan berbeda.</p>
+<p>Kelebihan MAC, karena pakai symmetric encryption jadinya lebih cepat proses generate kode sama proses verifikasinya dibanding digital signature. Kelemahannya juga sama seperti symmetric encryption, 
+tidak bisa memastikan dari siapa data itu dikirim karena siapa saja yang punya enryption key bisa mengirim data yang valid.</p>
+<p><br /></p>
+<h3 id="x509">X.509</h3>
+<p>Baik, setelah membahas tentang <em>Public Key Infrastructure</em> atau <em>PKI</em> di atas, sekarang kita lihat seperti apa digital certificate itu.</p>
+<p>Salah satu standar format digital certificate PKI adalah <strong>X.509</strong>. Digital certificate standar X.509 ini yang dipakai di SSL dan TLS.</p>
+<p>Digital certificate yang pakai standard X.509 berisi informasi-informasi atau struktur seperti di bawah:</p>
+<ul>
+<li><strong>Version</strong> atau versi X.509. Ada X.509 versi 1, 2 dan 3.</li>
+<li><strong>Serial Number</strong>. Serial dari pembuat digital certificate yang membedakan dari certificate lainnya.</li>
+<li><strong>Algorithm</strong>. Informasi tentang algoritma yang dipakai untuk membuat digital certificate. Algoritma seperti yang sudah dibahas sebelumnya tentang 
+confidentiality PKI.</li>
+<li><strong>Issuer</strong> atau organisasi <em>Certificate Authority</em> (CA) yang mengeluarkan digital certificate.</li>
+<li><strong>Validity</strong> berisi informasi tentang mulai kapan sampai kapan certificate ini validnya, tanggal expire nya.</li>
+<li><strong>Subject DN</strong>. Isinya tentang identitas pemilik digital certificate ini, dari nama sampai alamat email.</li>
+<li><strong>Public key</strong>. Public key asymmetric encryption seperti yang sudah dibahas sebelumnya.</li>
+</ul>
+<p>Selain yang di atas itu, ada beberapa informasi yang sifatnya opsional seperti extension X.509.</p>
+<p>Sebagai contoh, di bawah ini digital certificate X.509 yang dipakai blog DevNull ini.</p>
+<div class="codehilite"><pre><span></span><span class="n">openssl</span> <span class="n">x509</span> <span class="o">-</span><span class="n">noout</span> <span class="o">-</span><span class="nb">text</span> <span class="o">-</span><span class="k">in</span> <span class="n">devnull</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">id</span><span class="o">/</span><span class="n">fullchain</span><span class="p">.</span><span class="n">pem</span> 
+<span class="n">Certificate</span><span class="p">:</span>
+    <span class="k">Data</span><span class="p">:</span>
+        <span class="k">Version</span><span class="p">:</span> <span class="mi">3</span> <span class="p">(</span><span class="mi">0</span><span class="n">x2</span><span class="p">)</span>
+        <span class="nb">Serial</span> <span class="nb">Number</span><span class="p">:</span>
+            <span class="mi">03</span><span class="p">:</span><span class="n">ac</span><span class="p">:</span><span class="n">ba</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="mi">90</span><span class="p">:</span><span class="n">d4</span><span class="p">:</span><span class="mi">7</span><span class="k">c</span><span class="p">:</span><span class="n">b6</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">76</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="n">af</span><span class="p">:</span><span class="n">f8</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="mi">73</span><span class="p">:</span><span class="mi">89</span>
+    <span class="n">Signature</span> <span class="n">Algorithm</span><span class="p">:</span> <span class="n">sha256WithRSAEncryption</span>
+        <span class="n">Issuer</span><span class="p">:</span> <span class="k">C</span><span class="o">=</span><span class="n">US</span><span class="p">,</span> <span class="n">O</span><span class="o">=</span><span class="n">Let</span><span class="s1">&#39;s Encrypt, CN=Let&#39;</span><span class="n">s</span> <span class="n">Encrypt</span> <span class="n">Authority</span> <span class="n">X3</span>
+        <span class="n">Validity</span>
+            <span class="k">Not</span> <span class="k">Before</span><span class="p">:</span> <span class="nb">Dec</span>  <span class="mi">9</span> <span class="mi">14</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">00</span> <span class="mi">2016</span> <span class="n">GMT</span>
+            <span class="k">Not</span> <span class="k">After</span> <span class="p">:</span> <span class="n">Mar</span>  <span class="mi">9</span> <span class="mi">14</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">00</span> <span class="mi">2017</span> <span class="n">GMT</span>
+        <span class="n">Subject</span><span class="p">:</span> <span class="n">CN</span><span class="o">=</span><span class="n">devnull</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">id</span>
+        <span class="n">Subject</span> <span class="k">Public</span> <span class="k">Key</span> <span class="n">Info</span><span class="p">:</span>
+            <span class="k">Public</span> <span class="k">Key</span> <span class="n">Algorithm</span><span class="p">:</span> <span class="n">rsaEncryption</span>
+                <span class="k">Public</span><span class="o">-</span><span class="k">Key</span><span class="p">:</span> <span class="p">(</span><span class="mi">2048</span> <span class="nb">bit</span><span class="p">)</span>
+                <span class="n">Modulus</span><span class="p">:</span>
+                    <span class="mi">00</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="mi">03</span><span class="p">:</span><span class="mi">8</span><span class="n">f</span><span class="p">:</span><span class="mi">1</span><span class="n">b</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span><span class="n">bf</span><span class="p">:</span><span class="n">f4</span><span class="p">:</span><span class="n">bc</span><span class="p">:</span><span class="n">bc</span><span class="p">:</span><span class="n">ed</span><span class="p">:</span><span class="mi">77</span><span class="p">:</span><span class="mi">5</span><span class="k">c</span><span class="p">:</span>
+                    <span class="mi">1</span><span class="k">c</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="n">e0</span><span class="p">:</span><span class="n">ec</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">2</span><span class="n">e</span><span class="p">:</span><span class="mi">92</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="n">eb</span><span class="p">:</span><span class="mi">05</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">77</span><span class="p">:</span><span class="n">ec</span><span class="p">:</span><span class="mi">99</span><span class="p">:</span>
+                    <span class="mi">01</span><span class="p">:</span><span class="mi">02</span><span class="p">:</span><span class="mi">5</span><span class="n">d</span><span class="p">:</span><span class="mi">62</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="n">cb</span><span class="p">:</span><span class="mi">79</span><span class="p">:</span><span class="n">af</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="n">d0</span><span class="p">:</span><span class="mi">49</span><span class="p">:</span><span class="mi">2</span><span class="n">b</span><span class="p">:</span><span class="mi">65</span><span class="p">:</span><span class="n">f9</span><span class="p">:</span>
+                    <span class="mi">97</span><span class="p">:</span><span class="n">be</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="mi">8</span><span class="n">d</span><span class="p">:</span><span class="mi">99</span><span class="p">:</span><span class="n">bf</span><span class="p">:</span><span class="mi">2</span><span class="n">a</span><span class="p">:</span><span class="mi">2</span><span class="n">d</span><span class="p">:</span><span class="n">e7</span><span class="p">:</span><span class="mi">63</span><span class="p">:</span><span class="mi">2</span><span class="n">e</span><span class="p">:</span><span class="n">dc</span><span class="p">:</span><span class="mi">0</span><span class="n">b</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="mi">2</span><span class="n">f</span><span class="p">:</span>
+                    <span class="mi">21</span><span class="p">:</span><span class="mi">89</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">2</span><span class="n">f</span><span class="p">:</span><span class="mi">64</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">37</span><span class="p">:</span><span class="n">fc</span><span class="p">:</span><span class="n">e9</span><span class="p">:</span><span class="n">ef</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span><span class="n">d2</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mi">77</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span>
+                    <span class="mi">7</span><span class="n">d</span><span class="p">:</span><span class="mi">19</span><span class="p">:</span><span class="n">ba</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">96</span><span class="p">:</span><span class="mi">2</span><span class="k">c</span><span class="p">:</span><span class="mi">70</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="mi">97</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">2</span><span class="n">d</span><span class="p">:</span><span class="n">da</span><span class="p">:</span>
+                    <span class="mi">78</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mi">66</span><span class="p">:</span><span class="mi">0</span><span class="n">f</span><span class="p">:</span><span class="mi">3</span><span class="n">f</span><span class="p">:</span><span class="mi">5</span><span class="k">c</span><span class="p">:</span><span class="mi">6</span><span class="n">e</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">62</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="mi">4</span><span class="n">a</span><span class="p">:</span><span class="n">f4</span><span class="p">:</span><span class="n">e0</span><span class="p">:</span><span class="n">b9</span><span class="p">:</span>
+                    <span class="mi">54</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="mi">94</span><span class="p">:</span><span class="mi">1</span><span class="n">d</span><span class="p">:</span><span class="n">b7</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">19</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mi">9</span><span class="n">f</span><span class="p">:</span><span class="mi">4</span><span class="k">c</span><span class="p">:</span><span class="mi">18</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="mi">9</span><span class="n">f</span><span class="p">:</span><span class="n">f8</span><span class="p">:</span><span class="n">a6</span><span class="p">:</span>
+                    <span class="n">e7</span><span class="p">:</span><span class="n">b0</span><span class="p">:</span><span class="mi">64</span><span class="p">:</span><span class="mi">06</span><span class="p">:</span><span class="n">d0</span><span class="p">:</span><span class="n">a6</span><span class="p">:</span><span class="n">ba</span><span class="p">:</span><span class="n">b5</span><span class="p">:</span><span class="n">be</span><span class="p">:</span><span class="n">cd</span><span class="p">:</span><span class="n">e8</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="n">bc</span><span class="p">:</span><span class="mi">44</span><span class="p">:</span><span class="mi">2</span><span class="n">a</span><span class="p">:</span>
+                    <span class="mi">85</span><span class="p">:</span><span class="mi">9</span><span class="n">a</span><span class="p">:</span><span class="mi">6</span><span class="n">b</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">8</span><span class="n">e</span><span class="p">:</span><span class="n">d3</span><span class="p">:</span><span class="n">e7</span><span class="p">:</span><span class="mi">73</span><span class="p">:</span><span class="n">ff</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="n">a3</span><span class="p">:</span><span class="n">fd</span><span class="p">:</span><span class="mi">4</span><span class="n">e</span><span class="p">:</span><span class="mi">3</span><span class="k">c</span><span class="p">:</span><span class="n">e0</span><span class="p">:</span>
+                    <span class="n">f9</span><span class="p">:</span><span class="mi">9</span><span class="n">e</span><span class="p">:</span><span class="mi">3</span><span class="k">c</span><span class="p">:</span><span class="n">be</span><span class="p">:</span><span class="mi">6</span><span class="n">e</span><span class="p">:</span><span class="n">e7</span><span class="p">:</span><span class="mi">64</span><span class="p">:</span><span class="n">b6</span><span class="p">:</span><span class="n">b2</span><span class="p">:</span><span class="n">eb</span><span class="p">:</span><span class="mi">06</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="n">eb</span><span class="p">:</span><span class="mi">32</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span>
+                    <span class="n">a9</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="n">c1</span><span class="p">:</span><span class="mi">1</span><span class="n">f</span><span class="p">:</span><span class="mi">90</span><span class="p">:</span><span class="n">eb</span><span class="p">:</span><span class="n">ca</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mi">8</span><span class="n">a</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="mi">88</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="mi">90</span><span class="p">:</span>
+                    <span class="n">ea</span><span class="p">:</span><span class="n">f1</span><span class="p">:</span><span class="n">e8</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="n">e4</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mi">63</span><span class="p">:</span><span class="mi">99</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="n">bd</span><span class="p">:</span><span class="mi">5</span><span class="n">a</span><span class="p">:</span><span class="mi">78</span><span class="p">:</span><span class="mi">61</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span>
+                    <span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="n">b8</span><span class="p">:</span><span class="mi">78</span><span class="p">:</span><span class="mi">5</span><span class="n">a</span><span class="p">:</span><span class="n">e3</span><span class="p">:</span><span class="mi">22</span><span class="p">:</span><span class="n">e7</span><span class="p">:</span><span class="mi">7</span><span class="n">a</span><span class="p">:</span><span class="n">d9</span><span class="p">:</span><span class="n">f1</span><span class="p">:</span><span class="mi">81</span><span class="p">:</span><span class="n">b8</span><span class="p">:</span><span class="mi">59</span><span class="p">:</span><span class="mi">91</span><span class="p">:</span><span class="mi">4</span><span class="n">a</span><span class="p">:</span>
+                    <span class="n">b5</span><span class="p">:</span><span class="n">ec</span><span class="p">:</span><span class="mi">5</span><span class="n">e</span><span class="p">:</span><span class="mi">3</span><span class="n">b</span><span class="p">:</span><span class="n">e1</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="n">d1</span><span class="p">:</span><span class="mi">74</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="mi">77</span><span class="p">:</span><span class="n">c4</span><span class="p">:</span><span class="n">be</span><span class="p">:</span><span class="n">e1</span><span class="p">:</span>
+                    <span class="mi">4</span><span class="n">a</span><span class="p">:</span><span class="n">cd</span><span class="p">:</span><span class="mi">8</span><span class="n">d</span><span class="p">:</span><span class="n">e3</span><span class="p">:</span><span class="n">fa</span><span class="p">:</span><span class="n">f1</span><span class="p">:</span><span class="mi">2</span><span class="n">b</span><span class="p">:</span><span class="mi">5</span><span class="n">f</span><span class="p">:</span><span class="mi">93</span><span class="p">:</span><span class="mi">87</span><span class="p">:</span><span class="n">e4</span><span class="p">:</span><span class="mi">0</span><span class="k">c</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">0</span><span class="n">b</span><span class="p">:</span><span class="n">f6</span><span class="p">:</span>
+                    <span class="mi">28</span><span class="p">:</span><span class="mi">69</span><span class="p">:</span><span class="mi">86</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">97</span><span class="p">:</span><span class="n">b8</span><span class="p">:</span><span class="n">a5</span><span class="p">:</span><span class="n">b1</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="n">b4</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="mi">03</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">4</span><span class="n">b</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span>
+                    <span class="n">ea</span><span class="p">:</span><span class="mi">99</span>
+                <span class="n">Exponent</span><span class="p">:</span> <span class="mi">65537</span> <span class="p">(</span><span class="mi">0</span><span class="n">x10001</span><span class="p">)</span>
+        <span class="n">X509v3</span> <span class="n">extensions</span><span class="p">:</span>
+            <span class="n">X509v3</span> <span class="k">Key</span> <span class="k">Usage</span><span class="p">:</span> <span class="n">critical</span>
+                <span class="n">Digital</span> <span class="n">Signature</span><span class="p">,</span> <span class="k">Key</span> <span class="n">Encipherment</span>
+            <span class="n">X509v3</span> <span class="n">Extended</span> <span class="k">Key</span> <span class="k">Usage</span><span class="p">:</span> 
+                <span class="n">TLS</span> <span class="n">Web</span> <span class="n">Server</span> <span class="n">Authentication</span><span class="p">,</span> <span class="n">TLS</span> <span class="n">Web</span> <span class="n">Client</span> <span class="n">Authentication</span>
+            <span class="n">X509v3</span> <span class="n">Basic</span> <span class="k">Constraints</span><span class="p">:</span> <span class="n">critical</span>
+                <span class="n">CA</span><span class="p">:</span><span class="k">FALSE</span>
+            <span class="n">X509v3</span> <span class="n">Subject</span> <span class="k">Key</span> <span class="n">Identifier</span><span class="p">:</span> 
+                <span class="mi">8</span><span class="n">F</span><span class="p">:</span><span class="n">A5</span><span class="p">:</span><span class="n">A9</span><span class="p">:</span><span class="mi">96</span><span class="p">:</span><span class="n">A7</span><span class="p">:</span><span class="n">D0</span><span class="p">:</span><span class="mi">1</span><span class="n">A</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="mi">3</span><span class="n">E</span><span class="p">:</span><span class="n">D9</span><span class="p">:</span><span class="n">B2</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">18</span><span class="p">:</span><span class="mi">29</span><span class="p">:</span><span class="n">A0</span><span class="p">:</span><span class="mi">06</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="n">CD</span><span class="p">:</span><span class="mi">6</span><span class="n">F</span><span class="p">:</span><span class="mi">9</span><span class="n">E</span>
+            <span class="n">X509v3</span> <span class="n">Authority</span> <span class="k">Key</span> <span class="n">Identifier</span><span class="p">:</span> 
+                <span class="n">keyid</span><span class="p">:</span><span class="n">A8</span><span class="p">:</span><span class="mi">4</span><span class="n">A</span><span class="p">:</span><span class="mi">6</span><span class="n">A</span><span class="p">:</span><span class="mi">63</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span><span class="mi">7</span><span class="n">D</span><span class="p">:</span><span class="n">DD</span><span class="p">:</span><span class="n">BA</span><span class="p">:</span><span class="n">E6</span><span class="p">:</span><span class="n">D1</span><span class="p">:</span><span class="mi">39</span><span class="p">:</span><span class="n">B7</span><span class="p">:</span><span class="n">A6</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mi">65</span><span class="p">:</span><span class="n">EF</span><span class="p">:</span><span class="n">F3</span><span class="p">:</span><span class="n">A8</span><span class="p">:</span><span class="n">EC</span><span class="p">:</span><span class="n">A1</span>
+
+            <span class="n">Authority</span> <span class="n">Information</span> <span class="k">Access</span><span class="p">:</span> 
+                <span class="n">OCSP</span> <span class="o">-</span> <span class="n">URI</span><span class="p">:</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ocsp</span><span class="p">.</span><span class="nb">int</span><span class="o">-</span><span class="n">x3</span><span class="p">.</span><span class="n">letsencrypt</span><span class="p">.</span><span class="n">org</span><span class="o">/</span>
+                <span class="n">CA</span> <span class="n">Issuers</span> <span class="o">-</span> <span class="n">URI</span><span class="p">:</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">cert</span><span class="p">.</span><span class="nb">int</span><span class="o">-</span><span class="n">x3</span><span class="p">.</span><span class="n">letsencrypt</span><span class="p">.</span><span class="n">org</span><span class="o">/</span>
+
+            <span class="n">X509v3</span> <span class="n">Subject</span> <span class="n">Alternative</span> <span class="n">Name</span><span class="p">:</span> 
+                <span class="n">DNS</span><span class="p">:</span><span class="n">devnull</span><span class="p">.</span><span class="n">web</span><span class="p">.</span><span class="n">id</span>
+            <span class="n">X509v3</span> <span class="n">Certificate</span> <span class="n">Policies</span><span class="p">:</span> 
+                <span class="n">Policy</span><span class="p">:</span> <span class="mi">2</span><span class="p">.</span><span class="mi">23</span><span class="p">.</span><span class="mi">140</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">2</span><span class="p">.</span><span class="mi">1</span>
+                <span class="n">Policy</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">3</span><span class="p">.</span><span class="mi">6</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">4</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">44947</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">1</span>
+                <span class="n">CPS</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">cps</span><span class="p">.</span><span class="n">letsencrypt</span><span class="p">.</span><span class="n">org</span>
+                <span class="k">User</span> <span class="n">Notice</span><span class="p">:</span>
+                    <span class="n">Explicit</span> <span class="nb">Text</span><span class="p">:</span> <span class="n">This</span> <span class="n">Certificate</span> <span class="n">may</span> <span class="k">only</span> <span class="n">be</span> <span class="n">relied</span> <span class="n">upon</span> <span class="k">by</span> <span class="n">Relying</span> <span class="n">Parties</span> <span class="k">and</span> <span class="k">only</span> <span class="k">in</span> <span class="n">accordance</span> <span class="k">with</span> <span class="n">the</span> <span class="n">Certificate</span> <span class="n">Policy</span> <span class="k">found</span> <span class="k">at</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">letsencrypt</span><span class="p">.</span><span class="n">org</span><span class="o">/</span><span class="n">repository</span><span class="o">/</span>
+
+    <span class="n">Signature</span> <span class="n">Algorithm</span><span class="p">:</span> <span class="n">sha256WithRSAEncryption</span>
+        <span class="mi">2</span><span class="k">c</span><span class="p">:</span><span class="n">ee</span><span class="p">:</span><span class="n">d4</span><span class="p">:</span><span class="n">c4</span><span class="p">:</span><span class="n">c1</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="n">d4</span><span class="p">:</span><span class="mi">4</span><span class="k">c</span><span class="p">:</span><span class="mi">60</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="n">f8</span><span class="p">:</span><span class="mi">6</span><span class="n">d</span><span class="p">:</span><span class="mi">8</span><span class="n">e</span><span class="p">:</span><span class="n">db</span><span class="p">:</span><span class="n">cf</span><span class="p">:</span><span class="mi">86</span><span class="p">:</span><span class="n">f3</span><span class="p">:</span><span class="n">ae</span><span class="p">:</span>
+        <span class="n">b7</span><span class="p">:</span><span class="n">d9</span><span class="p">:</span><span class="mi">3</span><span class="n">a</span><span class="p">:</span><span class="mi">7</span><span class="n">b</span><span class="p">:</span><span class="mi">8</span><span class="k">c</span><span class="p">:</span><span class="mi">60</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">29</span><span class="p">:</span><span class="n">be</span><span class="p">:</span><span class="mi">7</span><span class="n">b</span><span class="p">:</span><span class="n">a0</span><span class="p">:</span><span class="mi">9</span><span class="n">d</span><span class="p">:</span><span class="n">f7</span><span class="p">:</span><span class="mi">49</span><span class="p">:</span><span class="mi">1</span><span class="k">c</span><span class="p">:</span><span class="mi">53</span><span class="p">:</span><span class="n">e2</span><span class="p">:</span><span class="mi">34</span><span class="p">:</span>
+        <span class="mi">8</span><span class="n">e</span><span class="p">:</span><span class="mi">9</span><span class="n">b</span><span class="p">:</span><span class="mi">68</span><span class="p">:</span><span class="n">d3</span><span class="p">:</span><span class="mi">72</span><span class="p">:</span><span class="n">b0</span><span class="p">:</span><span class="mi">97</span><span class="p">:</span><span class="mi">7</span><span class="k">c</span><span class="p">:</span><span class="mi">7</span><span class="n">f</span><span class="p">:</span><span class="mi">56</span><span class="p">:</span><span class="mi">29</span><span class="p">:</span><span class="n">fa</span><span class="p">:</span><span class="mi">80</span><span class="p">:</span><span class="n">ab</span><span class="p">:</span><span class="n">a9</span><span class="p">:</span><span class="mi">40</span><span class="p">:</span><span class="n">a4</span><span class="p">:</span><span class="mi">99</span><span class="p">:</span>
+        <span class="mi">39</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="mi">9</span><span class="n">e</span><span class="p">:</span><span class="mi">9</span><span class="n">d</span><span class="p">:</span><span class="n">af</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="n">c6</span><span class="p">:</span><span class="mi">61</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="n">f3</span><span class="p">:</span><span class="mi">18</span><span class="p">:</span><span class="n">a5</span><span class="p">:</span><span class="n">c9</span><span class="p">:</span><span class="mi">1</span><span class="n">e</span><span class="p">:</span><span class="mi">73</span><span class="p">:</span><span class="n">cc</span><span class="p">:</span><span class="mi">9</span><span class="n">e</span><span class="p">:</span><span class="mi">8</span><span class="n">b</span><span class="p">:</span>
+        <span class="mi">25</span><span class="p">:</span><span class="mi">7</span><span class="n">d</span><span class="p">:</span><span class="mi">76</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="n">f8</span><span class="p">:</span><span class="n">ec</span><span class="p">:</span><span class="n">e0</span><span class="p">:</span><span class="mi">27</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="mi">61</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">9</span><span class="n">a</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span><span class="n">ba</span><span class="p">:</span>
+        <span class="n">c8</span><span class="p">:</span><span class="n">a4</span><span class="p">:</span><span class="n">a2</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="mi">64</span><span class="p">:</span><span class="mi">84</span><span class="p">:</span><span class="mi">6</span><span class="n">d</span><span class="p">:</span><span class="n">b4</span><span class="p">:</span><span class="n">ac</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="mi">48</span><span class="p">:</span><span class="n">e0</span><span class="p">:</span><span class="n">d1</span><span class="p">:</span><span class="n">e4</span><span class="p">:</span><span class="n">a3</span><span class="p">:</span><span class="mi">2</span><span class="n">a</span><span class="p">:</span><span class="mi">92</span><span class="p">:</span><span class="n">ae</span><span class="p">:</span>
+        <span class="n">a1</span><span class="p">:</span><span class="n">d4</span><span class="p">:</span><span class="n">c8</span><span class="p">:</span><span class="mi">86</span><span class="p">:</span><span class="mi">2</span><span class="k">c</span><span class="p">:</span><span class="mi">8</span><span class="n">a</span><span class="p">:</span><span class="n">f4</span><span class="p">:</span><span class="mi">7</span><span class="n">a</span><span class="p">:</span><span class="mi">0</span><span class="k">c</span><span class="p">:</span><span class="mi">27</span><span class="p">:</span><span class="n">d3</span><span class="p">:</span><span class="n">ac</span><span class="p">:</span><span class="mi">7</span><span class="n">f</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="n">a7</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="n">a8</span><span class="p">:</span>
+        <span class="n">a7</span><span class="p">:</span><span class="mi">4</span><span class="n">a</span><span class="p">:</span><span class="n">c8</span><span class="p">:</span><span class="mi">3</span><span class="k">c</span><span class="p">:</span><span class="mi">4</span><span class="n">a</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span><span class="n">b3</span><span class="p">:</span><span class="mi">81</span><span class="p">:</span><span class="n">e7</span><span class="p">:</span><span class="mi">25</span><span class="p">:</span><span class="n">bc</span><span class="p">:</span><span class="mi">59</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="n">b0</span><span class="p">:</span><span class="mi">51</span><span class="p">:</span><span class="mi">88</span><span class="p">:</span><span class="mi">2</span><span class="n">e</span><span class="p">:</span><span class="n">b7</span><span class="p">:</span>
+        <span class="mi">73</span><span class="p">:</span><span class="n">a4</span><span class="p">:</span><span class="mi">73</span><span class="p">:</span><span class="n">bb</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="n">f3</span><span class="p">:</span><span class="mi">78</span><span class="p">:</span><span class="mi">36</span><span class="p">:</span><span class="mi">60</span><span class="p">:</span><span class="mi">18</span><span class="p">:</span><span class="mi">75</span><span class="p">:</span><span class="n">a1</span><span class="p">:</span><span class="n">a4</span><span class="p">:</span><span class="n">eb</span><span class="p">:</span><span class="n">b7</span><span class="p">:</span><span class="mi">08</span><span class="p">:</span><span class="mi">0</span><span class="n">d</span><span class="p">:</span><span class="mi">6</span><span class="k">c</span><span class="p">:</span>
+        <span class="mi">20</span><span class="p">:</span><span class="mi">26</span><span class="p">:</span><span class="n">bd</span><span class="p">:</span><span class="n">e1</span><span class="p">:</span><span class="mi">76</span><span class="p">:</span><span class="n">fc</span><span class="p">:</span><span class="n">bc</span><span class="p">:</span><span class="mi">77</span><span class="p">:</span><span class="n">ca</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="n">c5</span><span class="p">:</span><span class="mi">43</span><span class="p">:</span><span class="n">bb</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="n">ab</span><span class="p">:</span><span class="mi">5</span><span class="n">b</span><span class="p">:</span><span class="mi">67</span><span class="p">:</span><span class="mi">4</span><span class="n">f</span><span class="p">:</span>
+        <span class="n">c8</span><span class="p">:</span><span class="mi">7</span><span class="n">b</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="n">b4</span><span class="p">:</span><span class="mi">1</span><span class="n">f</span><span class="p">:</span><span class="mi">7</span><span class="n">b</span><span class="p">:</span><span class="n">b2</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="mi">13</span><span class="p">:</span><span class="mi">35</span><span class="p">:</span><span class="n">e3</span><span class="p">:</span><span class="mi">80</span><span class="p">:</span><span class="n">ea</span><span class="p">:</span><span class="mi">9</span><span class="n">f</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="mi">4</span><span class="n">d</span><span class="p">:</span><span class="n">c1</span><span class="p">:</span><span class="mi">04</span><span class="p">:</span>
+        <span class="mi">59</span><span class="p">:</span><span class="mi">69</span><span class="p">:</span><span class="mi">44</span><span class="p">:</span><span class="mi">55</span><span class="p">:</span><span class="n">d6</span><span class="p">:</span><span class="n">fb</span><span class="p">:</span><span class="n">ba</span><span class="p">:</span><span class="n">ae</span><span class="p">:</span><span class="mi">97</span><span class="p">:</span><span class="n">fa</span><span class="p">:</span><span class="n">fc</span><span class="p">:</span><span class="mi">73</span><span class="p">:</span><span class="n">fa</span><span class="p">:</span><span class="mi">94</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span><span class="n">cd</span><span class="p">:</span><span class="mi">30</span><span class="p">:</span><span class="mi">8</span><span class="n">e</span><span class="p">:</span>
+        <span class="mi">93</span><span class="p">:</span><span class="n">cd</span><span class="p">:</span><span class="n">a7</span><span class="p">:</span><span class="mi">1</span><span class="k">c</span><span class="p">:</span><span class="mi">1</span><span class="n">a</span><span class="p">:</span><span class="mi">1</span><span class="n">d</span><span class="p">:</span><span class="mi">45</span><span class="p">:</span><span class="mi">9</span><span class="n">a</span><span class="p">:</span><span class="n">e6</span><span class="p">:</span><span class="n">d0</span><span class="p">:</span><span class="mi">2</span><span class="n">e</span><span class="p">:</span><span class="mi">94</span><span class="p">:</span><span class="n">c6</span><span class="p">:</span><span class="mi">84</span><span class="p">:</span><span class="n">c9</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="n">a0</span><span class="p">:</span><span class="mi">5</span><span class="n">b</span><span class="p">:</span>
+        <span class="mi">35</span><span class="p">:</span><span class="n">e4</span><span class="p">:</span><span class="mi">8</span><span class="n">a</span><span class="p">:</span><span class="mi">8</span><span class="n">e</span><span class="p">:</span><span class="n">fe</span><span class="p">:</span><span class="n">d8</span><span class="p">:</span><span class="mi">49</span><span class="p">:</span><span class="n">d7</span><span class="p">:</span><span class="n">a0</span><span class="p">:</span><span class="mi">71</span><span class="p">:</span><span class="mi">9</span><span class="n">f</span><span class="p">:</span><span class="n">c3</span><span class="p">:</span><span class="n">c8</span><span class="p">:</span><span class="mi">02</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="n">ab</span><span class="p">:</span><span class="mi">95</span><span class="p">:</span><span class="n">ca</span><span class="p">:</span>
+        <span class="n">eb</span><span class="p">:</span><span class="mi">72</span><span class="p">:</span><span class="mi">8</span><span class="n">e</span><span class="p">:</span><span class="n">b6</span>
+</pre></div>
+
+
+<p>Jadi, kata &ldquo;sertifikat SSL&rdquo; yang sering kita dengar itu sebenarnya istilah marketing, istilah teknis yang benar adalah sertifikat X.509. Cuma karena sertifikat ini sering dipakai di SSL, makanya 
+jadi lebih terkenal sebagai &ldquo;sertifikat SSL&rdquo;, padahal TLS juga pakai standar sertifikat X.509 yang sama.</p>
+<p><br /></p>
+<h3 id="ssltls">SSL/TLS</h3>
+<p><strong>SSL (Secure Socket Layer)</strong> dan <strong>TLS (Transport Layer Security)</strong>, dua kata yang kadang membingungkan, paling tidak buat saya begitu. Maksudnya begini, kadang SSL dan TLS ini dua hal yang berbeda yang tidak bisa ketemu. Tapi kadang SSL dan TLS 
+ini adalah hal yang sama. SSL ya TLS, TLS ya SSL, karena itu biasanya ditulis SSL/TLS. saya rasa ini penting untuk dipahami bahwa ada maksud yang ambigu di dua kata ini.</p>
+<p>SSL/TLS ini sama-sama implementasi security <em>PKI</em> dan pakai digital certificate X.509.</p>
+<p>Kita bahas dulu perbedaannya, bahwa SSL dan TLS ini dua hal yang berbeda yang tidak bisa ketemu.<br />
+Kalau membahas perbedaannya, yang dimaksud dengan SSL dan TLS adalah protokolnya. Mereka ini SSL dan TLS 
+berbicara dengan bahasa yang berbeda, karena itu tidak bisa ketemu.<br />
+TLS ini seperti evolusi dari SSL, SSL awalnya didevelop dari Netscape. saya ambil dari <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security#SSL_1.0.2C_2.0_and_3.0">Wikipedia</a>, 
+bahwa versi pertama SSL yaitu versi 1.0 tidak pernah dirilis karena banyak celah keamanan. 
+Begitu juga SSL 2.0 yang masih banyak kekurangan, yang akhirnya melahirkan versi ketiga SSL 3.0 yang merupakan hasil design ulang protokol sebelumnya.</p>
+<p>Terus kemudian muncul TLS 1.0 sebagai successor dari SSL 3.0. Bedanya, TLS ini standar dari <em>Internet Engineering Task Force</em> atau IETF dan bukan dari Netscape lagi yang berarti bahwa TLS ini standar terbuka. 
+Tapi biarpun TLS 1.0 ini penerus SSL 3.0, dua protokol ini tidak kompatibel. saya tidak memahami detailnya, tapi salah satu perbedaan mendasar adalah di <em>Message Authentication Code</em> atau <em>MAC</em> yang sudah 
+dibahas di atas. MAC di SSL pakai block cipher sedangkan di TLS pakai hash yang lebih dikenal dengan HMAC.</p>
+<p>Setelah TLS 1.0, disusul TLS 1.1 dan yang sekarang adalah TLS 1.2. Versi TLS yang selanjutnya TLS 1.3 yang sekarang masih berbentuk draft di IETF.</p>
+<p>Waktu komunikasi secure antara server sama client, terlebih dulu ada proses <em>handshake</em> atau negosiasi parameter antara TLS di server dan client. Client akan meng-<em>advertise</em> ke server bahwa 
+dia support SSL 3.0, TLS 1.0, TLS 1.1, dan TLS 1.2 misalnya. Berdasarkan informasi ini, server akan memilih protokol yang cocok dan secara default akan memilih yang paling baru. Misalnya 
+si server cuma bisa sampai TLS 1.1 maka ini yang dipilih.</p>
+<p>Sekarang ini SSL 3.0 dianggap sudah tidak lagi aman, karena itu kebanyakan server tidak menyertakan protokol ini waktu proses <em>handshake</em>. Salah satu penyebab SSL 3.0 ditolak server 
+karena ada vulnerability yang dikenal dengan POODLE, baca lebih lanjut tentang POODLE di <a href="https://en.wikipedia.org/wiki/POODLE">https://en.wikipedia.org/wiki/POODLE</a></p>
+<p><br /></p>
+<p>Kemudian kita bahas persamaan dua kata ini SSL dan TLS. Kalau sebelumnya, perbedaan mereka ini ada di protokol atau bahasa yang dipakai, persamaan ini lebih ke pembedaan saja antara komunikasi yang aman 
+sama yang tidak.</p>
+<p>Contohnya begini, <em>Hypertext Transfer Protocol</em> atau <em>HTTP</em> itu berjalan di atas protokol TCP di port 80 yang sifatnya terbuka dan tidak aman. Ada HTTP yang sifatnya secure yang disebut <em>HTTPS</em>, dan ini 
+berjalan di atas protokol TCP port 443. Jadi ada dua <em>HTTP</em>, yang aman di port 443 dan yang tidak terenkripsi di port 80. Kalau di address bar browser, url untuk SSL/TLS diawali <code>https://</code> sedangkan non 
+SSL/TLS <code>http://</code></p>
+<p>Contoh yang lain seperti protokol email:</p>
+<p><strong>SMTP</strong>. SMTP di port 25 dan SMTP SSL/TLS di port 465, umumnya disebut smtps.<br />
+<strong>POP3</strong>. POP3 di port 110 dan POP3 SSL/TLS di port 995, disebut pop3s.<br />
+<strong>IMAP</strong>. IMAP di port 143 dan IMAP SSL/TLS di port 993, atau imaps.</p>
+<p>Secara teknis, port yang secure itu pakai protokol TLS. Tapi mengapa masih disebut juga SSL itu saya kurang paham, mengapa tidak disebut saja HTTP TLS atau SMTP TLS.</p>
+<p>Dari sini, kita jadi paham bahwa maksud penulisan SSL/TLS ini adalah bahwa SSL dan TLS ini hal yang sama.</p>
+<p>Terus kalau diperhatikan, masing-masing komunikasi itu ada di dua port yang berbeda. Sekarang ini yang seperti itu dianggap wasted atau buang-buang resource, karena itu sekarang ini 
+ada lagi yang namanya <strong>STARTTLS</strong>.<br />
+Apa bedanya? bedanya kalau SSL/TLS pakai port yang berbeda untuk komunikasi yang secure, STARTTLS pakai port yang sama. Jadi SMTP tetap di port 25, komunikasi dimulai dari tidak terenkripsi 
+kemudian diswitch atau dirubah ke komunikasi terenkripsi yang aman tapi tetap di port yang sama.</p>
+<p><br /></p>
+<h3 id="ssltls-handshake">SSL/TLS Handshake</h3>
+<p>Sebelum bisa bertukar data secara secure, antara client dan server perlu negosiasi dulu, proses ini namanya <em>handshake</em>. Proses ini diperlukan karena implementasi dan support algoritma enkripsi 
+antara client dan server bisa beda, jadi perlu adanya kesepakatan.</p>
+<p>Proses SSL/TLS Handshake kurang lebih seperti di bawah:</p>
+<ol>
+<li>Client mengirim <em>&ldquo;client hello&rdquo;</em> ke server. &ldquo;client hello&rdquo; ini berisi informasi CipherSuite atau algoritma apa saja yang disupport oleh client, versi SSL atau TLS juga diinformasikan di sini.</li>
+<li>Server membalas <em>&ldquo;client hello&rdquo;</em> itu dengan <em>&ldquo;server hello&rdquo;</em> yang berisi CipherSuite yang dipilih server. Bersamaan &ldquo;server hello&rdquo; ini dikirim juga digital certificate server.</li>
+<li>Client memeriksa validitas digital certificate yang dikirm server. Kalau digital certificate itu tidak valid entah karena alasan apapun, misalnya sudah expired atau digital certificate itu tidak dipercayai 
+oleh client, maka proses handshake berhenti.</li>
+<li>Sebaliknya, kalau digital certificate itu valid dan trusted, maka client membuat semacam password yang disebut pre-master secret yang diambil dari byte string yang acak. Pre-master secret ini kemudian dienkripsi 
+dengan public key server, public key ini ada di dalam certificate. Kemudian pre-master secret yang sudah terenkripsi dikirim ke server.</li>
+<li>Server kemudian men-<em>decrypt</em> pre-master secret itu dengan private key-nya.</li>
+<li>Sampai di sini, client dan server yang sudah punya pre-master secret yang sama. Kemudian mereka berdua membuat symmetric encryption key berdasarkan pre-master secret tadi. Key ini yang nantinya dipakai buat encrypt dan decrypt data.</li>
+<li>Client mengirim pesan <em>&ldquo;finished&rdquo;</em>.</li>
+<li>Server mengirim pesan <em>&ldquo;finished&rdquo;</em>.</li>
+</ol>
+<p>Setelah proses <em>handshake</em> di atas selesai, masing-masing client dan server bisa kirim dan terima data dengan terenkripsi pakai symmetric key. Perlu diingat bahwa symmetric encryption key yang dibuat tadi cuma berlaku 
+di session itu, session lain lagi key-nya baru lagi.</p>
+<p>Kelihatan dari sini bahwa SSL/TLS ini pakai dua metode enkripsi yang berbeda, asymmetric dan symmetric. Asymmetric encryption dipakai waktu handshake supaya symmetric key bisa dibuat dengan aman, sedangkan symmetric key 
+dipakai untuk komunikasi data.  </p>
+<p>Kita ingat lagi di atas, kelebihan symmetric encryption adalah kecepatannya. Sedangkan kelemahannya adalah distribusi key, dan penggunaan asymmetric encryption dipakai menutupi kekurangan itu. Di proses <em>handshake</em> di 
+atas tidak ada distribusi key, tapi masing-masing client dan server membuat key berdasarkan pre-master secret yang dienkripsi pakai public key server.</p>
+<p><br /></p>
+<h3 id="free-digital-certificate-dari-lets-encrypt"><a name="letsencrypt"></a>Free digital certificate dari Let&rsquo;s Encrypt</h3>
+<p>Baik, pertama saya kutip dulu dari situs <a href="https://letsencrypt.org">https://letsencrypt.org</a></p>
+<blockquote>
+<p>Let’s Encrypt is a free, automated, and open certificate authority (CA), run for the public’s benefit. It is a service provided by the Internet Security Research Group (ISRG).</p>
+<p>We give people the digital certificates they need in order to enable HTTPS (SSL/TLS) for websites, for free, in the most user-friendly way we can. We do this because we want to create a more secure and privacy-respecting Web.</p>
+</blockquote>
+<p>Sebelum Let&rsquo;s Encrypt, sudah ada beberapa CA yang punya certificate gratis. Kebanyakan mereka itu provider hosting, yang kalau kita langganan hosting di situ kita dapat free SSL/TLS certificate. Ada juga StartSSL, CA dari 
+perusahaan StartCom yang berbasis di.. <s>batuk..</s> Israel.  </p>
+<p>Ada juga CAcert, oraganisi CA non profit. saya sendiri sudah lama pakai certificate dari CA ini, kekurangannya CA ini adopsinya kurang luas. Debian sendiri yang dulu defaultnya ada certificate dari CA ini sekarang sudah tidak 
+di-include-kan lagi.</p>
+<p>Certificate authority atau CA ada yang namanya <strong>Root CA</strong> sama <strong>Intermediate CA</strong>. Jadi CA aslinya yang root, hanya saja untuk keamanan root CA ini tidak langsung mengeluarkan SSL/TLS certificate. Root CA ini mengeluarkan atau 
+secara digital menandatangani certificate untuk CA lain yang disebut Intermediate CA. Intermediate CA ini yang kemudian melayani permintaan certificate atas nama root CA.<br />
+Root CA bisa saja punya lebih dari satu Intermediate CA, dan karena proses penandatanganan certificate sudah didelegasikan ke Intermediate CA, private key dari root CA bisa disimpan secara offline di tempat yang aman, aman 
+dari pencurian termasuk juga aman dari force majeure seperti kebakaran.</p>
+<p>Nah, Let&rsquo;s Encrypt di sini perannya adalah sebagai Intermediate CA, sedangkan root CA nya adalah DST Root CA X3 yang secara default sudah ada di browser atau SSL/TLS client.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/crt-chain.png" alt="certificate chain" title="Certificate Chain" />
+</div>
+
+<p><br /></p>
+<h3 id="instalasi">Instalasi</h3>
+<p>Untuk instalasinya, Let&rsquo;s Encrypt perlu memastikan bahwa kita adalah benar sebagai pemilik domain dan website. Salah satu dari tiga cara bisa diambil buat verifikasi ini.</p>
+<ol>
+<li>Memanfaatkan web server yang sudah running, misal Apache2 atau Nginx.</li>
+<li>Standalone web server dari Let&rsquo;s Encrypt client.</li>
+<li>Manual, cara terakhir yang agak ribet. Cara ini diambil kalau kita tidak punya akses ke web server, misalnya website kita ada di shared hosting yang tidak punya fasilitas install Let&rsquo;s Encrypt.</li>
+</ol>
+<p>Karena system yang saya pakai Debian Jessie, mungkin saja cara di bawah ini tidak bisa diaplikasikan ke system lain.</p>
+<p>Pertama, install Let&rsquo;s Encrypt client yang bernama certbot pakai user root.</p>
+<div class="codehilite"><pre><span></span><span class="err">apt-get update &amp;&amp; apt-get install -y certbot</span>
+</pre></div>
+
+
+<p>Kalau kita mau pakai web server yang sudah running, mungkin karena alasan traffic website yang tinggi sehingga web server tidak bisa di shutdown, kita perlu install plugin buat web server itu.<br />
+Untuk plugin Apache2</p>
+<div class="codehilite"><pre><span></span><span class="err">apt-get install python-certbot-apache</span>
+</pre></div>
+
+
+<p>Untuk Nginx, ganti saja <code>apache</code> dengan <code>nginx</code>.</p>
+<p>Yang perlu kita input ke program certbot adalah nama domain dan email untuk keperluan registrasi dan recovery. Kalau di server yang sama ada lebih dari satu domain, kita bisa buat satu sertifikat saja untuk semua domain tersebut.</p>
+<p><strong>Cara pertama</strong>, pakai existing web server, Apache2 misalnya:</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot certonly --apache --agree-tos --email hostmaster@example.com --domain example.com</span>
+</pre></div>
+
+
+<ul>
+<li><code>certonly</code> di sini kita maksudkan bahwa kita cuma perlu certificate saja.</li>
+<li><code>--agree-tos</code> Term of service dari protokol komunikasi <em>Automated Certificate Management Environment</em> (ACME).</li>
+<li><code>--email</code> Sesuaikan email yang valid.</li>
+<li><code>--domain</code> nama domain sebagai identitas di certificate.</li>
+</ul>
+<p>Untuk domain yang lebih dari satu, bisa seperti di bawah:</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot certonly --apache --agree-tos --email hostmaster@example.com --domain example.com --domain example2.com</span>
+</pre></div>
+
+
+<p><strong>Cara kedua</strong> pakai builtin web server certbot.<br />
+kalau web server masih running, kill dulu.</p>
+<div class="codehilite"><pre><span></span><span class="err">killall apache2</span>
+</pre></div>
+
+
+<p>Saya pakai command <code>killall apache2</code> karena entah alasan apa command <code>systemctl stop apache2</code> tidak bisa shutdown service apache2.</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot certonly --standalone --agree-tos --email hostmaster@example.com --domain example.com</span>
+</pre></div>
+
+
+<p>Setelah proses selesai, hidupkan lagi web server.</p>
+<div class="codehilite"><pre><span></span><span class="err">systemctl start apache2</span>
+</pre></div>
+
+
+<p><strong>Cara ketiga</strong>, manual. Ini dipakai kalau misalnya kita langganan shared hosting yang kita tidak punya akses ssh ke server, web hosting tersebut tidak ada fitur install Let&rsquo;s Encrypt, dan support mereka tidak bisa membantu 
+instalasi Let&rsquo;s Encrypt atau bahkan tidak tahu apa itu Let&rsquo;s Encrypt.</p>
+<p>Caranya adalah, <code>certbot</code> kita install di laptop atau pc desktop misalnya, kemudian dari laptop itu eksekusi command <code>certbot</code> seperti dibawah:</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot certonly --manual --agree-tos --email hostmaster@example.com --domain example.com</span>
+</pre></div>
+
+
+<p>Untuk cara manual, akan muncul warning dari <code>certbot</code> bahwa ip address kita dilog di server Let&rsquo;s Encrypt.<br />
+Lewat cara ini, Let&rsquo;s Encrypt akan menginformasikan bahwa kita perlu upload file ke website, file ini berisi string sesuai instruksi <code>certbot</code>. Cara verifikasi ini mirip seperti verifikasi Google, yang kita perlu upload 
+file tertentu ke website kita.</p>
+<p><br /></p>
+<p>Begitu sukses instalasi, digital certificate ada di <code>/etc/letsencrypt/live/example.com/</code> example.com cuma contoh saja. Ada 4 file yang keterangannya seperti di bawah:</p>
+<ul>
+<li><code>chain.pem</code> Ini adalah file digital certificate Let&rsquo;s Encrypt, Intermediate CA kita.</li>
+<li><code>cert.pem</code> Ini digital certificate kita yang sudah ditandatangani Let&rsquo;s Encrypt.</li>
+<li><code>fullchain.pem</code> Gabungan antara <code>chain.pem</code> dan <code>cert.pem</code>. File ini yang nantinya dipakai di web server karena kebanyakan browser tidak ada certificate Lets&rsquo;s Encrypt, maka certificate dari Intermediate CA kita 
+perlu disertakan supaya membentuk chain lengkap dari kita ke Let&rsquo;s Encrypt sampai ke Digital Signature Trust (DST Root CA) yang root CA ini sudah ada di browser client.</li>
+<li><code>privkey.pem</code> Ini adalah private key kita seperti yang sudah dibahas sebelumnya tentang asymmetric encryption. File ini yang harus kita jaga kerahasiannya.</li>
+</ul>
+<p>Setelah itu, tinggal kita pakai file-file ini di konfigurasi web server, contoh untuk Apache2.</p>
+<div class="codehilite"><pre><span></span><span class="err">SSLEngine               on</span>
+<span class="err">SSLCertificateFile      /etc/letsencrypt/live/example.com/fullchain.pem</span>
+<span class="err">SSLCertificateKeyFile   /etc/letsencrypt/live/example.com/privekey.pem</span>
+</pre></div>
+
+
+<p><br /></p>
+<h3 id="renewal">Renewal</h3>
+<p>Untuk renewal, caranya sama dengan instalasi, hanya saja <code>certonly</code> diganti <code>renew</code>. Kemudian <code>renew</code> juga tidak perlu parameter <code>--email</code> dan <code>--domain</code>.<br />
+Misalnya:</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot renew --standalone --agree-tos</span>
+</pre></div>
+
+
+<p>Atau</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot renew --apache --agree-tos</span>
+</pre></div>
+
+
+<p>Untuk yang manual.</p>
+<div class="codehilite"><pre><span></span><span class="err">certbot renew --manual --agree-tos</span>
+</pre></div>
+
+
+<p>Terkecuali untuk yang <code>manual</code>, <code>renew</code> bisa dieksekusi lewat <code>cron</code> supaya bisa renew certificate secara otomatis kalau sudah mendekati masa expire. Dan tidak seperti digital certificate yang mahal, certificate 
+dari Let&rsquo;s Encrypt ini umurnya pendek, cuma tiga bulan saja. Tapi karena renewal bisa diproses secara otomatis lewat <code>cron</code> saya rasa tidak ada bedanya.</p>
+<p><br />
+Baik, sampai sini semoga tulisan ini bisa dipahami. Silahkan di-share, dikomentari dan dikoreksi kalau ada yang salah atau kurang.</p>
+<p>Terima kasih.</p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Tentang%20SSL/TLS%20%2B%20sertifikat%20TLS%20gratis%20dari%20Let%27s%20Encrypt%20https%3A//devnull.web.id/misc/ssl-tls-letsencrypt.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=https%3A//devnull.web.id/misc/ssl-tls-letsencrypt.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=https%3A//devnull.web.id/misc/ssl-tls-letsencrypt.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Tentang%20SSL/TLS%20%2B%20sertifikat%20TLS%20gratis%20dari%20Let%27s%20Encrypt&amp;body=https%3A//devnull.web.id/misc/ssl-tls-letsencrypt.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="../category/misc.html">Misc</a>» 
+            by <a href="../author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:         </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="..">Accueil</a></li> -->
+              <li><a href="../categories.html">Categories</a></li>
+              <li><a href="../tags.html">Tags</a></li>
+              <li><a href="../archives.html">Archives</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="../category/debian.html">Debian</a></li>
+              <li><a href="../category/esai.html">Esai</a></li>
+              <li><a href="../category/how-to.html">How-to</a></li>
+              <li><a href="../category/linux-padawan.html">Linux Padawan</a></li>
+              <li class="active"><a href="../category/misc.html">Misc</a></li>
+              <li><a href="../category/networking.html">Networking</a></li>
+              <li><a href="../category/openstack.html">OpenStack</a></li>
+              <li><a href="../category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="http://devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>
