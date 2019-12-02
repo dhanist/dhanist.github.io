@@ -3,7 +3,7 @@ Date: 2019-12-1 09:45
 Author: Dhani Setiawan
 Category: Networking
 Slug: jaringan-layer-3
-Status: draft
+Status: published
 Comments: yes
 
 
