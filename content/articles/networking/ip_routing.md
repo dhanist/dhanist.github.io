@@ -828,7 +828,7 @@ yang tidak punya memori besar.
     <img src="//devnull.web.id/images/networking/ip_route/ospf_area.png" alt="OSPF Area" title="OSPF Area" />
 </div>
 
-Jadi kapan kita pakai araa stub? Pertimbangannya, kalau area ini area jalan
+Jadi kapan kita pakai area stub? Pertimbangannya, kalau area ini area jalan
 buntu, keluar masuk area cuma ada satu jalan saja, lewat router ABR. Kedua,
 kalau router-router di area ini router kecil yang cuma perlu default route.
 
@@ -851,7 +851,7 @@ adjacency, router bisa saling broadcast LSA masing-masing.
 
 &nbsp;
 
-####Routing redistribution
+####Route redistribution
 Seperti juga bgp di atas, kita juga bisa import routing dari protokol lain ke
 ospf supaya router yang lain tau jalur ke prefix ini.
 
