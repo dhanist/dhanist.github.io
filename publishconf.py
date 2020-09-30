@@ -55,13 +55,14 @@ COLOPHON = False
 COLOPHON_TITLE = 'About'
 COLOPHON_CONTENT = "Mainly...."
 
-STATIC_PATHS = ['pages', 'images', 'extra', 'google']
+STATIC_PATHS = ['pages', 'images', 'extra', 'google', 'github']
 ARTICLE_EXCLUDES = ['google']
 EXTRA_PATH_METADATA = {
         'extra/robots.txt': {'path': 'robots.txt'},
         'extra/favicon.png': {'path': 'favicon.png'},
         'google/google4478290915ecfc37.html': {'path': 'google4478290915ecfc37.html'},
-        'google/google0e26f84e56c7d460.html': {'path': 'google0e26f84e56c7d460.html'}
+        'google/google0e26f84e56c7d460.html': {'path': 'google0e26f84e56c7d460.html'},
+        'github/CNAME': {'path': 'CNAME'}
 }
 
 DELETE_OUTPUT_DIRECTORY = True
