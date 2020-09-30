@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Belajar Linux Dasar - Pengenalan Input & Output — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Linux" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/linux-padawan/linux-dasar-1.html"
+             title="Bookmarks «Belajar Linux Dasar - Pengenalan Input & Output»">
+             Belajar Linux Dasar - Pengenalan Input & Output
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-04-22T13:02:00+08:00">Fri 22 April 2016</time>
+            <br />Filed under: <a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>              Tags:              <a rel="tag" href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+  <img src="/images/term.png" alt="Linux Terminal" title="Linux Terminal" />
+  <p>Photo credit: pixabay.com</p>
+</div>
+
+<p>GNU/Linux atau sebutan gampangnya Linux, hari ini sudah berbeda jauh sekali dibanding Linux dulu. Linux pada zaman dahulu kala identik dengan sistem operasi yang susah dan cuma orang-orang komputer saja yang pakai Linux. Sekarang Linux sudah gampang, tanpa perlu paham command pun pengguna sudah bisa pakai Linux.  </p>
+<p>Dulu waktu pertama belajar Linux, saya bingung waktu masukkan flash disk tapi di layar tidak muncul apa-apa. Putar mp3 tapi tidak ada suara apa-apa yang keluar, mau putar mp3 saja perlu perjuangan.<br />
+Syukurnya sekarang para pengguna baru tidak perlu melalui hal-hal ribet itu, cukup install dan siap pakai.</p>
+<p>Tapi ada hal lain, buat pengguna yang berencana menjadi Linux admin atau berencana membuat server dengan Linux, maka belajar command atau perintah-perintah Linux tetap harus dikuasai. Mau tidak mau tetap harus buka terminal dan ketik perintah.<br />
+Karena itu tulisan ini saya kategorikan di Linux Padawan. Padawan kalau di film Star Wars adalah seorang yang sedang belajar menjadi seorang master Jedi.</p>
+<p>Entah mengapa saya merasa resource pembelajaran Linux berbahasa Indonesia masih minim, mungkin juga Saya salah tapi lihat saja situs seperti <a href="http://linux.or.id">linux.or.id</a>. Benar atau salah tapi asumsi itu yang membuat Saya menulis artikel ini.</p>
+<p>Saya berniat menulis artikel tentang perintah-perintah Linux yang sering dipakai, ada kemungkinan juga akan berkelanjutan. Dimulai dari pengenalan Input dan Output sampai ke program.<br />
+Di Linux, ada package software yang namanya GNU Coreutils. Ini berisi set program-program standar yang pasti ada di setiap distribusi Linux. Tulisan ini akan coba menjelaskan penggunaan program-program Coreutils yang sering dipakai, dan kalau dirasa kurang akan ditambah dengan program-program yang lain.</p>
+<p>Sebelum ke program, kita perlu pahami beberapa hal dasar di Linux. Yaitu I/O (Input/Output), pipe, redirection, dan struktur direktori.</p>
+<p>&nbsp;</p>
+<p><strong>Input/Output</strong><br />
+Apa yang kita ketik di terminal termasuk input, dan yang keluar dari terminal namanya output.<br />
+Input tidak harus ada di terminal, begitu juga output. Input dan output bisa berupa file.<br />
+Misal kita mau print isi file /etc/passwd dengan command cat</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cat /etc/passwd</span>
+</code></pre></div>
+
+
+<p>cat adalah programnya, file /etc/passwd inputnya. Outputnya diprint di terminal</p>
+<p>Linux punya special device untuk I/O, yaitu standard input atau <em><strong>stdin</strong></em>, standard ouput disebut <em><strong>stdout</strong></em>, dan standard error <em><strong>stderr</strong></em>.  </p>
+<ul>
+<li>stdin: Input yang ditulis atau diprint di terminal.</li>
+<li>stdout: Output normal dari program.</li>
+<li>stderr: Output program untuk pesan error.</li>
+</ul>
+<p>Jadi jenis input di Linux ada dua, file dan terminal (stdin). Sedangkan jenis output ada tiga, file, output di terminal (stdout), dan output terminal kalau error (stderr).</p>
+<p>&nbsp;</p>
+<p><strong>Pipe</strong><br />
+Ada fitur menarik di Unix dan Linux, output dari satu program bisa dijadikan input program lain, caranya dengan memakai pipe. Disebut pipe mungkin karena cara kerjanya seperti pipa, menghubungkan output dan input. 
+Pipe dilambangkan dengan karakter |.</p>
+<p>Contoh, kita mau lihat uid dari nama user nobody. Kita pakai dua program, cat dan grep. Output dari cat dijadikan input program grep dengan pipe.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">cat</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span> <span class="o">|</span> <span class="n">grep</span> <span class="ss">&quot;nobody&quot;</span>
+
+<span class="o">#</span> <span class="k">Output</span> <span class="n">yang</span> <span class="n">terprint</span> <span class="n">di</span> <span class="n">terminal</span> <span class="p">(</span><span class="k">stdout</span><span class="p">)</span> <span class="n">seperti</span> <span class="n">dibawah</span>
+<span class="n">nobody</span><span class="p">:</span><span class="n">x</span><span class="p">:</span><span class="mi">65534</span><span class="p">:</span><span class="mi">65534</span><span class="p">:</span><span class="n">nobody</span><span class="p">:</span><span class="o">/</span><span class="n">nonexistent</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">nologin</span>
+</code></pre></div>
+
+
+<p>Maksud dari command di atas, cat /etc/passwd untuk print isi file /etc/passwd ke terminal, sedangkan grep &ldquo;nobody&rdquo; untuk filter baris teks yang ada tulisan nobody.<br />
+Ouput dari <em>cat /etc/passwd</em> tidak diprint ke terminal tapi diarahkan ke pipe. Pipe ini kemudian mengambil output dari perintah pertama dan menjadikannya input untuk perintah ke dua <em>grep &ldquo;nobody&rdquo;</em>.<br />
+Ringkasnya, print isi file /etc/passwd tapi cuma baris yang ada kata nobody saja. Dari output kita tahu uid user nobody adalah 65534, lain sistem hasilnya bisa beda.</p>
+<p>Pipe tidak terbatas dua program saja, lebih dari dua juga bisa, misalnya.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cat /etc/passwd | grep &quot;nobody&quot; | awk -F: &#39;{print $3}&#39;</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<p><strong>Redirection</strong><br />
+Fitur lain lagi, namanya redirection.<br />
+Kita bisa me-redirect atau memindahkan output atau input program. Misalnya, program yang outputnya ke stdout atau ke terminal bisa diredirect atau dipindahkan ke file, output dari stderr diredirect ke stdout, dan sebagainya.</p>
+<ul>
+<li>Karakter &gt; untuk redirect output.</li>
+<li>Karakter &lt; untuk redirect input.</li>
+</ul>
+<p>Contohnya, command di atas <em>cat /etc/passwd | grep &ldquo;nobody&rdquo;</em> outputnya tidak harus terminal, kita bisa redirect atau arahkan output ke file user misalnya.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cat /etc/passwd | grep &quot;nobody&quot; &gt; user</span>
+</code></pre></div>
+
+
+<p>Command di atas tidak ada output apa-apa di terminal karena output kita redirect atau pindahkan ke file user. Di file user, isinya sama saja dengan output perintah yang pertama. </p>
+<div class="codehilite"><pre><span></span><code><span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+</code></pre></div>
+
+
+<p>Untuk redirect input, kita gunakan karakter &lt;  </p>
+<p>Contoh untuk menghitung jumlah baris file /etc/passwd.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">wc</span> <span class="o">-</span><span class="n">l</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span>
+
+<span class="o">#</span> <span class="k">Output</span> <span class="n">di</span> <span class="k">stdout</span>
+<span class="mi">62</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span>
+</code></pre></div>
+
+
+<p>62 adalah jumlah baris, /etc/passwd adalah nama file.<br />
+Sekarang dengan redirect input.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">wc</span> <span class="o">-</span><span class="n">l</span> <span class="o">&lt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span>
+
+<span class="o">#</span> <span class="k">Output</span> <span class="n">di</span> <span class="k">stdout</span>
+<span class="mi">62</span>
+</code></pre></div>
+
+
+<p>Maksud dari command wc -l yang ke dua, file /etc/passwd diredirect ke stdin dan kemudian dijadikan input perintah wc -l.<br />
+Perhatikan perbedaan output dari kedua perintah. Yang pertama ada file /etc/passwd, yang ke dua tidak ada karena perintah wc -l mengambil input dari stdin, bukan file /etc/passwd.</p>
+<p>Ada mode lain di redirect, dengan dua karakter redirection &lt;&lt; atau &gt;&gt;.<br />
+Bedanya dengan dua karakter, modenya adalah append.</p>
+<p>Langsung saja dengan contoh.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cat /etc/passwd | grep &quot;nobody&quot; &gt; user</span>
+</code></pre></div>
+
+
+<p>Command ini kalau diulang 5 kali, isi file user tetap sama.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+</code></pre></div>
+
+
+<p>Tapi dengan mode append, atau dua karakter redirect</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cat /etc/passwd | grep &quot;nobody&quot; &gt;&gt; user</span>
+</code></pre></div>
+
+
+<p>Isi file user kalau command diulang lima kali.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+<span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+<span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+<span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+<span class="n">nobody</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="mi">65534</span><span class="o">:</span><span class="n">nobody</span><span class="o">:/</span><span class="n">nonexistent</span><span class="o">:/</span><span class="n">usr</span><span class="sr">/sbin/</span><span class="n">nologin</span>
+</code></pre></div>
+
+
+<p>Dengan dua karakter redirect, output atau input ditambahkan di bawahnya.</p>
+<p>&nbsp;</p>
+<p><strong>Struktur Direktori Linux</strong><br />
+Di Linux, tidak ada drive C: atau drive D: seperti di Windows.</p>
+<p>Di Linux, gambaran struktur direktori seperti di bawah:</p>
+<div class="codehilite"><pre><span></span><code><span class="o">/</span>                           <span class="c1"># root</span>
+ <span class="o">|</span>
+ <span class="o">|--</span> <span class="n">home</span>                   <span class="c1"># Direktori untuk user</span>
+ <span class="o">|</span>
+ <span class="o">|--</span> <span class="n">etc</span>                    <span class="c1"># /etc: direktori yang berisi konfigurasi</span>
+ <span class="o">|</span>   
+ <span class="o">|--</span> <span class="n">tmp</span>                    <span class="c1"># /tmp: temporary</span>
+ <span class="o">|</span>   
+ <span class="o">|--</span> <span class="n">usr</span>
+ <span class="o">|</span>       <span class="o">/</span>
+ <span class="o">|</span>
+ <span class="o">|</span>       <span class="o">|--</span>  <span class="n">bin</span>           <span class="c1"># /usr/bin: Berisi executable program</span>
+ <span class="o">|</span>       <span class="o">|</span>    
+ <span class="o">|</span>       <span class="o">|--</span>  <span class="n">lib</span>           <span class="c1"># /usr/lib: Berisi library program</span>
+ <span class="o">|</span>       <span class="o">|</span>
+ <span class="o">|</span>       <span class="o">|--</span>  <span class="n">share</span>
+ <span class="o">|</span>       <span class="o">|</span>    
+ <span class="o">|</span>       <span class="o">|--</span>  <span class="n">local</span>
+ <span class="o">|</span>                 <span class="o">/</span>
+ <span class="o">|</span>                  <span class="o">|</span> 
+ <span class="o">|</span>                  <span class="o">|--</span> <span class="n">bin</span>
+ <span class="o">|</span>                  <span class="o">|</span>
+ <span class="o">|</span>                  <span class="o">|--</span> <span class="n">lib</span>
+ <span class="o">|</span>                  <span class="o">|</span> 
+ <span class="o">|</span>                  <span class="o">|--</span> <span class="n">share</span>
+ <span class="o">|--</span> <span class="n">dev</span>                            <span class="c1"># /dev: Berisi device node</span>
+ <span class="o">|</span>       <span class="o">/</span>
+ <span class="o">|</span>       <span class="o">|--</span>  <span class="n">disk</span>
+ <span class="o">|</span>
+ <span class="o">|--</span> <span class="k">var</span>
+        <span class="o">/</span>
+         <span class="o">|</span>
+         <span class="o">|--</span> <span class="n">lib</span>
+         <span class="o">|</span>   
+         <span class="o">|--</span> <span class="nb">log</span>
+         <span class="o">|</span>   
+         <span class="o">|--</span> <span class="n">cache</span>
+</code></pre></div>
+
+
+<p>Seperti terlihat, struktur direktori seperti percabangan pohon. Paling atas disebut root, karakter / dan diikuti cabangnya, misal /usr/local/share.</p>
+<p>Kalau di Windows, biasanya program yang terinstall ada di direktori C:\Program Files. Di Linux berbeda, program yang terinstall filenya tersebar di beberapa direktori.<br />
+Misalnya program Vlc player, program executablenya di /usr/bin/vlc. Library-nya terinstall di /usr/lib/vlc, dokumentasi di /usr/share/vlc.<br />
+Kelebihannya dari Windows, kalau ada beberapa program membutuhkan library yang sama, atau istilahnya shared library, cukup memakai library yang sudah ada di direktori /lib, /usr/lib, atau /usr/local/lib. Satu libarary dipakai bersama-sama, dan hasilnya ukuran program jadi kecil.</p>
+<p>Struktur direktori Linux mengikuti standar FHS (Filesystem Hierarchy Standard) <a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard">Wikipedia</a>, silahkan dipelajari.</p>
+<p>&nbsp;</p>
+<p><strong>Absolute dan relative path</strong><br />
+Absolute path adalah path yang dimulai dari / (root), misalnya /etc/passwd.<br />
+Relative path, path yang dimulai dari current directory atau working directory. Current directory bisa diketahui dengan command pwd.</p>
+<div class="codehilite"><pre><span></span><code><span class="o">#</span> <span class="n">Dengan</span> <span class="k">absolute</span> <span class="n">path</span>
+<span class="n">cat</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span>
+
+<span class="o">#</span> <span class="n">Dengan</span> <span class="k">relative</span> <span class="n">path</span>
+<span class="err">$</span> <span class="n">cd</span> <span class="o">/</span><span class="n">etc</span>           <span class="o">#</span> <span class="n">cd</span> <span class="o">/</span><span class="n">etc</span><span class="p">,</span> <span class="n">pindah</span> <span class="n">working</span> <span class="n">directory</span> <span class="n">ke</span> <span class="o">/</span><span class="n">etc</span>
+<span class="err">$</span> <span class="n">cat</span> <span class="n">passwd</span>
+</code></pre></div>
+
+
+<p>Command cat yang ke dua tidak perlu /etc karena working directory adalah /etc.</p>
+<p>&nbsp;</p>
+<p><strong>Navigasi</strong><br />
+Ada beberapa karakter spesial untuk navigasi direktori.</p>
+<ul>
+<li>.  (dot): current directory.</li>
+<li>.. (double dot): naik satu direktori.</li>
+<li>~  (tilde): home directory.</li>
+</ul>
+<p>Contoh:</p>
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">cd</span> /usr/local/share       <span class="c1"># Pindah ke direktori /usr/local/share</span>
+$ <span class="nb">cd</span> .                      <span class="c1"># Tetap di tempat.</span>
+$ <span class="nb">pwd</span>                       <span class="c1"># Print working directory</span>
+/usr/local/share
+$ <span class="nb">cd</span> ..                     <span class="c1"># Naik satu direktori</span>
+$ <span class="nb">pwd</span>
+/usr/local
+$ <span class="nb">cd</span> ..
+$ <span class="nb">pwd</span>
+/usr
+$ <span class="nb">cd</span> ~                      <span class="c1"># Pindah ke home directory</span>
+$ <span class="nb">pwd</span>
+/home/administrator
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<p>Setelah paham hal di atas, maka nantinya tidak akan bingung kalau ketemu command yang ada karakter aneh seperti |, &gt;, .., ~, dan seterusnya.</p>
+<p>Di tulisan selanjutnya kita akan mulai bahas program-program dari Coreutils.</p>
+<p>Terima kasih.</p>
+<p>&nbsp;</p>
+<p>[EDIT]<br />
+Artikel selanjutnya: <a href="//devnull.web.id/linux-padawan/linux-dasar-2.html">Belajar Linux Dasar - Manajemen file</a></p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Belajar%20Linux%20Dasar%20-%20Pengenalan%20Input%20%26%20Output%20//devnull.web.id/linux-padawan/linux-dasar-1.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/linux-padawan/linux-dasar-1.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/linux-padawan/linux-dasar-1.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Belajar%20Linux%20Dasar%20-%20Pengenalan%20Input%20%26%20Output&amp;body=//devnull.web.id/linux-padawan/linux-dasar-1.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li class="active"><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

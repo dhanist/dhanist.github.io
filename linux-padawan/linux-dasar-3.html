@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Belajar Linux Dasar - Manipulasi Teks dan Stream — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Linux" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/linux-padawan/linux-dasar-3.html"
+             title="Bookmarks «Belajar Linux Dasar - Manipulasi Teks dan Stream»">
+             Belajar Linux Dasar - Manipulasi Teks dan Stream
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-05-20T02:47:00+08:00">Fri 20 May 2016</time>
+            <br />Filed under: <a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>              Tags:              <a rel="tag" href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+  <img src="//devnull.web.id/images/linux/regex.png" alt="regex" title="Regular Expression" />
+  <p>Image source: www.linuxnix.com</p>
+</div>
+
+<p>Selamat pagi, siang, atau malam. Selamat datang kembali di seri pembelajaran Linux Dasar. Kalau Anda baru bergabung, Anda bisa lihat tulisan sebelumnya lewat link di bawah:</p>
+<p>1. <a href="//devnull.web.id/linux-padawan/linux-dasar-1.html">Belajar Linux Dasar - Pengenalan Input &amp; Output</a><br />
+2. <a href="//devnull.web.id/linux-padawan/linux-dasar-2.html">Belajar Linux Dasar - Manajemen file</a></p>
+<p>Di artikel ini saya tuliskan tentang manipulasi teks dan stream. Teks sudah jelas, tapi stream?<br />
+Stream itu stdin, stdout, dan stderr yang sudah dibahas di tulisan yang pertama, proses manipulasi stream ada di I/O itu.</p>
+<p>Jadi misalnya input program dari stdin itu <code>A</code>, keluar di stdout berubah jadi <code>B</code>, nah proses merubah <code>A</code> ke <code>B</code> ini disebut manipulasi stream.</p>
+<p>Tahukan Anda? bahwa salah satu the greatest strength, atau kekuatan terbesar Unix dan Linux itu ada di kemampuannya memanipulasi teks dan stream.<br />
+Saya paham itu, karena dulu sekali saya juga pengguna Windows, dan tidak ada hal yang seperti ini di Windows. </p>
+<p>Karena itu sebagai Linux Engineer, hal yang satu ini wajib dikuasai. Sejenak kita tinggalkan GUI, pakai command dan rasakan kekuatan Linux sebenarnya.</p>
+<p>Benar GUI sudah maju, tapi sehebat-hebatnya GUI tidak bisa menandingi fitur teks dan stream manipulation ini. Pelajari dan buktikan sendiri.</p>
+<p>Baik, kita lihat apa saja program yang dibahas kali ini:</p>
+<ol>
+<li><a href="#wildcard-n-regex">Wildcard &amp; Regular Expression</a></li>
+<li><a href="#cut">cut</a></li>
+<li><a href="#head-n-tail">head &amp; tail</a></li>
+<li><a href="#tr">tr</a></li>
+<li><a href="#sort">sort</a></li>
+<li><a href="#uniq">uniq</a></li>
+</ol>
+<p>Selain program di atas, saya juga tambahkan beberapa program yang bukan dari Coreutils. Program-program ini krusial dan penting.</p>
+<ol>
+<li><a href="#more-n-less">more &amp; less</a></li>
+<li><a href="#awk">awk</a></li>
+<li><a href="#grep">grep</a></li>
+<li><a href="#sed">sed</a></li>
+</ol>
+<p>&nbsp;</p>
+<h2 id="wildcard-regular-expression"><a name="wildcard-n-regex"></a>Wildcard &amp; Regular Expression</h2>
+<p>Pernah lihat command yang mirip seperti ini?</p>
+<div class="codehilite"><pre><span></span><code><span class="err">grep &#39;^[0-9]{1,3}.*$&#39; data.txt</span>
+</code></pre></div>
+
+
+<p>Karakter-karakter aneh itu namanya karakter Regular Expression atau regex atau regexp.</p>
+<p>Wildcard dan regex itu karakter-karakter spesial yang diartikan secara berbeda oleh shell atau program.</p>
+<p>Mungkin Anda bertanya, apa pentingnya saya memahami ini?<br />
+Sebenarnya tanpa paham wildcard atau regex, kita sudah bisa pakai command di shell Linux. Tapi dengan sedikit memahami ini, banyak task yang ribet
+bisa jadi mudah.</p>
+<p>Menurut saya tidak ada ruginya pelajari wildcard sama regex.</p>
+<p>Wildcard sama regex ini fungsinya kurang lebih sama, mencari pola karakter dalam string. Bedanya, karakter wildcard diproses di Linux Shell seperti
+bash, dash, dan lainnya. Regex diproses oleh program, contoh di atas itu pakai program <code>grep</code>.</p>
+<h3 id="wildcard">Wildcard</h3>
+<p>Wildcard ini karakter-karakter spesial di shell Linux. Pakai wildcard kita bisa beroperasi di banyak file sekaligus.</p>
+<p>Masing-masing karakter wildcard artinya beda-beda, saya list dan jelaskan satu-satu.</p>
+<ul>
+<li><strong>*</strong>: Asterisk atau tanda bintang.</li>
+<li><strong>?</strong>: Question mark atau tanda tanya.</li>
+<li><strong>[]</strong>: Square bracket atau kurung siku.</li>
+<li><strong>[!]</strong>: Exclamation mark, tanda seru dalam kurung siku.</li>
+<li><strong>{}</strong>: curly bracket atau kurung kurawal, dan.</li>
+<li><strong>\</strong>: Backslash.</li>
+</ul>
+<p><strong>Asterisk (*)</strong><br />
+Tanda bintang atau asterisk mewakili karakter apa saja, jumlahnya bisa berapa saja termasuk nol.</p>
+<p>Jadi <code>mp*</code> bisa berarti <code>mp</code>, <code>mp3</code>, <code>mp4</code>, atau <code>mp</code> apa saja.</p>
+<p>Misalnya saja kita punya tiga file dengan nama berbeda:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">touch a.txt</span>
+<span class="err">touch ab.txt</span>
+<span class="err">touch abc.txt</span>
+</code></pre></div>
+
+
+<p>Kita punya tiga file <code>a.txt</code>, <code>ab.txt</code>, dan <code>abc.txt</code>.<br />
+Kita bisa filter output ls pakai bintang</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls a*.txt</span>
+<span class="err">abc.txt  ab.txt  a.txt</span>
+</code></pre></div>
+
+
+<p>Jadi, tanda bintang itu mewakili karakter apa saja, dengan jumlah berapapun.<br />
+<code>a*.txt</code> artinya huruf <code>a</code> diikuti karakter apa saja, jumlahnya berapa saja diikuti dengan <code>.txt</code>.</p>
+<p><strong>Tanda tanya (?)</strong><br />
+Karakter ini (?) mewakili karakter apa saja, tapi jumlahnya satu.</p>
+<p>Contohnya kalau kita mau filter command <code>ls</code> untuk tipe file <code>mp3</code>, <code>mp4</code> misalnya:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls *mp?</span>
+</code></pre></div>
+
+
+<p><code>*mp?</code> artinya, karakter apa saja dengan jumlah berapa saja, diikuti karakter <code>mp</code>, dan diikuti satu karakter apa saja.</p>
+<p>Jadi <code>ls *mp?</code> akan match file dengan ekstensi <code>mp3</code>, <code>mp4</code>, <code>mpg</code>, <code>mp2</code>, dan <code>mp apa saja</code>.</p>
+<p><strong>Square bracket ([])</strong><br />
+Karakter yang ada di dalam kurung siku adalah satu set karakter. Gampangnya kita bisa baca set karakter di kurung siku ini dengan <em><code>atau</code></em>.</p>
+<p>Contoh, <code>[abc]</code> bisa dibaca <code>a</code> atau <code>b</code> atau <code>c</code>.</p>
+<p>Misalnya kita mau filter output command <code>ls</code> untuk tipe file <code>jpg</code> dan <code>mpg</code></p>
+<div class="codehilite"><pre><span></span><code><span class="n">ls</span><span class="w"> </span><span class="o">*</span><span class="p">.</span><span class="o">[</span><span class="n">mj</span><span class="o">]</span><span class="n">pg</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Jadi, <code>*.[mj]pg</code> bisa dibaca karakter apa saja dengan jumlah berapa saja, diikuti <code>tanda titik (.)</code>, terus diikuti karakter <code>m</code> atau <code>j</code>, dan diikuti karakter <code>pg</code>.</p>
+<p><strong>Tanda seru dalam kurung siku ([!])</strong><br />
+Ini sama dengan yang sebelumnya, hanya saja kebalikannya. Kalau <code>[mj]</code> berarti <code>m</code> atau <code>j</code>, <code>[!mj]</code> berarti apa saja selain <code>m</code> dan <code>j</code>.</p>
+<p><strong>Curly backets atau kurung kurawal ({})</strong><br />
+Kalau kurung siku bisa dibaca <em><code>atau</code></em>, kurung kurawal ini bisa dibaca <em><code>dan</code></em>. Bedanya juga, di kurung kurawal masing-masing pattern dipisah pakai koma.</p>
+<p>Jadi <code>{o,p}df</code> berarti <code>odf</code> dan <code>pdf</code>.</p>
+<p>Contoh saja, dari pada kita hapus satu-satu file <code>pdf</code> dan <code>odf</code>, kita bisa pakai satu command.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">rm *.{o,p}df</span>
+</code></pre></div>
+
+
+<p><strong>Backslash ()</strong><br />
+Ini untuk escape karakter spesial. Kalau tanda tanya <code>?</code> berarti satu karakter apa saja, tapi kalau ditempatkan backslash didepannya <code>\?</code>, tanda tanya itu jadi hilang arti spesialnya, dan cuma berarti tanda tanya.</p>
+<p>&nbsp;</p>
+<h3 id="regular-expression">Regular Expression</h3>
+<p>Regex ini karakternya sedikit lebih kompleks dari wildcard. Oke, bukan sedikit, tapi jauh lebih kompleks.</p>
+<p>Perhatikan set karakter regex dibawah.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$</span>
+</code></pre></div>
+
+
+<p>Biarpun terlihat rumit, arti regex di contoh itu cuma email address. Cuma gambaran saja bahwa Regular Expression karakternya lebih banyak dibanding wildcard.</p>
+<p>Seperti yang saya sebutkan di atas, regex ini prosesnya bukan di shell, tapi di program. Jadi command seperti di bawah ini tidak valid.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">ls</span><span class="w"> </span><span class="o">^[</span><span class="n">abc</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Tidak valid karena penggunaan regex di shell.</p>
+<p>Apa saja karakter Regular Expression?</p>
+<p><strong>Dot atau tanda titik (.)</strong><br />
+    Artinya satu karakter apa saja. Sama seperti tanda tanya kalau di wildcard. Jadi <code>mp.</code> bisa berarti <code>mp3</code> atau <code>mp4</code>.</p>
+<p><strong>Backslash (\)</strong><br />
+    Artinya sama dengan backslash di wildcard, dipakai buat escape karakter spesial.</p>
+<p><strong>Asterisk (*)</strong><br />
+    Berarti match nol atau lebih untuk karakter seblumnya. <code>a*</code> berarti <code>a</code>, <code>aa</code>, <code>aaa</code>, dan seterusnya. 
+        Sedangkan <code>.* (dot dan asterisk)</code> berarti karakter apa saja dengan jumlah nol atau lebih. Ini karena <code>. (dot)</code> berarti karakter apa saja di regex.</p>
+<p><strong>Plus (+)</strong><br />
+    Berarti satu atau lebih untuk karakter sebelumnya. <code>a+</code> berarti <code>aa</code>,  <code>aaa</code>, <code>aaaa</code>, dan seterusnya.</p>
+<p><strong>{min,max}</strong><br />
+<code>min</code> dan <code>max</code> itu angka misalnya <code>{1,2}</code>. Artinya jumlah karakter sebelumnya minimal <code>1</code> dan maksimal <code>2</code>.<br />
+    Jadi <code>a{2,3}</code> bisa jadi <code>aa</code> dan <code>aaa</code>, tapi tidak <code>aaaa</code> karena melebihi nilai max.</p>
+<p><strong>Caret (^)</strong><br />
+    Artinya karakter pertama di baris teks. <code>^a</code> berarti baris teks yang karakter pertamanya <code>a</code>.</p>
+<p><strong>Tanda dolar ($)</strong><br />
+    Ini kebalikan dari <code>^</code>, yang berarti karakter terakhir. <code>a$</code> berarti baris teks yang karakter terakhirnya adalah <code>a</code>.</p>
+<p><strong>Kurung siku ([])</strong><br />
+    Artinya sama dengan kurung siku di wildcard. <code>[ab]</code> berarti <code>a</code> atau <code>b</code>.</p>
+<p><strong>[^]</strong><br />
+    Sama seperti <code>[!]</code> di wildcard. <code>[^ab]</code> berarti bukan <code>a</code> dan bukan <code>b</code>.</p>
+<p><strong>|</strong><br />
+    Berarti salah satu dari pattern. <code>(a|b|c)</code> berarti salah satu saja antara <code>a</code> atau <code>b</code> atau <code>c</code>.</p>
+<p>&nbsp;</p>
+<p>Di atas itu karakter-karakter Regular Expression. Regex ini dipakai di program seperti <code>grep</code>, <code>awk</code>, dan <code>sed</code> yang juga ada di tulisan ini.</p>
+<p>Pusing?<br />
+Ingat, Anda membaca ini atas kemauan sendiri dan tanpa paksaan dari pihak manapun.</p>
+<p>Kita lanjut ke program.</p>
+<p>&nbsp;</p>
+<h2 id="cut"><a name="cut" ></a>cut</h2>
+<p><strong>cut</strong> dipakai buat filter output berdasarkan <code>delimiter</code> dan <code>field</code>, input program <code>cut</code> bisa dari stdin atau file.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">cut</span><span class="w"> </span><span class="k">OPTION</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">FILE</span><span class="o">]</span><span class="p">...</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Lebih gampang dijelaskan pakai contoh, misal kita punya file dengan nama <code>data.txt</code> yang isinya seperti di bawah</p>
+<div class="codehilite"><pre><span></span><code><span class="err">satu    dua     tiga    empat</span>
+</code></pre></div>
+
+
+<p>Masing-masing kata itu dipisahkan dengan delimiter tab, jadi <code>satu&lt;tab&gt;dua&lt;tab&gt;tiga&lt;tab&gt;empat</code>. Nah yang disebut field itu kata <code>satu</code>, <code>dua</code>, <code>tiga</code>, dan <code>empat</code>.<br />
+Field ini dihitung <code>field 1</code>, <code>field 2</code>, dan seterusnya, dihitung dari kiri. Jadi <code>field 1</code> itu kata <code>satu</code>, <code>field 4</code> itu kata <code>empat</code>.</p>
+<p>Sekarang, kita lihat penggunaan <code>cut</code> yang umum.<br />
+Misalnya kita mau filter output file <code>data.txt</code> untuk <code>field 3</code> saja:</p>
+<div class="codehilite"><pre><span></span><code>$ cut -f3 data.txt
+tiga
+</code></pre></div>
+
+
+<p>Kalau kita mau print <code>field 2</code> sampai field terakhir, pakai <code>dash (-)</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ cut -f2- data.txt
+dua    tiga    empat
+</code></pre></div>
+
+
+<p>Bagaimana kalau <code>field 1</code> sama <code>field 3</code>?</p>
+<div class="codehilite"><pre><span></span><code>$ cut -f1,3 data.txt
+satu   tiga
+</code></pre></div>
+
+
+<p><code>cut</code> juga bisa pakai <code>stdin</code> selain file. Jadi kita bisa pakai <code>pipe</code>, misalnya:</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> cut -f1,3
+satu   tiga
+</code></pre></div>
+
+
+<p><code>cut</code> secara default pakai <code>delimiter tab</code>, jadi bagaimana kalau isi file <code>data.txt</code> seperti ini?</p>
+<div class="codehilite"><pre><span></span><code><span class="err">satu,dua,tiga,empat</span>
+</code></pre></div>
+
+
+<p>Kata-kata di file itu dipisah pakai koma, bukan tab. Jadi kita harus secara spesifik instruksikan <code>cut</code> supaya pakai delimiter koma, caranya dengan argumen <code>-d</code> diikuti karakter delimiter-nya.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> cut -d, -f3
+tiga
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="head-tail"><a name="head-n-tail" ></a>head &amp; tail</h3>
+<p>command <code>head</code> dan <code>tail</code> dipakai untuk membatasi jumlah baris yang diprint ke stdout.</p>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">FILE</span><span class="o">]</span><span class="p">...</span><span class="w"></span>
+<span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">FILE</span><span class="o">]</span><span class="p">...</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Bedanya <code>head</code> sama <code>tail</code>, <code>head</code> dihitung dari baris pertama, kalau <code>tail</code> dihitung dari baris terakhir.  </p>
+<p>Misal kita punya file <code>data.txt</code> yang isinya ada 11 baris teks.</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; satu</span>
+<span class="s">&gt; dua</span>
+<span class="s">&gt; tiga</span>
+<span class="s">&gt; empat</span>
+<span class="s">&gt; lima</span>
+<span class="s">&gt; enam</span>
+<span class="s">&gt; tujuh</span>
+<span class="s">&gt; delapan</span>
+<span class="s">&gt; sembilan</span>
+<span class="s">&gt; sepuluh</span>
+<span class="s">&gt; sebelas</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Tes command <code>head</code></p>
+<div class="codehilite"><pre><span></span><code>$ head data.txt
+satu
+dua
+tiga
+empat
+lima
+enam
+tujuh
+delapan
+sembilan
+sepuluh
+</code></pre></div>
+
+
+<p>Kalau command <code>tail</code></p>
+<div class="codehilite"><pre><span></span><code>$ tail data.txt
+dua
+tiga
+empat
+lima
+enam
+tujuh
+delapan
+sembilan
+sepuluh
+sebelas
+</code></pre></div>
+
+
+<p>Kelihatan bedanya?<br />
+Ya, jadi secara default <code>head</code> menampilkan 10 baris teks dihitung dari baris pertama. <code>tail</code> menampilkan 10 baris dihitung dari baris terakhir.</p>
+<p>Kalau kita mau kurang atau lebih dari 10, bisa pakai argumen <code>-n</code></p>
+<div class="codehilite"><pre><span></span><code>$ head -n2 data.txt
+satu
+dua
+$
+$ tail -n2 data.txt
+sepuluh
+sebelas
+</code></pre></div>
+
+
+<p>Tentu saja kita juga bisa pakai stdin lewat <code>pipe</code> selain <code>file</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> tail -n2
+sepuluh
+sebelas
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="tr"><a name="tr" ></a>tr</h3>
+<p><strong>tr</strong> dipakai untuk translasi atau hapus set karakter.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">tr</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="n">SET1</span><span class="w"> </span><span class="o">[</span><span class="n">SET2</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+
+<p><code>tr</code> ini inputnya dari <code>stdin</code> dan print output ke <code>stdout</code>. saya biasanya pakai <code>tr</code> buat konversi karakter atau hapus karakter.</p>
+<p>Misal kita mau convert huruf kecil ke besar</p>
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">echo</span> <span class="s2">&quot;abcd&quot;</span> <span class="p">|</span> tr <span class="o">[</span>:lower:<span class="o">]</span> <span class="o">[</span>:upper:<span class="o">]</span>
+ABCD
+</code></pre></div>
+
+
+<p>Kalau mau sebaliknya, tinggal dibalik saja <code>tr [:upper:] [:lower:]</code></p>
+<p><code>tr</code> ini berguna buat misalnya merubah <code>newline</code> jadi <code>tab</code>. Contoh kita buat file <code>data.txt</code> yang isinya seperti ini:</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; abcd</span>
+<span class="s">&gt; efgh</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>File <code>data.txt</code> yang isinya dua baris. Kita bisa rubah <code>newline (\n)</code> ke <code>tab (\t)</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;\t&#39;</span>
+abcd   efgh
+</code></pre></div>
+
+
+<p>Atau <code>newline</code> ke <code>spasi</code></p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span>
+abcd efgh
+</code></pre></div>
+
+
+<p>Atau jadi <code>dash (-)</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;-&#39;</span>
+abcd-efgh-
+</code></pre></div>
+
+
+<p>Kita juga bisa pakai <code>tr</code> buat hapus karakter tertentu pakai argumen <code>-d</code>. Contoh, hapus huruf <code>c</code> dari stream.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> tr -d <span class="s1">&#39;c&#39;</span>
+abd
+efgh
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="sort"><a name="sort" ></a>sort</h3>
+<p><strong>sort</strong>, seperti namanya dipakai buat sorting baris teks dari stdin atau file.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">sort</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">FILE</span><span class="o">]</span><span class="p">...</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Mari kita coba dengan file <code>data.txt</code> yang tidak berurutan.</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; zebra</span>
+<span class="s">&gt; charlie</span>
+<span class="s">&gt; bravo</span>
+<span class="s">&gt; kilo</span>
+<span class="s">&gt; 456</span>
+<span class="s">&gt; 123</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Sort file <code>data.txt</code></p>
+<div class="codehilite"><pre><span></span><code>$ sort data.txt
+<span class="m">123</span>
+<span class="m">456</span>
+bravo
+charlie
+kilo
+zebra
+</code></pre></div>
+
+
+<p>Jadi, sort mengurutkan dari 0-9 kemudian a-z. Kalau mau sebaliknya, pakai argumen <code>-r (reverse)</code>.</p>
+<p>Sort mode <code>reverse</code> dari <code>stdin</code></p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> sort -r
+zebra
+kilo
+charlie
+bravo
+<span class="m">456</span>
+<span class="m">123</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="uniq"><a name="uniq" ></a>uniq</h3>
+<p><strong>uniq</strong> ini dipakai buat print file atau stdin ke <code>stdout</code> tapi skip baris yang sama dan berdekatan.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">uniq</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">INPUT [OUTPUT</span><span class="o">]</span><span class="err">]</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Coba dengan file <code>data.txt</code></p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; satu</span>
+<span class="s">&gt; satu</span>
+<span class="s">&gt; dua</span>
+<span class="s">&gt; dua</span>
+<span class="s">&gt; tiga</span>
+<span class="s">&gt; tiga</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Kalau kita print file itu pakai <code>uniq</code>,</p>
+<div class="codehilite"><pre><span></span><code>$ uniq data.txt
+satu
+dua
+tiga
+</code></pre></div>
+
+
+<p>Jadi kalau ada line atau baris berdekatan yang sama, <code>uniq</code> print satu saja. Tapi bagaimana kalau misalnya baris yang sama itu tidak berdekatan?</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; satu</span>
+<span class="s">&gt; tiga</span>
+<span class="s">&gt; dua</span>
+<span class="s">&gt; tiga</span>
+<span class="s">&gt; satu</span>
+<span class="s">&gt; dua</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Isi file yang seperti itu, kalau kita pakai <code>uniq</code></p>
+<div class="codehilite"><pre><span></span><code>$ uniq data.txt
+satu
+tiga
+dua
+tiga
+satu
+dua
+</code></pre></div>
+
+
+<p>Tidak ada yang berubah.</p>
+<p>Triknya, kalau kita mau print baris pakai <code>uniq</code> tapi line-nya tidak berdekatan, kita bisa pakai <code>sort</code>.<br />
+Misalnya</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> sort <span class="p">|</span> uniq
+dua
+satu
+tiga
+</code></pre></div>
+
+
+<p>Kita print dulu <code>data.txt</code>, kemudian di sorting pakai command <code>sort</code>, baru pakai <code>uniq</code>.</p>
+<p>&nbsp;</p>
+<p>Itu program-program Coreutils untuk manipulasi output. Selanjutnya kita ke program-program selain Coreutils.</p>
+<p>&nbsp; </p>
+<h3 id="more-less"><a name="more-n-less" ></a>more &amp; less</h3>
+<p>Command <code>more</code> dan <code>less</code> fungsinya sama. Kalau kita print file yang isinya banyak baris dan tidak fit di layar, <code>more</code> dan <code>less</code> bisa dipakai buat scroll.<br />
+Jadi sama seperti kalau kita baca artikel di web yang panjang, kita bisa scroll halamannya kebawah.</p>
+<p>Program <code>more</code> sebenarnya termasuk Coreutils, kalau <code>less</code> bukan. Kelemahan program <code>more</code>, dia tidak bisa scroll ke atas, cuma scroll ke bawah. Nah para hacker yang kurang suka limitasi ini buat program sendiri seperti <code>more</code> tapi yang bisa scroll ke atas, lucunya program itu malah dinamakan <code>less</code>.</p>
+<p>Contoh penggunaan <code>less</code> misalnya kalau kita baca file syslog yang panjang itu.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">less</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">syslog</span>
+</code></pre></div>
+
+
+<p>Tekan <code>&lt;Enter&gt;</code> atau panah ke bawah untuk scroll ke bawah, panah atas untuk scroll ke atas. Program <code>less</code> dan <code>more</code> juga bisa baca dari stdin selain dari file.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">cat</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">syslog</span> <span class="o">|</span> <span class="n">less</span>
+</code></pre></div>
+
+
+<p>Sama saja.</p>
+<p>&nbsp;</p>
+<p>Tiga program selanjutnya, <code>awk</code>, <code>grep</code>, dan <code>sed</code> perlu <code>Regular Expression</code> yang sudah ditulis di atas. Di contoh ini saya tidak akan pakai karakter regex yang aneh-aneh, yang simpel saja.</p>
+<p>&nbsp;</p>
+<h3 id="awk"><a name="awk" ></a>awk</h3>
+<p>Sama seperti program-program yang lain, <code>awk</code> ini juga dipakai buat manipulasi stream. Bedanya, <code>awk</code> ini lebih programmable atau seperti scripting. Input <code>awk</code> bisa dari <code>file</code> atau <code>stdin</code>.</p>
+<p>Secara umum penggunaan <code>awk</code> seperti ini</p>
+<div class="codehilite"><pre><span></span><code><span class="err">awk &#39;/pattern_regex/ {action1;}&#39; file</span>
+</code></pre></div>
+
+
+<p>Salah satu dari <code>/pattern_regex/</code> atau <code>{action;}</code> boleh tidak dipakai, tapi tidak dua-duanya. Kalau <code>{action;}</code> tidak ada, maka action dianggap <code>{print}</code>. <code>{print}</code> ini action default di <code>awk</code>.</p>
+<p>Proses <code>awk</code> kalau dirinci seperti ini:</p>
+<ol>
+<li><code>awk</code> baca input dari file atau stdin baris per baris.</li>
+<li>Kalau ada <code>/pattern_regex/</code>, di setiap baris teks, periksa pattern regex. Kalau match eksekusi action yang ada di kurung kurawal. Kalau tidak, baris teks dilompati dan action tidak dieksekusi.</li>
+<li>Kalau tidak ada <code>/pattern_regex/</code>, eksekusi <code>{action;}</code> di setiap baris teks.</li>
+<li>Kalau tidak ada <code>{action;}</code> print baris teks yang match dengan <code>/pattern_regex/</code>.</li>
+</ol>
+<p>Contoh umum penggunaan awk sama seperti <code>cut</code>.<br />
+Masih ingat program <code>cut</code> di atas?</p>
+<p>Sama seperti <code>cut</code>, <code>awk</code> juga ada delimiter dan default delimiter di program <code>awk</code> ini bisa <code>spasi</code> atau <code>tab</code>. Sama seperti <code>cut</code> juga, delimiter bisa disesuaikan.</p>
+<p>Langsung saja dengan contoh file <code>data.txt</code></p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; satu dua tiga empat</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Sama seperti <code>cut</code>, kalau kita mau print field 3 pakai <code>awk</code>, caranya:</p>
+<div class="codehilite"><pre><span></span><code>$ awk <span class="s1">&#39;{print $3;}&#39;</span> data.txt
+tiga
+</code></pre></div>
+
+
+<p>Untuk field 1 dan 3</p>
+<div class="codehilite"><pre><span></span><code>$ awk <span class="s1">&#39;{print $1,$3;}&#39;</span> data.txt
+satu tiga
+</code></pre></div>
+
+
+<p>Sekarang kita coba dengan <code>data.txt</code> yang berisi dua baris.</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; satu dua tiga empat</span>
+<span class="s">&gt; lima enam tujuh delapan</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Coba print field ke 3.</p>
+<div class="codehilite"><pre><span></span><code>$ awk <span class="s1">&#39;{print $3;}&#39;</span> data.txt
+tiga
+tujuh
+</code></pre></div>
+
+
+<p>Kalau misalnya kita mau <code>awk</code> eksekusi action di baris tertentu saja, kita bisa filter baris itu. Misalnya untuk eksekusi action print di baris yang diawali <code>lima</code> saja.</p>
+<div class="codehilite"><pre><span></span><code>$ awk <span class="s1">&#39;/^lima.*/ {print $3;}&#39;</span> data.txt
+tujuh
+</code></pre></div>
+
+
+<p>Line yang pertama di-skip karena tidak ada pattern <code>lima</code>.</p>
+<p>Seperti yang lain, <code>awk</code> juga bisa baca dari stdin.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> awk <span class="s1">&#39;/^lima.*/ {print $3;}&#39;</span>
+</code></pre></div>
+
+
+<p>Bagaimana untuk delimiter yang bukan <code>spasi</code> atau <code>tab</code>?<br />
+Ambil contoh seperti file <code>/etc/passwd</code> yang seperti ini:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">root</span><span class="o">:</span><span class="n">x</span><span class="o">:</span><span class="mi">0</span><span class="o">:</span><span class="mi">0</span><span class="o">:</span><span class="n">root</span><span class="o">:/</span><span class="n">root</span><span class="o">:/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span>
+</code></pre></div>
+
+
+<p>Kita bisa pakai argumen <code>-F</code> diikuti karakter delimiternya.</p>
+<div class="codehilite"><pre><span></span><code>$ awk -F: <span class="s1">&#39;/^root/ {print $7;}&#39;</span> /etc/passwd
+/bin/bash
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="grep"><a name="grep" ></a>grep</h3>
+<p><strong>grep</strong> dipakai buat filter baris teks yang ada berisi pattern Regular Expression yang dicari.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">grep</span><span class="w"> </span><span class="o">[</span><span class="n">OPTIONS</span><span class="o">]</span><span class="w"> </span><span class="n">PATTERN</span><span class="w"> </span><span class="o">[</span><span class="n">FILE...</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Misalnya file <code>data.txt</code> isinya dua baris seperti di bawah:</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; satu dua tiga empat</span>
+<span class="s">&gt; lima enam tujuh delapan</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Nah pakai <code>grep</code>, kita bisa filter baris teks yang ada pattern <code>"enam"</code> misalnya.</p>
+<div class="codehilite"><pre><span></span><code>$ grep <span class="s2">&quot;enam&quot;</span> data.txt
+lima enam tujuh delapan
+</code></pre></div>
+
+
+<p><code>grep</code> ini case sensitive, jadi <code>ABCD</code> beda sama <code>abcd</code>. Kalau mau pakai pattern yang case insensitive atau besar kecil huruf bukan masalah, pakai argumen <code>-i</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ grep -i <span class="s2">&quot;ENAM&quot;</span> data.txt
+lima enam tujuh delapan
+</code></pre></div>
+
+
+<p>Kadang kita perlu tahu di baris ke berapa pattern <code>regex</code> itu match. Terutama teks yang isinya ratusan atau ribuan baris seperti source code.</p>
+<p>kita bisa instruksikan <code>grep</code> supaya print nomor baris itu, caranya pakai argumen <code>-n</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ grep -ni <span class="s2">&quot;ENAM&quot;</span> data.txt
+<span class="m">2</span>:lima enam tujuh delapan
+</code></pre></div>
+
+
+<p><code>2</code>, itu nomor barisnya.</p>
+<p>Selain <code>file</code>, <code>grep</code> juga bisa terima input dari <code>stdin</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> grep <span class="s2">&quot;enam&quot;</span>
+</code></pre></div>
+
+
+<p>Untuk pattern yang lebih kompleks misalnya.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> grep <span class="s2">&quot;^s.*t</span>$<span class="s2">&quot;</span>
+satu dua tiga empat
+</code></pre></div>
+
+
+<p>Maksudnya <code>"^s.*t$"</code> baris yang dimulai huruf <code>s (^s)</code>, diikuti karakter apa saja dengan jumlah berapa saja <code>(.*)</code> dan diakhiri huruf <code>t (t$)</code>.</p>
+<p>&nbsp;</p>
+<h3 id="sed"><a name="sed" ></a>sed</h3>
+<p><strong>sed</strong> ini stream editor, program yang powerful dan keren sekali di Linux. Pakai <code>sed</code> ini kita bisa edit file teks tanpa perlu buka file itu di editor seperti <code>Vim</code> atau <code>Emacs</code>.</p>
+<p>Anda juga bisa bayangkan <code>sed</code> ini seperti <code>pipe</code>, terima input dari ujung yang satu dan keluar dari ujung yang lain. Bedanya, <code>sed</code> ada proses manipulasi stream, jadi outputnya beda sama input karena sudah dimanipulasi.</p>
+<p>Proses <code>sed</code> kurang lebih seperti di bawah:</p>
+<ol>
+<li>Terima input dari <code>file</code> atau <code>stdin</code>, baca baris per baris.</li>
+<li>Di setiap baris, tempatkan baris teks itu di <code>buffer</code>.</li>
+<li>Edit teks yang ada di <code>buffer</code>.</li>
+<li>Print teks yang sudah diedit ke <code>output</code>.</li>
+<li>Lanjut ke baris berikutnya, eksekusi nomor 1 sampai 4 sampai tidak ada lagi input atau eof (end of file).</li>
+</ol>
+<p><code>sed</code> ini punya banyak mode untuk manipulasi stream. Di sini kita pelajari tiga saja yang umum dipakai.</p>
+<ul>
+<li><code>print</code>. Print baris teks tanpa ada modifikasi teks.</li>
+<li><code>delete</code>. Delete baris teks.</li>
+<li><code>subtitute</code>. Cari pola karakter berdasarkan regex dan subtitusi karakter itu dengan karakter lain.</li>
+</ul>
+<p><strong>Print</strong><br />
+Mode print dipakai buat print baris teks tanpa ada manipulasi teks.</p>
+<p>Contoh dengan file <code>data.txt</code> yang seperti ini.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt
+<span class="m">1</span>. satu
+<span class="m">2</span>. dua
+<span class="m">3</span>. tiga
+<span class="m">4</span>. empat
+<span class="m">5</span>. lima
+<span class="m">6</span>. enam
+<span class="m">7</span>. tujuh
+<span class="m">8</span>. delapan
+<span class="m">9</span>. sembilan
+<span class="m">10</span>. sepuluh
+</code></pre></div>
+
+
+<p>Format mode print: <strong><code>sed -n '&lt;nomor baris&gt;'p file</code></strong>.  </p>
+<p>Contoh print baris ke 7.</p>
+<div class="codehilite"><pre><span></span><code>$ sed -n <span class="s1">&#39;7&#39;</span>p data.txt
+<span class="m">7</span>. tujuh
+</code></pre></div>
+
+
+<p>Print baris terakhir pakai tanda <code>$ (dolar)</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ sed -n <span class="s1">&#39;$&#39;</span>p data.txt
+<span class="m">10</span>. sepuluh
+</code></pre></div>
+
+
+<p>Print baris ke dua sampai 5.</p>
+<div class="codehilite"><pre><span></span><code>$ sed -n <span class="s1">&#39;2,5&#39;</span>p data.txt
+<span class="m">2</span>. dua
+<span class="m">3</span>. tiga
+<span class="m">4</span>. empat
+<span class="m">5</span>. lima
+</code></pre></div>
+
+
+<p>Print baris ke delapan sampai baris terakhir.</p>
+<div class="codehilite"><pre><span></span><code>$ sed -n <span class="s1">&#39;8,$&#39;</span>p data.txt
+<span class="m">8</span>. delapan
+<span class="m">9</span>. sembilan
+<span class="m">10</span>. sepuluh
+</code></pre></div>
+
+
+<p>&nbsp;    </p>
+<p><strong>Delete</strong><br />
+Format untuk mode delete: <strong><code>sed '&lt;nomor baris&gt;'d file</code></strong>.</p>
+<p>Mode delete ini bisa dianggap kebalikan dari mode <code>print</code>.</p>
+<p>Contoh delete baris ke 7.</p>
+<div class="codehilite"><pre><span></span><code>$ sed <span class="s1">&#39;7&#39;</span>d data.txt
+<span class="m">1</span>. satu
+<span class="m">2</span>. dua
+<span class="m">3</span>. tiga
+<span class="m">4</span>. empat
+<span class="m">5</span>. lima
+<span class="m">6</span>. enam
+<span class="m">8</span>. delapan
+<span class="m">9</span>. sembilan
+<span class="m">10</span>. sepuluh
+</code></pre></div>
+
+
+<p>Delete baris terakhir pakai tanda <code>$ (dolar)</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ sed <span class="s1">&#39;$&#39;</span>d data.txt
+<span class="m">1</span>. satu
+<span class="m">2</span>. dua
+<span class="m">3</span>. tiga
+<span class="m">4</span>. empat
+<span class="m">5</span>. lima
+<span class="m">6</span>. enam
+<span class="m">7</span>. tujuh
+<span class="m">8</span>. delapan
+<span class="m">9</span>. sembilan
+</code></pre></div>
+
+
+<p>Delete baris ke dua sampai 5.</p>
+<div class="codehilite"><pre><span></span><code>$ sed <span class="s1">&#39;2,5&#39;</span>d data.txt
+<span class="m">1</span>. satu
+<span class="m">6</span>. enam
+<span class="m">7</span>. tujuh
+<span class="m">8</span>. delapan
+<span class="m">9</span>. sembilan
+<span class="m">10</span>. sepuluh
+</code></pre></div>
+
+
+<p>Delete baris ke delapan sampai baris terakhir.</p>
+<div class="codehilite"><pre><span></span><code>$ sed -n <span class="s1">&#39;8,$&#39;</span>d data.txt
+<span class="m">1</span>. satu
+<span class="m">2</span>. dua
+<span class="m">3</span>. tiga
+<span class="m">4</span>. empat
+<span class="m">5</span>. lima
+<span class="m">6</span>. enam
+<span class="m">7</span>. tujuh
+</code></pre></div>
+
+
+<p>&nbsp;    </p>
+<p><strong>Subtitusi</strong><br />
+Mode subtitusi ini bisa dibilang <em>search and replace</em>, cari karakter pakai regex, kalau ketemu replace.</p>
+<p>Saya suka pakai sed mode ini, lebih cepat daripada harus lewat teks editor.</p>
+<p>Format mode subtitusi: <strong><code>sed 's/regex/replace/' file</code></strong></p>
+<p>Dengan contoh file <code>data.txt</code> seperti di bawah,</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; 123 abc</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Coba subtitusi karakter <code>123</code> dengan <code>456</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ sed <span class="s1">&#39;s/123/456/&#39;</span> data.txt
+<span class="m">456</span> abc
+</code></pre></div>
+
+
+<p><code>sed</code> ini kalau kita instruksikan buat subtitusi karakter, cuma pattern yang pertama match saja yang dirubah.</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; 123 abc 123</span>
+<span class="s">&gt; EOF</span>
+$
+$ sed <span class="s1">&#39;s/123/456/&#39;</span> data.txt
+<span class="m">456</span> abc <span class="m">123</span>
+</code></pre></div>
+
+
+<p>Pattern <code>123</code> yang kedua tidak berubah. Kalau kita mau rubah semuanya, pakai <code>g (global)</code> setelah delimiter terakhir.</p>
+<div class="codehilite"><pre><span></span><code>$ sed <span class="s1">&#39;s/123/456/g&#39;</span> data.txt
+<span class="m">456</span> abc <span class="m">456</span>
+</code></pre></div>
+
+
+<p>Tentu saja <code>sed</code> ini juga bisa ambil input dari <code>stdin</code> selain <code>file</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ cat data.txt <span class="p">|</span> sed <span class="s1">&#39;s/123/456/g&#39;</span>
+<span class="m">456</span> abc <span class="m">456</span>
+</code></pre></div>
+
+
+<p>Dari semua contoh di atas itu, output semuanya di print ke stdout. Kadang kita perlu juga output bukan stdout tapi langsung ke file.<br />
+<code>sed</code> punya satu fitur untuk ini namanya in-place. Pakai in-place, input dan output adalah file yang sama. Gampangnya, edit file tanpa perlu buka di editor.</p>
+<div class="codehilite"><pre><span></span><code>$ cat &gt; data.txt <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; 123 abc 123</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+
+
+<p>Merubah file secara in-place pakai argumen <code>-i</code>.</p>
+<div class="codehilite"><pre><span></span><code>$ sed -i <span class="s1">&#39;s/123/456/&#39;</span> data.txt
+$ cat data.txt
+<span class="m">456</span> abc <span class="m">123</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<p>Sampai sini topik kali ini, manipulasi teks dan stream.<br />
+Contoh-contoh yang ditulis di atas itu sedikit, cuma buat pengenalan. Kalau kurang, &ldquo;Man page is your friend&rdquo;, dan tentu saja Google.</p>
+<p>Saya terbuka, jadi silahkan disampaikan kalau di tulisan ini ada yang perlu dikoreksi, perlu ditambah atau dikurangi, asal bukan untuk dihapus.</p>
+<p>Sampai jumpa di tulisan selanjutnya, Insya Allah.</p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Belajar%20Linux%20Dasar%20-%20Manipulasi%20Teks%20dan%20Stream%20//devnull.web.id/linux-padawan/linux-dasar-3.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/linux-padawan/linux-dasar-3.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/linux-padawan/linux-dasar-3.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Belajar%20Linux%20Dasar%20-%20Manipulasi%20Teks%20dan%20Stream&amp;body=//devnull.web.id/linux-padawan/linux-dasar-3.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li class="active"><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

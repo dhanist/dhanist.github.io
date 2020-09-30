@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Convert Database OpenStack Cinder dari Sqlite3 ke MySQL - Debian Jessie — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Debian, OpenStack, Linux" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html"
+             title="Bookmarks «Convert Database OpenStack Cinder dari Sqlite3 ke MySQL - Debian Jessie»">
+             Convert Database OpenStack Cinder dari Sqlite3 ke MySQL - Debian Jessie
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-01-28T18:58:00+08:00">Thu 28 January 2016</time>
+            <br />Filed under: <a href="//devnull.web.id/category/openstack.html">OpenStack</a>              Tags:              <a rel="tag" href="//devnull.web.id/tag/debian.html">Debian</a>,               <a rel="tag" href="//devnull.web.id/tag/openstack.html">OpenStack</a>,               <a rel="tag" href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <p>Cinder adalah service block storage di OpenStack. Di instalasi OpenStack
+Debian 8 juga ada masalah di databasenya.</p>
+<p>Problem ini baru  Saya ketahui kemudian, padahal Cinder instalasi
+sebelumnya sudah berjalan. Ketika mau ditambahkan node baru untuk block
+storage, baru ketahuan ternyata ada problem konfigurasi Cinder.</p>
+<p>By default, Cinder menggunakan database sqlite3 sedangkan pada instalasi
+ini saya menggunakan MySQL. Kesalahan Saya pada waktu itu tidak
+melakukan verifikasi database, saya hanya lihat service Cinder berjalan
+dan saya anggap tidak ada masalah, setelah timbul masalah baru diketahui
+Cinder menggunakan database Sqlite, padahal di konfigurasi cinder
+jelas-jelas saya menggunakan MySQL.</p>
+<p>Konfigurasi Cinder ada di /etc/cinder/cinder.conf.</p>
+<p>Kesalahan pertama, di file konfigurasi tertulis <strong><em>sql_connection =
+mysql://.... </em></strong>yang seharusnya <strong><em>connection = mysql://..</em></strong>. Ini harus
+diganti, bisa dengan sed.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># sed -i &#39;s/sql_connection/connection/&#39; /etc/cinder/cinder.conf</span>
+</code></pre></div>
+
+
+<p>Kesalahan kedua, line koneksi database diatas dibawah section [ssl] yang
+harusnya di section [database]. Ini juga harus dibetulkan.</p>
+<p>Berikutnya, data yang sudah terlanjur ada di Sqlite harus dimigrasikan
+ke MySQL. Bagi Saya, ini yang susah karena saya tidak paham Sqlite,
+MySQL pun hanya seadanya saja.</p>
+<p>Ini langkah-langkah yang dilakukan:</p>
+<p>Matikan semetara foreign key checking:</p>
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">echo</span> <span class="s2">&quot;SET foreign_key_checks = 0;&quot;</span> &gt; cinder-schema.sql
+</code></pre></div>
+
+
+<p>Dump skema database, defaultnya database sqlite ada di
+/var/lib/cinder/cinder.sqlite :</p>
+<div class="codehilite"><pre><span></span><code>$ sqlite3 /var/lib/cinder/cinder.sqlite .schema <span class="p">|</span> tee -a cinder-schema.sql
+</code></pre></div>
+
+
+<p>Dump data:</p>
+<div class="codehilite"><pre><span></span><code>$ sqlite3 /var/lib/cinder/cinder.sqlite .dump <span class="p">|</span> <span class="se">\ </span>
+&gt; grep <span class="s2">&quot;^INSERT INTO&quot;</span> <span class="p">|</span> tee cinder-data.sql
+</code></pre></div>
+
+
+<p>Sampai sini, sudah ada dua file. cinder-schema.sql yang berisi skema
+database dan cinder-data.sql yang berisi data. Berikutnya file-file ini
+harus diedit supaya conform dengan MySQL.</p>
+<p>Hapus statement yang tidak perlu:</p>
+<div class="codehilite"><pre><span></span><code>$ sed -i <span class="s1">&#39;/PRAGMA/d; /BEGIN TRANSACTION;/d; /COMMIT;/d&#39;</span> cinder-schema.sql
+</code></pre></div>
+
+
+<p>Di skema tersebut ada kolom binary tidak diquote dan key dengan double
+quote. keduanya harus di quote dengan backtick (`). Kemudian di file
+cinder-data.sql, semua table dengan double quote juga harus diganti
+dengan backtick</p>
+<div class="codehilite"><pre><span></span><code><span class="n">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/</span><span class="se">\&quot;</span><span class="s1">key</span><span class="se">\&quot;</span><span class="s1">/`key`/&#39;</span> <span class="n">cinder</span><span class="o">-</span><span class="k">schema</span><span class="p">.</span><span class="k">sql</span>
+<span class="n">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/binary/`binary`/&#39;</span> <span class="n">cinder</span><span class="o">-</span><span class="k">schema</span><span class="p">.</span><span class="k">sql</span>
+<span class="n">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/INSERT INTO </span><span class="se">\&quot;</span><span class="s1">/INSERT INTO `/&#39;</span> <span class="n">cinder</span><span class="o">-</span><span class="k">data</span><span class="p">.</span><span class="k">sql</span>
+<span class="n">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/</span><span class="se">\&quot;</span><span class="s1"> VALUES/` VALUES/&#39;</span> <span class="n">cinder</span><span class="o">-</span><span class="k">data</span><span class="p">.</span><span class="k">sql</span>
+</code></pre></div>
+
+
+<p>Setelah itu, gabungkan kedua file diatas:</p>
+<div class="codehilite"><pre><span></span><code>$ cat cinder-data.sql &gt;&gt; cinder-schema.sql
+</code></pre></div>
+
+
+<p>Hidupkan kembali foreign check:</p>
+<div class="codehilite"><pre><span></span><code>$ <span class="nb">echo</span> <span class="s2">&quot;SET foreign_key_checks = 1;&quot;</span> &gt;&gt; cinder-schema.sql
+</code></pre></div>
+
+
+<p>File cinder-schema.sql sudah berisi command yang conform dengan MySQL
+dan tinggal diimport. Kalau database belum ada, harus dibuat dulu dan
+kalau database sudah ada, table-table nya harus di drop dulu semua.</p>
+<p>Import database, dengan asumsi user database-nya cinder dan nama
+databasenya cinderdb:</p>
+<div class="codehilite"><pre><span></span><code>$ mysql -u cinder -p cinderdb &lt; cinder-schema.sql
+</code></pre></div>
+
+
+<p>Restart Cinder:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"> # systemctl restart cinder-api.service   </span>
+<span class="err"> &gt; cinder-volume.service   </span>
+<span class="err"> &gt; cinder-scheduler.service</span>
+</code></pre></div>
+
+
+<p>Sampai disini seharusnya Cinder sudah bisa berjalan dengan Mysql dan
+komunikasi antar block storage node sudah bisa.</p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Convert%20Database%20OpenStack%20Cinder%20dari%20Sqlite3%20ke%20MySQL%20-%20Debian%20Jessie%20//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Convert%20Database%20OpenStack%20Cinder%20dari%20Sqlite3%20ke%20MySQL%20-%20Debian%20Jessie&amp;body=//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/openstack.html">OpenStack</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="//devnull.web.id/tag/debian.html">Debian</a> #<a href="//devnull.web.id/tag/openstack.html">OpenStack</a> #<a href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li class="active"><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

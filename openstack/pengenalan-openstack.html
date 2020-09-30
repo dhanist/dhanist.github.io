@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Membumikan OpenStack — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Linux, OpenStack, Debian" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/openstack/pengenalan-openstack.html"
+             title="Bookmarks «Membumikan OpenStack»">
+             Membumikan OpenStack
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-05-14T00:13:00+08:00">Sat 14 May 2016</time>
+            <br />Filed under: <a href="//devnull.web.id/category/openstack.html">OpenStack</a>              Tags:              <a rel="tag" href="//devnull.web.id/tag/linux.html">Linux</a>,               <a rel="tag" href="//devnull.web.id/tag/openstack.html">OpenStack</a>,               <a rel="tag" href="//devnull.web.id/tag/debian.html">Debian</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+  <img src="//devnull.web.id/images/openstack/openstack-logo.png" alt="OpenStack" title="OpenStack" />
+</div>
+
+<p>Hari itu tanggal 13 Februari 2016, bunyi notifikasi di hape tanda ada email masuk. Subject email itu bunyinya <em>&ldquo;Debian 6.0 Long Term Support reaching end-of-life&rdquo;</em>, email announcement dari tim Debian.</p>
+<p>Semua Linux admin paham apa maksudnya ini. Ya, itu berarti upgrade sistem, sebuah task yang njlimet.</p>
+<p>Tapi tetap saja, sistem harus diupgrade. Debian 6 dengan nama Squeeze itu sudah lima tahun dari lahirnya di tahun 2011 lalu.</p>
+<p>Februari 2016, Debian stable yang paling baru namanya Debian Jessie, versi 8.<br />
+Itu artinya, prosesnya pasti semakin rumit karena proses upgrade tidak bisa lompat dari 6 langsung ke 8, harus upgrade ke versi 7 dulu atau Debian Wheezy.</p>
+<p>Dengan pertimbangan proses yang njlimet itu, juga karena lingkungan virtualisasi Xen, ditambah lagi karena banyaknya jumlah server yang harus diupgrade, saya putuskan tidak upgrade.</p>
+<p>Sistem tidak diupgrade, tapi saya lebih milih buat fresh install Debian Jessie.</p>
+<p>Nyatanya pilihan ini juga tidak lebih mudah, saya harus pikirkan juga bagaimana caranya migrasi sistem dengan waktu downtime yang minim.</p>
+<p>Strategi yang muncul di pikiran saya waktu itu, pakai satu mesin untuk host virtualisasi, terus buat guest OS Debian 8 di situ, kemudian migrasi konfigurasi.</p>
+<p>Nah di sinilah perkenalan saya dengan OpenStack dimulai.</p>
+<p>Saya tidak tinggal di goa, jadi kata seperti cloud computing, big data, dan OpenStack sering sekali saya dengar. Kata-kata itu biasanya cuma lewat begitu saja, tapi karena momen upgrade ini Saya jadi punya niat buat memahami apa itu OpenStack.</p>
+<p>Saya buka Google, cari tentang OpenStack berbahasa Indonesia belum ada yang bisa memuaskan keingintahuan Saya. Kebanyakan tulisan terlalu advance, banyak juga yang pengenalan OpenStack tapi tidak terlalu ramah buat yang belum ngerti OpenStack seperti saya waktu itu.</p>
+<p>Dari hasil baca sana-sini saya masih juga kesulitan memahami konsep OpenStack. Tapi akhirnya biarpun berbekal sedikit pengetahuan, Saya tetap install OpenStack. Setup OpenStack Saya waktu itu, satu controller dan dua compute node biar bisa redundant maksudnya.</p>
+<p>Setelah proses deploy dan testing yang sangat singkat itu, hasilnya saya berani putuskan bahwa setup OpenStack ini siap beroperasi.</p>
+<p>Dan sekarang saya pikir, Saya juga perlu menulis pengenalan OpenStack berdasarkan pemahaman Saya.</p>
+<p>&nbsp;</p>
+<h2 id="tentang-openstack">Tentang OpenStack</h2>
+<p>Saya yakin banyak pengguna <s>Linux</s> GNU/Linux, mungkin juga Anda salah satunya yang sering dengar kata OpenStack, atau mau belajar OpenStack tapi masih geleng-geleng belum ngeh apa itu OpenStack.</p>
+<p>Kabar baiknya, di artikel ini saya mau coba kasih gambaran tentang pengertian OpenStack termasuk komponennya. Kabar buruknya, karena Saya juga termasuk baru kenal OpenStack, jadi tidak semua hal tentang OpenStack ada di tulisan ini.</p>
+<p>Kalau kita bahas tentang OpenStack pasti tidak bisa lepas dari yang namanya buzzword &ldquo;Cloud&rdquo;. Ya, jadi kata <em>Cloud</em> itu cuma buzzword. Artinya, <em>Cloud</em> itu bukan terminologi teknis, jadi arti kata <em>Cloud</em> itu bisa beda masing-masing orang.</p>
+<p>Tapi coba kita lihat definisi <em>Cloud Computing</em> yang lumayan bikin bingung dari <a href="https://en.wikipedia.org/wiki/Cloud_computing">Wikipedia</a> ini:  </p>
+<blockquote>
+<p>&ldquo;<em><strong>Cloud computing</strong>, also <strong>on-demand computing</strong>, is a kind of Internet-based computing that provides shared processing resources and data to computers and other devices on demand. It is a model for enabling ubiquitous, on-demand access to a shared pool of configurable computing resources (e.g., networks, servers, storage, applications and services)</em>&ldquo;</p>
+</blockquote>
+<p>Jadi, secara umum yang mereka-mereka maksud dengan <em>Cloud Computing</em> itu, layanan komputasi yang resource komputasinya seperti jaringan, hard disk, dan server, itu tidak perlu dikelola sendiri dan resource itu sifatnya on-demand.</p>
+<p>Seperti Saya, atau Anda juga yang punya email Gmail misalnya. Kita tidak perlu punya server, tidak perlu sewa jaringan sama public ip address kalau mau bisa pakai email. Cukup buka browser, atau pakai smartphone sudah bisa baca sama kirim email.<br />
+Resourcenya seperti server, storage, sama jaringannya kita tidak perlu ikut mikir, biarkan itu Google saja yang mikir.<br />
+Sama seperti kalau kita perlu listrik, kita tidak perlu punya pltd sendiri kan? kita tinggal sewa saja dari PLN, beres.</p>
+<p>Nah, dengan pemahaman <em>Cloud</em> yang seperti itu, terus di mana tempat dan fungsinya OpenStack?</p>
+<p>Jadi OpenStack adalah software suite, atau kumpulan banyak software yang fungsinya untuk mengatur resource komputasi itu. OpenStack fungsinya mengatur server, hard disk, network, dan sebagainya. Karena itu OpenStack menyebut dirinya sebagai <em><strong>Cloud Software</strong></em>.</p>
+<p>Sebenarnya OpenStack itu adalah project Open Source yang lahirnya belakangan. Jadi sebelum OpenStack sudah ada project yang kurang lebih sama, seperti OpenNebula contohnya.</p>
+<p>OpenStack disebut software suite karena memang ada lebih dari satu software cloud di OpenStack itu. Beda sama software cloud yang spesifik, software cloud buat storage misalnya seperti ownCloud atau Seafile.<br />
+Kalau untuk storage-nya, OpenStack punya software yang namanya Swift sama Cinder.</p>
+<p>Masing-masing software atau service di OpenStack ini bisa jalan sendiri-sendiri atau independen. Jadi kalau misalnya kita cuma perlu software cloud buat storage, kita bisa install OpenStack Swift saja, yang lain tidak perlu.</p>
+<p>Sudah paham kalau OpenStack adalah software suite untuk cloud? Sekarang coba kita lihat apa saja software atau service di OpenStack.</p>
+<p>OpenStack punya nama-nama untuk masing-masing software nya.</p>
+<ol>
+<li><strong>Keystone:</strong> Identity service</li>
+<li><strong>Nova:</strong> Compute service</li>
+<li><strong>Glance:</strong> Image service</li>
+<li><strong>Swift:</strong> Object storage service</li>
+<li><strong>Cinder:</strong> Block storage service</li>
+<li><strong>Neutron:</strong> Networking service</li>
+</ol>
+<p>Enam software di atas itu yang termasuk inti atau core service di OpenStack, cuma enam ini juga yang mau saya tuliskan.</p>
+<p>Saya tidak bahas service yang lain karena saya juga tidak pernah pakai service itu kecuali Horizon. Horizon ini buat manajemen Cloud lewat interface web.</p>
+<p>Service selain enam core di atas:</p>
+<ul>
+<li><strong>Horizon:</strong> Dashboard Web management</li>
+<li><strong>Trove:</strong> Database</li>
+<li><strong>Zaqar:</strong> Messaging</li>
+<li><strong>Barbican:</strong> Key Management</li>
+<li><strong>Congress:</strong> Governance</li>
+<li><strong>Ceilometer:</strong> Telemetry</li>
+<li><strong>Sahara:</strong> Elastic Map Reduce</li>
+<li><strong>Manila:</strong> Shared Filesystems</li>
+<li><strong>Magnum:</strong> Containers</li>
+<li><strong>Heat:</strong> Orchestration</li>
+<li><strong>Ironic:</strong> Bare-Metal Provisioning</li>
+<li><strong>Designate:</strong> Domain Name Service</li>
+<li><strong>Murano:</strong> Application Catalog</li>
+</ul>
+<p>&nbsp;</p>
+<h3 id="keystone">Keystone</h3>
+<p>Keystone adalah identity service. Mungkin service Keystone ini yang wajib ada di tiap-tiap instalasi OpenStack. Jadi semua service sama tenant di OpenStack harus terdaftar di Keystone ini.</p>
+<p>Misalnya kita nambah service baru, seperti Nova contohnya, Nova ini harus di daftarkan di Keystone. User sama tenant begitu juga, harus terdaftar di Keystone.</p>
+<p>Istilah Tenant di OpenStack itu seperti grup resource. Jadi setiap tenant itu punya user sama kapasitas resource-nya masing-masing. Kita bisa batasi resource storage buat tenant A maksimal 100 GB misalnya.</p>
+<p>Itu Keystone. Jadi Keystone itu service OpenStack yang berhubungan dengan Tenant, User, sama service yang lain.</p>
+<h3 id="nova">Nova</h3>
+<p>Nova adalah compute service, atau virtualisasi, atau service virtual machine. Nova tugasnya membuat guest OS atau virtual machine, restart, shutdown, destroy guest OS, itu semuanya dari Nova.</p>
+<p>Nova ini frontend, artinya Nova bukan teknologi hypervisor seperti KVM, Xen dan teman-temannya. Untuk hypervisor-nya Nova bisa pakai backend Qemu, bisa juga pakai KVM, Xen, bahkan VMware vSphere.</p>
+<p>Itu Nova. Jadi jelas ya, bahwa fungsi Nova ini lebih ke Virtual Machine.</p>
+<h3 id="glance">Glance</h3>
+<p>Glance fungsinya buat manage disk image. Disk image ini yang nantinya diattach ke vm lewat Nova, terus dipakai buat hard disk virtual.<br />
+Glance ini seperti repositori disk image, user bisa upload disk image, terus instruksikan Nova supaya boot pakai disk image ini.</p>
+<p>Jadi gambarannya kurang lebih seperti itu. Glance itu fungsinya berhubungan dengan image, disk image.</p>
+<h3 id="swift">Swift</h3>
+<p>Swift adalah service object storage di OpenStack.</p>
+<p>Sudah pernah dengar object storage? ini salah satu dari beberapa jenis storage, yang lain misalnya seperti file-level storage sama block-level storage.</p>
+<p>Di object storage, kalau misalnya kita simpan file di storage dengan tipe ini, data yang disimpan di storage ini disebut object.</p>
+<p>Object ini masing-masing punya metadata, metadata ini berisi informasi tentang object, misalnya tipe filenya, besarnya berapa, dibuat kapan, dan sebagainya. Terus setiap object ini juga punya id masing-masing yang unik.</p>
+<p>Kita ambil contoh, kita sudah tidak asing sama layanan cloud storage semacam Google Drive atau Amazon S3.<br />
+Bisa kita bayangkan dari semua pengguna Google Drive itu, kalau dihitung semua kapasitas storage-nya pasti bukan hitungan terabyte lagi, anggap saja sekian exabyte atau jutaan terabyte.</p>
+<p>Nah, problemnya adalah, bagaimana mengatur data sebesar itu? itu pasti jadi persoalan sendiri.</p>
+<p>Di sinilah keunggulan storage tipe object storage. Kapasitas storage dengan tipe ini bisa scaling atau bisa membesar kapasitasnya sampai skala unlimited. Terus kerennya lagi, letak geografis bukan masalah buat object storage.</p>
+<p>Jadi storage yang terpisah-pisah secara geografis, data center yang beda lokasi bukan masalah karena object storage melihatnya sebagai satu entity.  </p>
+<p>Karena itu, karena kelebihan ini makanya layanan seperti Amazon S3 sama Google Drive pakai object storage buat nyimpan data.</p>
+<h3 id="cinder">Cinder</h3>
+<p>OpenStack Cinder adalah service block storage. Block storage ini beda sama Swift yang object storage di atas.<br />
+Block storage ini nyimpan data di disk dalam bentuk block, block ini biasanya disebut volume.</p>
+<p>Block storage itu kebanyakan dipakai di <em>Storage Area Network</em> atau SAN. Data yang bentuknya block itu bisa dipakai buat hard disk virtual, karena itu tipe storage ini banyak dipakai buat filesystem di Guest OS.</p>
+<p>Block yang tersimpan di disk itu bisa didistribusikan sebagai hard disk virtual ke server-server lewat protokol iSCSI atau Fibre Channel (FC), ini bukan typo tapi memang betul fibre bukan fiber.<br />
+Fibre Channel ini protokol, kalau fiber optic itu medianya. </p>
+<p>Terus OS yang pakai FC atau iSCSI ini nantinya bisa memperlakukan block yang dari SAN itu, sama seperti hard disk fisik. Block ini bisa diformat ke filesystem tertentu seperti ext4, ntfs, atau fat dan diisi data.</p>
+<p>Tipe storage yang ini lebih cepat kalau dibanding object storage, itu kelebihannya, karena itu tipe block ini lebih cocok buat database sama filesystem untuk OS.<br />
+Kelemahannya, tipe block ini kurang bisa scaling seperti object storage. Jadi kalau object storage bisa scaling bahkan sampai beda lokasi, block storage tidak.</p>
+<h3 id="neutron">Neutron</h3>
+<p>OpenStack Neutron ini adalah layanan Networking as a Service atau NaaS. saya sendiri juga belum ngeh konsep NaaS ini sampai Saya pakai OpenStack, padahal Saya punya background jaringan.</p>
+<p>Neutron ini tugasnya me-manage jaringan virtual, alokasikan ip address, termasuk juga security firewall.<br />
+Pakai Neutron ini, user tenant bisa buat jaringan virtual untuk tenant-nya, dia juga bisa buat router virtual termasuk port-nya, atur firewall, ip address, dan lainnya.</p>
+<p>Dari semua service core di OpenStack, menurut saya Neutron ini yang paling susah, paling susah dimengerti. Karena ketika dipelajari lagi ternyata Neutron ini banyak komponen program Linux yang membentuk jadi Neutron. Dari Linux bridge, Open vSwitch, OpenFlow, Linux virtual ethernet, sampai Linux network namespace.</p>
+<p>Kalau Anda mau pelajari OpenStack Neutron lebih dalam lagi, silahkan baca tulisan saya yang lain tentang Neutron, <a href="//devnull.web.id/openstack/memahami-networking-openstack-neutron.html">Memahami OpenStack Neutron lebih dalam</a> sama lanjutannya juga, <a href="http://devnull.web.id/openstack/openstack-network-namespace.html">Cara Kerja OpenStack Networking - Memahami Network Namespace</a>.  </p>
+<p>Dua artikel ini saya rasa cukup buat memahami gambaran bagaimana OpenStack Neutron itu sebenarnya.</p>
+<p>&nbsp;</p>
+<h2 id="manajemen-openstack">Manajemen OpenStack</h2>
+<p>Untuk manajemen service-nya, OpenStack punya tiga fasilitas. Dashboard web GUI lewat service Horizon, bisa juga pakai Command Line Interface atau CLI, atau Application Programming Interface atau API.  </p>
+<p>Dua yang awal tidak perlu banyak penjelasan, tinggal yang terakhir API. API ini interface buat pemrograman, pakai API ini developer atau programmer bisa buat program sendiri buat me-manage service OpenStack.<br />
+Terus program itu berkomunikasi dengan OpenStack lewat API ini. Jadi API ini semacam perantara antara program yang dibuat programmer sama OpenStack.</p>
+<p>&nbsp;</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Kalau Anda pengguna Linux yang bukan end user atau sekedar pengguna, atau Anda berada di industri IT, terutama Linux, menurut saya OpenStack layak untuk dipelajari. Kita lihat saja tren komputasi sekarang, data yang besar, masif, dan terpusat. </p>
+<p>Kalau dulu developer jualan software, sekarang software ditaruh di cloud terus dibuat layanan atau istilah kerennya sekarang Software as a Service (SaaS), Google Apps contohnya.</p>
+<p>Google Apps ambil contoh saja seperti aplikasi perkantoran Google Docs. Kalau seperti Microsoft Office programnya dijual, tapi kalau Google Docs programnya tidak dijual tapi ditempatkan di cloud terus dijadikan layanan.<br />
+User tinggal buka browser, kapan saja dari mana saja dan dari perangkat apa saja bisa pakai service program Google Docs.</p>
+<p>Kalau misalnya perlu update software, atau ada problem sama programnya, itu juga bukan tanggung jawab user tapi Google.</p>
+<p>Nah OpenStack bisa menjawab tren computing itu, OpenStack ini juga sebuah project Open Source yang besar karena sebagian besar leader di industri IT berkontribusi di OpenStack. Sebut saja seperti Rackspace, Red Hat, Ubuntu, Google, Intel, Cisco, dan masih banyak lagi yang terlibat di project ini.</p>
+<p>Saya sendiri begitu sudah sedikit ngeh dengan OpenStack ini, saya merasa kagum sama sistem ini, dan seharusnya Anda juga.</p>
+<p>Terakhir, saya minta bantuan Anda untuk share tulisan ini kalau menurut Anda tulisan ini bisa membantu buat pemula OpenStack.</p>
+<p>&nbsp;</p>
+<p>Terima kasih.</p>
+<p>&nbsp;</p>
+<p><strong>Artikel Berkaitan:</strong><br />
+<a href="//devnull.web.id/openstack/convert-database-openstack-cinder-dari-sqlite3-ke-mysql.html">Convert Database OpenStack Cinder dari Sqlite3 ke MySQL - Debian Jessie</a><br />
+<em>Kesalahan konfigurasi default OpenStack Cinder di Debian 8, dan bagaimana cara konversi database dari Sqlite3 ke MySQL</em></p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Membumikan%20OpenStack%20//devnull.web.id/openstack/pengenalan-openstack.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/openstack/pengenalan-openstack.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/openstack/pengenalan-openstack.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Membumikan%20OpenStack&amp;body=//devnull.web.id/openstack/pengenalan-openstack.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/openstack.html">OpenStack</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="//devnull.web.id/tag/linux.html">Linux</a> #<a href="//devnull.web.id/tag/openstack.html">OpenStack</a> #<a href="//devnull.web.id/tag/debian.html">Debian</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li class="active"><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

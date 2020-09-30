@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Belajar Linux Dasar - Manajemen file — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Linux" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/linux-padawan/linux-dasar-2.html"
+             title="Bookmarks «Belajar Linux Dasar - Manajemen file»">
+             Belajar Linux Dasar - Manajemen file
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-05-02T20:02:00+08:00">Mon 02 May 2016</time>
+            <br />Filed under: <a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>              Tags:              <a rel="tag" href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+  <img src="//devnull.web.id/images/linux/linux-cli.png" alt="Linux CLI" title="Linux CLI" />
+</div>
+
+<p>Tulisan ini menyambung artikel sebelumnya, <a href="/linux-padawan/linux-dasar-1.html">Belajar Linux Dasar - Pengenalan Input &amp; Ouput</a>.</p>
+<p>Penggunaan program-program di artikel ini dibuat sederhana dengan maksud supaya para pengguna Linux yang baru, atau yang belum familiar dengan terminal bisa langsung ketik perintah tanpa harus membaca manual yang panjang dan <s>boring</s> lengkap itu. Kalau sudah sedikit ngerti baru baca manual lengkapnya, atau istilahnya RTFM (<em>Read The F[ine] Manual</em>).</p>
+<p>Di artikel ini saya tuliskan tentang manajemen file, bagaimana cara membuat, rename, copy, cut, dan hapus file.</p>
+<p>&nbsp;</p>
+<p>Beberapa program yang dipakai:</p>
+<ul>
+<li><a href="#ls"><strong>ls</strong></a>, Untuk listing file dan direktori.</li>
+<li><a href="#mkdir"><strong>mkdir</strong></a>, Dipakai untuk membuat direktori baru.</li>
+<li><a href="#touch"><strong>touch</strong></a>, Update timestamp atau buat file baru.</li>
+<li><a href="#mv"><strong>mv</strong></a>, Move (cut + paste) dan rename file.</li>
+<li><a href="#cp"><strong>cp</strong></a>, Copy file dan direktori.</li>
+<li><a href="#rm"><strong>rm</strong></a>, Hapus file dan direktori.</li>
+<li><a href="#ln"><strong>ln</strong></a>, Untuk membuat link.</li>
+</ul>
+<p>Di penulisan penggunaan program (synopsis), saya mengikuti Linux manual. Jadi argumen program di antara tanda [ dan ] bersifat opsional.</p>
+<p>&nbsp;</p>
+<h3 id="ls"><a name="ls"></a>ls</h3>
+<p><strong>ls</strong> dipakai untuk me-list nama-nama file dan direktori plus atributnya.<br />
+Synopsis</p>
+<div class="codehilite"><pre><span></span><code><span class="n">ls</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">FILE</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+
+<p><em>ls</em> kalau tidak disuplai argumen apa-apa akan me-list nama-nama file di current directory, working atau current directory bisa dilihat dengan perintah <em>pwd</em>. File atau folder hidden dengan nama berawalan . (dot) juga tidak di-print kecuali ada argumen -a (all).</p>
+<p><strong>Contoh</strong><br />
+Untuk me-listing file dan direktori di current directory, ketik ls tanpa argumen apa-apa.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls</span>
+</code></pre></div>
+
+
+<p>Output dengan perintah ls di atas semua file terlihat sama, kita tidak bisa bedakan mana file mana folder, berapa besar file-nya, dsb.</p>
+<p>Tergantung program terminal dan environmentnya, biasanya output ls ada warna-warna untuk membedakan tipe file, kalau tidak ada warna, coba ini:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls --color</span>
+</code></pre></div>
+
+
+<p>Biarpun sudah dibedakan dengan warna, tetap tidak ada informasi kapan file-file itu terahir kali diakses, atau berapa ukurannya, atau siapa pemilik file itu. Supaya ls ada output informasi itu, pakai argumen -l.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -l --color</span>
+</code></pre></div>
+
+
+<p>Untuk list file dan direktori yang bukan di current directory, folder /tmp misalnya</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls /tmp</span>
+</code></pre></div>
+
+
+<p>Sudah dijelaskan di atas kalau file hidden dengan nama berawalan . (dot) tidak diprint, pakai argumen -a (all) kalau mau print termasuk yang hidden.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -a ~</span>
+</code></pre></div>
+
+
+<p>Dua atau lebih argumen bisa dijadikan satu, misalnya untuk list atribut file termasuk yang hidden.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -la ~/</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="mkdir"><a name="mkdir"></a>mkdir</h3>
+<p><strong>mkdir</strong> dipakai untuk buat file direktori baru. saya sebut file karena memang di Unix dan Linux, direktori itu file, sama seperti file umumnya.<br />
+Cara pakai mkdir:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">mkdir</span><span class="w"> </span><span class="o">[</span><span class="n">OPTIONS</span><span class="o">]</span><span class="w"> </span><span class="n">DIRECTORY</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>OPTIONS di sini opsional, boleh tidak dipakai. DIRECTORY adalah nama direktori yang mau dibuat.</p>
+<p><strong>Contoh</strong><br />
+Membuat direktori <em>blah</em> di current directory:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mkdir blah</span>
+</code></pre></div>
+
+
+<p>Membuat direktori <em>blah</em> dengan absolute path.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mkdir /tmp/blah</span>
+</code></pre></div>
+
+
+<p>Kalau kita mau buat direktori baru, sekalian buat juga parent directory-nya kalau belum ada, kita bisa pakai argumen -p (parent).</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mkdir -p blah/blah1/blah2/blah3</span>
+</code></pre></div>
+
+
+<p>Dengan -p, mkdir tidak akan error kalau direktori yang dimaksud sudah ada.<br />
+Perintah di atas itu untuk buat direktori <em>blah3</em>, kalau direktori parent-nya <em>blah2</em> belum ada, maka dibuat juga. Begitu juga kalau folder <em>blah</em> dan <em>blah1</em> belum ada, maka akan dibuat juga.</p>
+<p>Kalau kita mau buat banyak direktori baru, tidak perlu ketik perintah satu-satu.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mkdir {blah, blah1, blah2}</span>
+</code></pre></div>
+
+
+<p>Perintah ini untuk buat direktori <em>blah</em>, <em>blah1</em>, dan <em>blah2</em> di current directory. Sebenarnya tanda { dan } bukan fitur mkdir, tapi Linux shell.</p>
+<p>&nbsp;</p>
+<h3 id="touch"><a name="touch"></a>touch</h3>
+<p><strong>touch</strong> dipakai untuk modifikasi timestamp, atau buat file baru kalau file yang dimaksud tidak ada. Timestamp adalah waktu terakhir file diakses dan dimodifikasi.</p>
+<p>Synopsis</p>
+<div class="codehilite"><pre><span></span><code><span class="n">touch</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="w"> </span><span class="k">FILE</span><span class="w"></span>
+</code></pre></div>
+
+
+<p><strong>Contoh</strong>  </p>
+<div class="codehilite"><pre><span></span><code><span class="err">touch foo</span>
+</code></pre></div>
+
+
+<p>Perintah itu, kalau file <em>foo</em> tidak ada maka dibuat baru, tapi kalau ada maka waktu akses dan modifikasi file yang dirubah. Waktu bisa dilihat dengan perintah ls.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -l foo</span>
+</code></pre></div>
+
+
+<p>Tunggu beberapa menit, ulangi perintah <em>touch foo</em> kemudian <em>ls -l foo</em> dan perhatikan perbedaan outputnya.</p>
+<p>&nbsp;</p>
+<h3 id="mv"><a name="mv"></a>mv</h3>
+<p><strong>mv</strong> dipakai untuk rename atau move (cut + paste) file.</p>
+<p>Synopsis</p>
+<div class="codehilite"><pre><span></span><code><span class="n">mv</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">-T</span><span class="o">]</span><span class="w"> </span><span class="n">SOURCE</span><span class="w"> </span><span class="n">DEST</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>SOURCE adalah file atau direktori asal, dan DEST adalah file atau direktori tujuan.</p>
+<p><strong>Contoh</strong><br />
+Rename direktori <em>blah</em> ke <em>blah1</em></p>
+<div class="codehilite"><pre><span></span><code><span class="err">mv blah blah1</span>
+</code></pre></div>
+
+
+<p>Pindahkan direktori <em>blah1</em> ke /tmp</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mv blah1 /tmp</span>
+</code></pre></div>
+
+
+<p>Atau misalnya mau pindahkan <em>blah1</em> ke /tmp/ dengan nama berbeda, <em>blah2</em> misalnya</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mv blah1 /tmp/blah2</span>
+</code></pre></div>
+
+
+<p>Sangat simpel.</p>
+<p>&nbsp;</p>
+<h3 id="cp"><a name="cp"></a>cp</h3>
+<p><strong>cp</strong> dipakai untuk copy file.</p>
+<p>Synopsis </p>
+<div class="codehilite"><pre><span></span><code><span class="n">cp</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="p">...</span><span class="w"> </span><span class="o">[</span><span class="n">-T</span><span class="o">]</span><span class="w"> </span><span class="n">SOURCE</span><span class="w"> </span><span class="n">DEST</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Penjelasan SOURCE dan DEST sama dengan mv di atas.</p>
+<p><strong>Contoh</strong><br />
+Copy file <em>foo</em> ke folder /tmp</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cp foo /tmp</span>
+</code></pre></div>
+
+
+<p>Untuk copy <em>foo</em> ke /tmp dengan nama berbeda, foo1 misalnya.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cp foo /tmp/foo1</span>
+</code></pre></div>
+
+
+<p>Copy direktori.<br />
+Untuk copy direktori, gunakan argumen -r (recursive)</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cp -r blah /tmp/blah1</span>
+</code></pre></div>
+
+
+<p>Program cp tidak ada output apa-apa kalau sukses, kalau mau print file-file yang dicopy pakai argumen -v (verbose), misalnya:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">cp -rv blah /tmp/blah1</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="rm"><a name="rm"></a>rm</h3>
+<p><strong>rm</strong> dipakai untuk menghapus file dan direktori.</p>
+<p>Synopis</p>
+<div class="codehilite"><pre><span></span><code><span class="n">rm</span><span class="w"> </span><span class="o">[</span><span class="n">OPTION</span><span class="o">]</span><span class="w">   </span><span class="k">FILE</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>OPTION bersifat opsional, FILE adalah file yang mau dihapus.</p>
+<p><strong>Contoh</strong><br />
+Hapus file /tmp/foo</p>
+<div class="codehilite"><pre><span></span><code><span class="err">rm /tmp/foo</span>
+</code></pre></div>
+
+
+<p>Hapus direktori dengan option -r (recursive)</p>
+<div class="codehilite"><pre><span></span><code><span class="err">rm -r /tmp/blah</span>
+</code></pre></div>
+
+
+<p>Untuk hapus direktori, selain <em>rm -r</em> juga bisa pakai <em>rmdir</em>.</p>
+<p>Kadang beberapa file tidak bisa begitu saja dihapus, kita bisa pakai option -f (force) untuk file-file yang susah dihapus.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">rm -rf /tmp/blah</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<h3 id="ln"><a name="ln"></a>ln</h3>
+<p><strong>ln</strong> dipakai untuk membuat file link.  </p>
+<p>Di Linux ada file dengan tipe link. Link itu kurang lebih seperti shortcut kalau di Windows.</p>
+<p>Jenis link di Linux ada dua, soft link dan hard link. Soft link cara kerjanya kurang lebih seperti shortcut, sedangkan hard link seperti alias.  </p>
+<p>Soft link biasanya juga disebut dengan symbolic link atau pendeknya symlink.</p>
+<p>Penjelasan untuk hard link agak low level, tapi saya akan coba jelaskan sedikit.</p>
+<p>Misal saya buat file dengan nama <em>foo</em>, maka file <em>foo</em> ini punya struktur data yang disebut inode, inode ini unik untuk setiap file dan untuk sederhananya inode ini anggap saja nomor.  </p>
+<p>Misalnya inode untuk file <em>foo</em> itu 100, nah kalau kita buat hard link ke <em>foo</em> dengan nama <em>bar</em>, maka sama saja kita buat file baru  dengan nama <em>bar</em> tapi dengan inode 100.<br />
+Kita edit <em>foo</em> maka <em>bar</em> juga berubah, begitu juga sebaliknya. Tapi kalau kita hapus salah satu nama <em>foo</em> misalnya, maka yang terhapus cuma <em>foo</em>, sedangkan inode 100 masih tetap ada, jadinya <em>bar</em> juga masih ada.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/linux/link.png" alt="Linux link" title="Linux link" />
+</div>
+
+<p>File di Linux cuma bisa terhapus kalau nama file untuk inode tertentu jumlahnya sama dengan 0, artinya kalau ada 5 hard link ke satu inode maka untuk benar-benar menghapus file, lima link tersebut harus dihapus.<br />
+Terus lagi hard link tidak bisa cross device, artinya target file untuk link tidak bisa beda partisi atau hard disk, harus sama. Sedangkan symlink tidak ada batasan seperti itu.</p>
+<p><strong>Contoh</strong><br />
+Untuk membuat symlink ke file <em>foo</em> dengan nama <em>bar</em></p>
+<div class="codehilite"><pre><span></span><code><span class="err">ln -s foo bar</span>
+</code></pre></div>
+
+
+<p>Dengan symlink atau soft link, kalau kita hapus file target <em>foo</em>, maka <em>bar</em> disebut broken link. <em>bar</em> mengarah ke <em>foo</em> tapi <em>foo</em> tidak ada.</p>
+<p>Sedangkan untuk hard link</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ln foo bar</span>
+</code></pre></div>
+
+
+<p>Dengan hard link, <em>foo</em> dan <em>bar</em> mengarah ke satu inode jadi seolah-olah file <em>foo</em> dan <em>bar</em> seperti file kembar yang selalu sinkron. Edit <em>foo</em> maka <em>bar</em> berubah, begitu juga sebaliknya. Hapus <em>foo</em>, <em>bar</em> masih bisa diakses.</p>
+<p>Demonstrasi penggunaan link dengan hard link.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">[dhani: ~] Endor &gt; touch foo</span>
+<span class="err">[dhani: ~] Endor &gt; echo &quot;abcd&quot; &gt; foo</span>
+<span class="err">[dhani: ~] Endor &gt; cat foo</span>
+<span class="err">abcd</span>
+<span class="err">[dhani: ~] Endor &gt; ln foo bar</span>
+<span class="err">[dhani: ~] Endor &gt; cat bar</span>
+<span class="err">abcd</span>
+<span class="err">[dhani: ~] Endor &gt; echo &quot;1234&quot; &gt; bar</span>
+<span class="err">[dhani: ~] Endor &gt; cat foo</span>
+<span class="err">1234</span>
+<span class="err">[dhani: ~] Endor &gt; rm foo</span>
+<span class="c">rm: remove regular file ‘foo’? y</span>
+<span class="err">[dhani: ~] Endor &gt; cat bar</span>
+<span class="err">1234</span>
+<span class="err">[dhani: ~] Endor &gt; rm -f bar</span>
+<span class="err">[dhani: ~] Endor &gt;</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<p>Saya rasa program-program ini tidak susah dipahami. Dan kalau perlu memahami lebih lagi tentang program-program di atas, langsung saja, ahem&hellip; <s>RTFM</s>, maksud saya baca manual masing-masing program dengan ketik perintah <em>man &lt;program&gt;</em>.</p>
+<p>misalnya untuk program mkdir:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">man mkdir</span>
+</code></pre></div>
+
+
+<p>Kita lanjut lagi di tulisan berikutnya dengan program-program yang lain, Insya Allah.</p>
+<p>&nbsp;</p>
+<p>[Edit]<br />
+Artikel selanjutnya: <a href="//devnull.web.id/linux-padawan/linux-dasar-3.html">Belajar Linux Dasar - Manipulasi Teks dan Stream</a></p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Belajar%20Linux%20Dasar%20-%20Manajemen%20file%20//devnull.web.id/linux-padawan/linux-dasar-2.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/linux-padawan/linux-dasar-2.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/linux-padawan/linux-dasar-2.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Belajar%20Linux%20Dasar%20-%20Manajemen%20file&amp;body=//devnull.web.id/linux-padawan/linux-dasar-2.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li class="active"><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

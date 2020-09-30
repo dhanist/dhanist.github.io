@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Blockchain: Teknologi dibalik Bitcoin — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/misc/blockchain-bitcoin.html"
+             title="Bookmarks «Blockchain: Teknologi dibalik Bitcoin»">
+             Blockchain: Teknologi dibalik Bitcoin
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2017-01-07T22:19:00+08:00">Sat 07 January 2017</time>
+            <br />Filed under: <a href="//devnull.web.id/category/misc.html">Misc</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <div class="fimg">
+        <img src="//devnull.web.id/images/misc/blockchain/bitcoin.png" alt="bitcoin" title="bitcoin" />
+        <p>Gambar: pinterest.com</p>
+</div>
+
+<p>Bayangkan sebuah sistem tanpa otoritas. Bayangkan kalau kita bisa transaksi tanpa perlu bank, atau buat kontrak tanpa perlu notaris. Bayangkan kalau ada sistem yang bisa mengganti fungsi pihak ketiga itu, bank atau notaris itu, tanpa ribet dan tanpa mahal.</p>
+<p>Bisakah? Mungkin sekarang belum, tapi nanti bisa sangat mungkin. Teknologi atau sistem itu sekarang lagi populer, namanya blockchain, teknologi dibalik kesuksesan <em>cryptocurrency</em> Bitcoin.</p>
+<p>Bitcoin ini kurang lebih sama seperti mata uang umunya seperti Rupiah atau Euro, bedanya Bitcoin bentuknya digital. Bedanya lagi, kalau Euro dipakai di negara-negara Eropa atau Rupiah dipakai di Indonesia, Bitcoin dipakai di negara Internet. Perbedaan lainnya, tidak ada otoritas seperti bank yang mengelola Bitcoin. Proses otorisasi, autentikasi, dan verifikasi semuanya ada di sistem blockchain.</p>
+<p>Sebelum terlalu jauh tulisannya, buat teman-teman yang mendarat di halaman ini karena pengen tau apa itu Bitcoin, siapa Satoshi Nakamoto, cara transaksi Bitcoin, atau cari tau tentang jual beli Bitcoin, tulisan ini bukan tentang itu, tapi lebih ke masalah teknologinya.</p>
+<p>Jadi seperti apa blockchain itu?<br />
+Blockchain itu database. Dalam konteks Bitcoin, database ini isinya record transaksi siapa kirim berapa bitcoin ke siapa. Yang bikin beda sama database umumnya, blockchain ini sistemnya ter-desentralisasi, terbuka, <em>read only</em>, <em>read only</em> artinya begitu transaksi sudah tercatat, record itu tidak bisa lagi dirubah. Sebenarnya bukan tidak bisa dirubah, tapi hampir mustahil ada orang bisa memanipulasi data yang tercatat.</p>
+<p>Blockchain ini database yang data-datanya ditempatkan di blok-blok. Satu <em>block</em> itu isinya banyak record transaksi. <em>Block-block</em> ini tersusun berdasarkan urutan waktu terus masing-masing <em>block</em> ini punya link ke <em>block</em> sebelumnya, link ini bentuknya hash sha256.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/blockchain.png" alt="blockchain" title="blockchain" />
+</div>
+
+<p>Biar bisa paham cara kerja blockchain, kita harus paham dulu pengetahuan dasar tentang <em>Public Key Encryption</em>. Jadi kalau ada di antara teman-teman yang belum paham apa itu <em>Digital Signature</em>, <em>Public Key Infrastructure</em> sama algoritma <em>hash</em>, sebaiknya pelajari dulu. Beberapa waktu lalu saya ada publish post tentang SSL/TLS. Memang tentang SSL/TLS tapi di dalamnya ada pembahasan yang lumayan komprehensif tentang <em>PKI (Public Key Infrastructure)</em>, judulnya <a href="//devnull.web.id/misc/ssl-tls-letsencrypt.html">Tentang SSL/TLS + sertifikat TLS gratis dari Let&rsquo;s Encrypt</a></p>
+<p><br /></p>
+<p>Lanjut, ambil contoh transaksi bitcoin. Alice minum kopi di warung kopi punya Bob, warkopnya Bob ini terima pembayaran Bitcoin. Alice, yang juga punya Bitcoin coba bayar kopi pakai Bitcoin, harganya kalau dalam Rupiah 15 ribu tapi dikonversi ke Bitcoin sekitar 0.001 BTC. Alice buka aplikasi Bitcoin di hapenya, terus transfer 0.001 BTC ke alamat bitcoin Bob.</p>
+<p>Supaya bisa transaksi pakai Bitcoin, Alice sama Bob sebelumnya harus punya bitcoin wallet, kita bisa analogikan bitcoin wallet ini seperti rekening bank. Kalau rekening bank ada identitasnya, bitcoin wallet juga ada tapi identitas bitcoin wallet ini bukan nama seperti rekening tapi <em>key pair</em> enkripsi asimetris, ada <em>public key</em> sama <em>private key</em>. Terus yang pasti, kalau mau bisa transaksi Bitcoin, di bitcoin wallet itu harus ada nilai bitcoin atau semacam saldo kalau di rekening. Bitcoin ini bisa dibeli di market pakai mata uang tradisional seperti Rupiah. Alice di walletnya sudah punya bitcoin 0.5 BTC yang sebelumnya dia beli dari local market seharga 6 juta.</p>
+<p>Alamat bitcoin contohnya seperti <code>3HCSJQA3zji58dJmifL5q1DA7p2hX5rGAZ</code> yang bisa dibuat gratis di banyak provider bitcoin wallet, salah satunya seperti <a href="https://www.coinbase.com/">Coinbase</a>. Itu alamat bitcoin yang valid, kalau mau coba silahkan transfer bitcoin, itu alamat Bitcoin saya :)<br />
+Panjang alamat bitcoin ini sepanjang 20 byte atau 160 bit yang berarti 2<sup>160</sup>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">    2 ^ 160 = 1461501637330000000000000000000000000000000000000</span>
+</code></pre></div>
+
+
+<p>Kalau alamat bitcoin sebanyak itu, alamat bitcoin ini tidak bakal habis biarpun masing-masing penduduk bumi punya sejuta alamat bitcoin yang berbeda.</p>
+<p>Terus dibalik bitcoin ini ada jaringan yang disebut bitcoin network, network ini yang ngatur semua transaksi bitcoin. Jaringan atau bitcoin network ini isinya komputer, sebutannya node. Node ini diinstal software Bitcoin terus mereka ini terhubung satu sama lainnya, node-node ini bisa komputer seperti PC umumnya atau komputer yang didesain khusus buat jalankan software Bitcoin.<br />
+Network ini sistemnya <em>peer to peer</em> yang artinya tidak ada servernya, masing-masing node saling terkoneksi seperti aplikasi Bittorrent. </p>
+<p>Apa yang terjadi waktu Alice transfer bitcoin ke alamat bitcoin Bob? Prosesnya, aplikasi wallet Alice buat dua request transfer seperti ini:</p>
+<ol>
+<li>Transfer 0.001 BTC dari wallet Alice ke wallet Bob.</li>
+<li>Transfer 0.498 BTC dari wallet Alice ke wallet Alice.</li>
+</ol>
+<p>Dari sisi pengguna, Alice cuma tau kalau saldonya berkurang. Tapi dari sisi network bitcoin transfer itu ada dua, satu transfer ke alamat Bitcoin Bob, satunya ke alamat Alice sendiri.<br />
+Jadi di Bitcoin itu tidak ada namanya saldo, yang ada input sama output. Yang dianggap saldo itu cuma input yang belum jadi output. Input itu bitcoin yang masuk, output bitcoin yang keluar dari wallet. Terus input sama output ini harus balance, bitcoin yang masuk sama yang keluar harus imbang.</p>
+<p>Nah di contoh ini, input wallet Alice yang 0.5 BTC dari market. Nah waktu transaksi, input 0.5 BTC ini harus habis jadi output semua. Karena itu dibuat dua output seperti di atas itu, output pertama bayar kopi, output kedua transfer ke wallet sendiri.<br />
+Tapi kalau diperhatikan <code>0.001 + 0.0498 = 0.499</code> bukan <code>0.5</code>, kemana yang <code>0.001</code>? 0.001 BTC ini jadi fee buat network atas jasa mereka memproses transaksi itu. Jadi fee network itu selisih dari transaksi, kalau misalnya Alice di output kedua transfer 0.497 BTC ke wallet sendiri, berarti fee buat network jumlahnya 0.002 BTC.</p>
+<p>Jadi, request wallet Alice ke network kurang lebih seperti ini:</p>
+<blockquote>
+<p>Halo, saya Alice. Saya punya input 0.5 BTC yang mau dijadikan output.<br />
+Output 1, 0.001 BTC ke wallet Bob.<br />
+Output 2, 0.498 BTC ke wallet sendiri.<br />
+Sisanya yang 0.001 BTC silahkan diambil buat fee.</p>
+</blockquote>
+<p>Fee ini sifatnya opsional, artinya tanpa fee pun transaksi tetap diproses sama network. Cuma fee ini bisa menentukan prioritas, semakin besar fee semakin cepat diproses.</p>
+<p>Request Alice di atas itu kemudian ditandatangani secara digital pakai private key Alice terus di-<em>broadcast</em> ke network. Para node di network yang terima pesan broadcast itu mereka coba verifikasi, apa benar Alice yang kirim pesan itu. Verifikasi ini pakai public key Alice, kalau tandatangan atau digital signature yang di-broadcast cocok dengan public key Alice berarti request itu valid.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/sign.png" alt="blockchain digital signature" title="blockchain digital signature" />
+</div>
+
+<p>Begitu transaksi itu valid dan berhasil diverifikasi, request itu diproses, record transaksi itu dicatat terus dimasukkan ke <em>block</em> bersama record banyak transaksi lainnya. Block ini kemudian ditempatkan ke database blockchain sebagai <em>block</em> baru.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/new-block.png" alt="blockchain new block" title="blockchain new block" />
+</div>
+
+<p><br /></p>
+<h3 id="struktur-block">Struktur block.</h3>
+<p>Seperti apa bentuknya block itu?</p>
+<p>Struktur block kurang lebih seperti di bawah:</p>
+<ul>
+<li>4 byte        : block size. Berisi informasi berapa besar block ini.</li>
+<li>80 byte       : header block.</li>
+<li>1-9 byte      : berisi informasi berapa transaksi yang ada di block ini.</li>
+<li>bervariasi    : berisi list transaksi bitcoin yang tercatat di block ini.</li>
+</ul>
+<p>Rincian header block yang 80 byte di atas seperti ini:</p>
+<ul>
+<li>4 byte        : versi software bitcoin yang dipakai.</li>
+<li>32 byte       : berisi <em>hash</em> block sebelumnya.</li>
+<li>32 byte       : hash dari merkle root atau root data structure binary hash tree.</li>
+<li>4 byte        : berisi timestamp kapan waktu block ini dibuat. Hitungan detik dari <em>Unix Epoch</em> (1 Januari 1970).</li>
+<li>4 byte        : tingkat kesulitan algoritma proof-of-work.</li>
+<li>4 byte        : nonce. Atau nilai proof-of-work yang berhasil ditemukan.</li>
+</ul>
+<p><em>Merkle root</em>, <em>Nonce</em> sama <em>proof-of-work</em> dibahas nanti.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/block-structure.png" alt="blockchain block structure" title="blockchain block structure" />
+</div>
+
+<p>Seperti terlihat, setiap block di headernya ada hash dari block sebelumnya atau bisa dianggap link ke block sebelumnya. Begitu terus dan kalau link ini ditelusuri terus, ujungnya ada di block yang paling pertama dibuat. Block yang paling pertama dibuat ini namanya <em>Genesis Block</em> yang dibuat di tahun 2009. Baca lebih lanjut tentang <a href="https://en.bitcoin.it/wiki/Genesis_block">Genesis Block</a>.</p>
+<p><strong>Merkle root</strong>. Data structure-nya namanya merkle tree atau binary hash tree. Skip.. skip.. tanpa terlalu detail, adanya hash dari merkle root ini dipakai buat membuktikan dengan cepat apakah di block ini transaksi yang dicari ada atau tidak. Satu block, isinya bisa 500 sampai diatas seribu transaksi bitcoin, kalau cari satu-satu diurut dari awal sampai transaksi terakhir tidak efektif, nah adanya <em>root hash</em> ini bisa dipakai buat pembuktian bahwa transaksi yang dicari ada di dalam block tanpa perlu lihat record satu per satu. Wikipedia tentang data structure <a href="https://en.wikipedia.org/wiki/Merkle_tree">Merkle tree</a></p>
+<p>Kembali ke <em>Network</em>. Salah satu jenis node di <em>Network</em> ini ada yang kerjanya mem-validasi, verifikasi transaksi, terus kalau transaksi itu valid, mereka catat transaksi itu dalam block, node ini namanya <strong>Miner</strong>. Ada banyak <em>Miner</em> di network bitcoin, ribuan atau mungkin jutaan miner yang saling terkoneksi satu sama lain.</p>
+<p>Terus network blockchain ini tidak ter-sentralisasi, artinya tidak ada server yang terpusat. Database blockchain itu tersebar di semua node, masing-masing node punya database yang sama yang saling singkron terus menerus.</p>
+<p>Waktu ada pesan broadcast dari Alice, database blockchain pada waktu itu sampai block ke 99 misalnya. Berarti para miner waktu itu semuanya kerja secara independen buat block berikutnya, block ke 100 yang transaksi kopi Alice bakal masuk di block ini.</p>
+<p>Di sini muncul problem. Karena masing-masing miner memproses block berikutnya, block ke 100 secara independen, block ini bisa beda-beda isinya antara miner satu sama yang lainnya. Bahkan mungkin ada node miner yang lokasinya jauh dari Alice dia tidak terima pesan broadcast-nya karena misalnya latency jaringan Internetnya tinggi, jadi di miner ini transaksi Alice tidak masuk di block ke 100, tapi di miner lain ada.</p>
+<p>Solusinya, ada semacam tantangan buat para miner ini, siapa yang berhasil menang lomba ini, dia yang berhak menempatkan block ke 100 ke chain database blockchain. Bukan cuma itu, miner ini juga dapat reward atau imbalan bitcoin atas hasil usahanya. Selain reward, miner ini juga punya hak ambil fee dari setiap transaksi termasuk fee 0.001 BTC dari Alice, ditambah banyak fee dari ratusan bahkan ribuan transaksi yang masuk di block ke 100.</p>
+<p>Tantangan ini yang di blockchain dinamai <em>Proof-of-work</em>. Para miner ini beradu cepat menebak angka yang disebut angka <em>nonce</em>. Siapa berhasil menemukan <em>nonce</em> paling cepat dia pemenangnya.</p>
+<p><br /></p>
+<h3 id="bitcoin-mining">Bitcoin mining</h3>
+<p>Reward bitcoin buat miner yang berhasil menang ini satu-satunya cara pembuatan Bitcoin baru. Jadi bitcoin yang beredar sekarang ini awalnya dari para miner itu, karena itu mereka disebut miner atau penambang Bitcoin.<br />
+Berapa banyak coin yang didapat miner kalau berhasil menebak <em>nonce</em>? banyak.</p>
+<p>Reward buat miner itu 50 BTC. Tapi jumlah ini dikurangi setenganya setiap 210.000 block baru. Setiap kurang lebih 10 menit muncul block baru di blockchain, ini berarti sekitar 4 tahun sekali reward dipotong setengah. <em>Genesis block</em> atau block yang paling pertama dibuat di tahun 2009, reward buat miner 50 BTC. Tahun 2012 jadi setengahnya, 25 BTC dan di tahun 2016 dipotong lagi setengah jadi 12.5 BTC. Jadi sekarang ini reward buat miner yang berhasil menebak <em>nonce</em> reward-nya 12.5 BTC.</p>
+<p>Reward ini bakalan dipotong setengahnya terus sampai total bitcoin yang beredar totalnya 21 juta bitcoin. Ini batasan Bitcoin, kalau sudah sampai 21 juta bitcoin tidak ada lagi bitcoin yang bisa dibuat. Reward buat para miner setelah ini cuma dari fee transaksi saja</p>
+<p><br /></p>
+<h3 id="proof-of-work">Proof-of-work</h3>
+<p>Proof-of-work ini data yang jadi syarat supaya block bisa dimasukkan ke blockchain. Data Proof-of-work ini susah sekali buatnya, perlu waktu sama <em>computing power</em> yang besar, tapi gampang buat diverifikasi kebenarannya. Proses pembuatan data ini caranya acak dan tebak-tebakan, terus probabilitas tebakan itu benar kemungkinannya kecil sekali.</p>
+<p>Caranya, para miner harus mencari nilai hash SHA256 yang inputnya <code>header block + nilai nonce</code> yang hasil hash ini nilainya <em>sama dengan atau lebih kecil</em> dari <code>target</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">   hash (header block + nonce) &lt;= target</span>
+</code></pre></div>
+
+
+<p><strong>Nonce</strong> ini panjangnya 4 byte atau 32 bit. Para miner, mereka cari nilai <em>nonce</em> ini, <em>nonce</em> berubah maka hash yang dihasilkan berubah. Mereka tebak nonce terus menerus sampai hasil hash sama atau lebih kecil dari <em>target</em>. Tingkat kesulitannya ada di <em>target</em> ini, kalau <em>target</em> nilainya besar berarti kemungkinan hasil hash lebih kecil dari target juga besar. Tapi kalau nilai target ini kecil, probabilitas menemukan nonce yang tepat juga jadi kecil.<br />
+Tingkat kesulitan ini namanya <em>Difficulty</em> dan ini disesuaikan terus menerus. Kalau para miner bisa gampang nebak <em>nonce</em>, maka <em>difficulty</em> dinaikkan yang berarti nilai target turun. <em>Difficulty</em> ini dipakai buat menjaga supaya rata-rata <em>Proof-of-work</em> itu bisa dihasilkan setiap 10 menit sekali, yang berarti block baru masuk ke database blockchain setiap sekitar 10 menit.</p>
+<p><strong>Evolusi hardware miner</strong><br />
+Dulu, awal-awal bitcoin para miner biasa pakai PC biasa yang diinstall software Bitcoin Core terus dijadikan node miner. Kemudian muncul tren pakai GPU atau <em>Graphical Processing Unit</em> buat dijadikan miner. GPU lebih cepat dari CPU biasa, jadi bisa lebih banyak menebak hash per detiknya dibandingkan CPU.</p>
+<p>Karena Bitcoin yang tambah lama tambah populer ditambah kompetitifnya persaingan mining, para produsen hardware mereka produksi <em>Field-programmable gate array</em> atau FPGA card buat hardware mining yang tentu saja lebih cepat dibanding GPU. Persaingan tambah sengit, sekarang ini tren mining sudah jadi hardware ASIC (Application Specific Integrated Circuit) yang punya power sekian ratus ribu mega hash per detiknya, jauh kalau dibandingkan sama FPGA yang punya power rata-rata dibawah seribu mega hash per detiknya.</p>
+<p>Tentu saja para miner yang awal-awal pakai ASIC bisa kaya mendadak, tapi karena sekarang rata-rata miner semuanya ASIC jadinya ya tetap kompetitif. Dan saking ketatnya persaingan hardware mining ini, sekarang mining biarpun pakai hardware ASIC yang mahal pun tetap susah bersaing. Karena itu rata-rata para miner sekarang mereka buat grup miner yang disebut <em>mining pool</em>, pool ini isinya banyak hardware mining yang ngumpul jadi satu terus beban kerja nebak hash dibagi ke anggota pool itu. Kalau pool ini berhasil menghasilkan Proof-of-work, reward bitcoinnya dibagi ke anggota pool berdasarkan kontribusi hardware miner itu.</p>
+<p>Karena kemampuan hardware yang tambah hari tambah cepat ini makanya <em>difficulty</em> proof-of-work mengikuti tren ini biar pembuatan block baru bisa tetap di rata-rata sepuluh menit.</p>
+<p><br />
+Miner yang berhasil menemukan nilai <em>nonce</em>, dia kirim pesan broadcast ke network. Node lain yang terima pesan broadcast ini coba verifikasi apa benar <em>nonce</em> ini menghasilkan data proof-of-work dibawah nilai target. Kalau benar, para node ini mereka ambil block yang dibuat penemu nonce terus block ini dimasukkan ke database blockchain mereka. Mereka para miner ini kemudian mulai lagi kerja nebak nonce buat block berikutnya, begitu seterusnya.</p>
+<p><br /></p>
+<h3 id="fork">Fork</h3>
+<p>Biarpun kemungkinannya kecil sekali tapi bisa terjadi di waktu yang hampir bersamaan dua node miner atau lebih mereka berhasil menemukan <em>nonce</em>. Ini bisa muncul kalau pesan broadcast penemu <em>nonce</em> pertama belum sampai ke node kedua, bisa jadi karena jarak atau latency jaringan.<br />
+Kalau begini, ada dua block baru yang sama-sama valid dimasukkan ke database blockchain, problem ini disebut <strong>fork</strong>.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/blockchain-fork.png" alt="blockchain fork" title="blockchain fork" />
+</div>
+
+<p>karena problem fork ini, network jadi terbagi.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/blockchain-network-split.png" alt="blockchain network split" title="blockchain network split" />
+</div>
+
+<p>Fork ini tidak boleh dibiarkan, network harus memilih salah satu dari dua block yang sama-sama valid itu. Caranya, para miner harus memprioritaskan salah satu dari dua block, terserah yang mana. Begitu salah satu dari dua block ini dapat block baru, maka block ini yang diambil. Gampangnya, cabang mana yang paling panjang rentetan block-nya, dia yang diambil.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/blockchain-fork2.png" alt="blockchain fork" title="blockchain fork" />
+</div>
+
+<p><br /></p>
+<h3 id="security">Security</h3>
+<p>Blockchain ini sistemnya open, semua transaksi bisa dilihat siapa saja yang punya Internet, software-nya pun Open Source. Bagaimana keamanan datanya?</p>
+<p>Ada beberapa tipe penggunaan database blockchain yang tidak legal.<br />
+Pertama <em>Unauthorized transaction</em>. Setiap akun bitcoin wallet diproteksi pakai sepasang asymetric encryption key. Artinya bitcoin yang tercatat di wallet itu cuma yang punya private key yang bisa transaksi, orang tidak bisa seenaknya pakai bitcoin orang lain buat transaksi karena kalau digital signature mismatch pasti ditolak sama network. Kecuali akun bitcoin wallet jatuh ke orang lain ini lain ceritanya, weak link nya ada di user bukan di sistem.</p>
+<p>Kedua <em>alter data</em>. Bagaimana kalau ada attacker yang coba merubah data yang tercatat di blockchain?</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/blockchain.png" alt="blockchain" title="blockchain" />
+</div>
+
+<p>Misal attacker merubah transaksi yang ada di block 96. Karena transaksi berubah, maka data <em>merkle root</em> di header juga berubah yang berarti hash header juga berubah yang juga berarti <em>Proof-of-work</em> sama <em>nonce</em> jadi invalid. Kalau begini, attacker harus cari nilai <em>nonce</em> sampai benar. Kalau para miner saja harus join pool buat cari proof-of-work, bayangkan bagaimana lamanya attacker yang sendirian itu menebak nonce.</p>
+<p>Oke kalau dianggap attacker ini punya hardware yang sangat super cepat yang bisa menebak nonce dalam hitungan menit, dia masih punya tugas lagi. Hash 96 punya attacker ini valid tapi karena data berubah maka hash pun berubah, dan karena setiap block punya link hash ke block sebelumnya, maka block 96 dan 97 jadi terputus karena hash block 96 yang tercatat di block 97 tidak sama lagi.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/misc/blockchain/blockchain-attack.png" alt="blockchain attack" title="blockchain attack" />
+</div>
+
+<p>Dengan kondisi begini, attacker mau tidak mau dia harus rubah block 97 juga. Dia harus rubah hash block sebelumnya di block 97 supaya sama dengan hash block 96, akibatnya header block 97 berubah. Kalau header berubah berarti proof-of-work jadinya tidak valid lagi. Artinya, tebak nonce lagi. Ketemu nonce block 97, dia masih punya block 98, 99, sama block 100 yang harus dimodifikasi juga.</p>
+<p>Kalaupun attacker ini berhasil, biarpun kemungkinan itu hampir mustahil, dia harus ingat bahwa blockchain ini databasenya tersebar di semua node yang terkoneksi ke network. Artinya, attacker ini harus merubah database di semua node itu, bayangkan bagaimana susahnya itu.</p>
+<p>Ketiga <em>double spending</em>. Double spending ini, input bitcoin yang sama dipakai di dua ouput transaksi yang berbeda di waktu yang hampir bersamaan. Node yang terima pesan transaksi ini cuma bisa terima satu transaksi saja, transaksi yang lain dianggap tidak valid. Masalahnya tidak semua node bisa sepakat transaksi mana yang valid sama mana yang tidak. Kalau kondisi network normal, double spend ini tidak terlalu jadi masalah karena begitu proof-of-work berhasil dibuat, data di block miner penemu nonce itu yang valid. Karena itu, double spend ini kalau mau berhasil, maka network harus terpecah dan satu-satunya waktu network tidak sepakat itu waktu ada problem <em>fork</em>.</p>
+<p>Kembali ke fork lagi, fork ini kan cuma bisa muncul kalau ada dua atau lebih miner yang menemukan nonce secara bersamaan. Nah si attacker harus pikirkan bagaimana caranya itu bisa terjadi terus terusan, karena kalau salah satu cabang fork lebih panjang, cabang yang satunya jadi tidak valid lagi.</p>
+<p>Sampai sini kita bisa ambil kesimpulan bahwa semakin lama umur block maka semakin solid. Karena itu biasanya kalau transaksi bitcoin yang jumlahnya besar, transaksi ditunggu sampai sekitar satu jam biar block tempat transaksi itu ditumpuk 6 block di depannya. 6 Block atau 6 konfirmasi ini disepakati jadi batas aman block tidak bisa lagi dimanipulasi.</p>
+<p><br /></p>
+<h3 id="blockchain-vulnerablity">Blockchain vulnerablity</h3>
+<p>Kalau dilihat dari masalah keamanan di atas bisa disimpulkan bahwa keamanan data blockchain ini ada di kerumitan komputasi sama race melawan network miner. Tapi ada cara yang memudahkan attack di atas itu, namanya <strong>51% attack</strong>. 51% attack ini kalau attacker bisa menguasai 51% network miner, maka dia bisa mengontrol network karena kemungkinan menemukan proof-of-work jadi lebih besar kalau sebagian besar network miner dikuasai. Tapi biarpun begitu, cuma <em>alter data</em> sama <em>double spend</em> saja yang mungkin bisa curangi, masalah <em>unauthorized transaction</em> tetap aman karena diproteksi pakai digital signature.</p>
+<p><br /></p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Teknologi blockchain ini memang masih belum diadopsi luas, tapi adanya Bitcoin ini blockchain jadi populer.</p>
+<p>Bayangkan kemungkinan-kemungkinan apa saja nanti yang bisa muncul karena blockchain. Mungkin kita tidak perlu ICANN buat mengatur nama domain lagi. Mungkin sistem DNS kita tidak lagi diatur sama root server yang 13 itu. Mungkin masalah legal yang selama ini bergantung sama notaris bisa dialihkan ke blockchain.</p>
+<p>Kalau saya bayangkan bagaimana kalau semua masyarakat Indonesia masing-masing punya identitas digital yang diproteksi pakai encryption key. Terus kalau ada voting semacam pemilu atau pikada, identitas digital dipakai buat voting terus hasil voting ditempatkan di database blockchain. Voting bisa lewat smartphone atau komputer yang tersambung ke Internet. Tidak ada pilihan yang tidak valid karena semua pilihan ditandatangani pakai digital signature. Tidak ada yang bisa memanipulasi data karena data ada di database blockchain, bukan di KPU.</p>
+<p>Itu imajinasi Saya, rekans Linuxer mungkin saja imajinasinya lebih liar lagi dari itu :)</p>
+<p><br />
+<strong>Refs:</strong><br />
+Sumber diambil dari e-book <a href="https://github.com/bitcoinbook/bitcoinbook">Mastering Bitcoin</a> yang ditulis oleh Andreas M. Antonopoulos.</p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Blockchain%3A%20Teknologi%20dibalik%20Bitcoin%20//devnull.web.id/misc/blockchain-bitcoin.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/misc/blockchain-bitcoin.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/misc/blockchain-bitcoin.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Blockchain%3A%20Teknologi%20dibalik%20Bitcoin&amp;body=//devnull.web.id/misc/blockchain-bitcoin.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/misc.html">Misc</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:         </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li class="active"><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

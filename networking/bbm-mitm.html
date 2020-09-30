@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>BlackBerry Messenger Rentan Mitm Attack — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/networking/bbm-mitm.html"
+             title="Bookmarks «BlackBerry Messenger Rentan Mitm Attack»">
+             BlackBerry Messenger Rentan Mitm Attack
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2017-01-12T13:19:00+08:00">Thu 12 January 2017</time>
+            <br />Filed under: <a href="//devnull.web.id/category/networking.html">Networking</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <p>Awalnya dari saya baca-baca tentang HSTS (HTTP Strict Transport Security). HSTS ini metode buat mencegah Man-in-the-middle (MitM) attack di komunikasi secure SSL/TLS. </p>
+<p>Salah satu cara attack komunikasi SSL/TLS sebelum adanya HSTS ini biasanya pakai protocol downgrade. 
+Caranya, si attacker secara diam-diam menempatkan diri di tengah-tengah komunikasi SSL antara client sama server, terus dia meng-interupsi komunikasi antara client ke server.<br />
+Di sini attacker bisa downgrade komunikasi client ke server yang awalnya secure pakai SSL didowngrade ke plain HTTP. 
+Kalau user kurang teliti bisa tanpa sadar masuk jebakan ini karena tidak ada warning apa-apa di browser.</p>
+<p>HSTS fungsinya mencegah tipe MitM ini. Caranya, server menginformasikan ke client bahwa komunikasi ke server ini harus pakai SSL/TLS. Jadinya kalau protokol di-downgrade 
+ke plain HTTP koneksi bakal di terminate dan client menolak berkomunikasi sama server pakai plain HTTP.</p>
+<p>Kelemahannya, koneksi yang pertama kali ke server yang belum pernah diakses tetap tidak terproteksi jadi tetap ada kemungkinan protokol downgrade di sini. 
+Karena itu client serperti browser Firefox atau Chrome sudah dimasukkan list situs-situs yang dikenal pakai HSTS supaya koneksi ke situs-situs ini biarpun pertama kalinya tetap 
+terproteksi.</p>
+<p><br />
+Begitu HSTS ini mulai diaplikasikan, metode attack SSL/TLS downgrade jadi tidak bisa lagi dipakai di server yang ada HSTS nya.</p>
+<p>Karena itu tes HSTS saya coba <em>eavesdropping</em> komunikasi bukan dengan cara downgrade SSL tapi pakai cara redirect komunikasi secure nya. 
+Pakai cara ini komunikasi client tetap pakai SSL/TLS cuma CA atau <em>Certificate Authority</em> dipalsukan pakai CA buatan sendiri.</p>
+<p>Ini gambaran bagaimana gambaran MitM komunikasi SSL/TLS.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/networking/mitm.png" alt="Man-in-the-middle attack" title="Man-in-the-middle attack" />
+</div>
+
+<p>Tool yang saya pakai namanya SSLsplit. Metodenya, attacker ada di tengah-tengah komunikasi fungsinya jadi client sekaligus server. Jadi client buat ambil data dari server yang sebenarnya, jadi server buat meneruskan data ke client yang sebenarnya.</p>
+<p>Pas client kirim message <em>client hello</em> waktu SSL handshake, attacker juga kirim <em>client hello</em> ke server. Berikutnya, server kirim <em>server hello</em> sama <em>certificate</em>. Attacker ambil informasi dari digital certificate ini, terus dia buat <em>certificate signing request</em> yang informasinya sama seperti yang asli, Subject DN, Common Name, dll semuanya disamakan. CSR yang sudah digenerate ini terus di-<em>sign</em> pakai CA buatan sendiri dan jadilah digital certificate yang sama dengan certificate aslinya.</p>
+<p>Certificate buatan ini terus dikirim ke client. Client coba verifikasi validitas certificate ini dan normalnya, kalau client itu bagus dia langsung terminate komunikasi karena CA yang menandatangani certificate itu tidak ada di trusted database. Client modern semacam Firefox atau Google Chrome pasti muncul warning karena certificate tidak trusted.</p>
+<p>Nah pas waktu tes malah saya secara tidak sengaja temukan BlackBerry Messenger atau BBM dia vulnerable sama attack jenis MitM, tepatnya SSL Man-in-the-middle attack.</p>
+<p>Problemnya, client BBM dia tidak ada warning yang muncul, komunikasi juga tidak di-stop biarpun certificate dipalsukan, chatting tetap bisa jalan. Parahnya lagi, BBM bukan seperti WhatsApp atau Telegram yang pakai end-to-end encryption, jadi ya pesan chatting bisa dibaca.</p>
+<p>Ini hasil percobaan saya:</p>
+<p>Pertama, client BBM sudah yang paling baru dari Google Play Store.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/networking/bbm-version.png" alt="BBM version" title="BBM version" />
+</div>
+
+<p>Saya pakai port 8443 dan jalankan SSLsplit mode debug.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">sslsplit -D \</span>
+<span class="err">-S /home/dhani/void/ \</span>
+<span class="err">-c /home/dhani/vpn/keys/ca.crt \</span>
+<span class="err">-k /home/dhani/vpn/keys/ca.key \</span>
+<span class="err">https 0.0.0.0 8443</span>
+</code></pre></div>
+
+
+<ul>
+<li><code>-D</code>: Debug.</li>
+<li><code>-S</code>: Directory tempat log. Log komunikasi ditulis di direktori ini.</li>
+<li><code>-c</code>: CA certificate</li>
+<li><code>-k</code>: CA key</li>
+<li><code>https 0.0.0.0 8443</code>: Buat socket dan bind semua ip address di tcp port 8443. <code>https</code> berasumsi bahwa ini komunikasi http dan SSLsplit secara otomatis bisa men-<em>decode</em> log ke http. Selain <code>https</code> bisa pakai <code>ssl</code> sama <code>tcp</code>.</li>
+</ul>
+<p><br /></p>
+<div class="codehilite"><pre><span></span><code><span class="err">Generated RSA key for leaf certs.</span>
+<span class="err">SSLsplit 0.5.0 (built 2017-01-10)</span>
+<span class="err">Copyright (c) 2009-2016, Daniel Roethlisberger &lt;daniel@roe.ch&gt;</span>
+<span class="c">http://www.roe.ch/SSLsplit</span>
+<span class="err">Build info: V:GIT</span>
+<span class="c">Features: -DHAVE_NETFILTER</span>
+<span class="err">NAT engines: netfilter* tproxy</span>
+<span class="c">netfilter: IP_TRANSPARENT SOL_IPV6 !IPV6_ORIGINAL_DST</span>
+<span class="err">Local process info support: no</span>
+<span class="err">compiled against OpenSSL 1.0.1t  3 May 2016 (1000114f)</span>
+<span class="err">rtlinked against OpenSSL 1.0.1t  3 May 2016 (1000114f)</span>
+<span class="err">OpenSSL has support for TLS extensions</span>
+<span class="err">TLS Server Name Indication (SNI) supported</span>
+<span class="err">OpenSSL is thread-safe with THREADID</span>
+<span class="err">Using SSL_MODE_RELEASE_BUFFERS</span>
+<span class="err">SSL/TLS protocol availability: ssl3 tls10 tls11 tls12 </span>
+<span class="err">SSL/TLS algorithm availability: RSA DSA ECDSA DH ECDH EC</span>
+<span class="err">OpenSSL option availability: SSL_OP_NO_COMPRESSION SSL_OP_NO_TICKET SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION SSL_OP_TLS_ROLLBACK_BUG</span>
+<span class="err">compiled against libevent 2.0.21-stable</span>
+<span class="err">rtlinked against libevent 2.0.21-stable</span>
+<span class="err">4 CPU cores detected</span>
+<span class="err">SSL/TLS protocol: negotiate</span>
+<span class="c">proxyspecs:</span>
+<span class="err">- [0.0.0.0]:8443 ssl|http netfilter</span>
+<span class="err">Loaded CA: &#39;/C=ID/ST=Kalimantan Timur/L=Balikpapan/O=DevNull/OU=DevNull/CN=DevNull Authority/name=ca/emailAddress=dhani.stx@gmail.com&#39;</span>
+<span class="err">Created self-pipe [r=3,w=4]</span>
+<span class="err">Created chld-pipe [r=5,w=6]</span>
+<span class="err">Created socketpair 0 [p=7,c=8]</span>
+<span class="err">Created socketpair 1 [p=9,c=10]</span>
+<span class="err">Created socketpair 2 [p=11,c=12]</span>
+<span class="err">Using libevent backend &#39;epoll&#39;</span>
+<span class="err">Event base supports: edge yes, O(1) yes, anyfd no</span>
+<span class="err">Received privsep req type 03 sz 9 on srvsock 7</span>
+<span class="err">Received privsep req type 00 sz 1 on srvsock 7</span>
+<span class="err">Inserted events:</span>
+<span class="err">Received privsep req type 00 sz 1 on srvsock 11</span>
+<span class="err">  0x1f6af50 [fd 6] Read Persist</span>
+<span class="err">  0x1f6b470 [fd 7] Read Persist</span>
+<span class="err">  0x1f6ad88 [fd 5] Read Persist</span>
+<span class="err">  0x1f65140 [fd 3] Signal Persist</span>
+<span class="err">  0x1f6b6b0 [fd 1] Signal Persist</span>
+<span class="err">  0x1f6b7e0 [fd 2] Signal Persist</span>
+<span class="err">  0x1f6b910 [fd 13] Signal Persist</span>
+<span class="err">  0x1f6bae0 [fd 10] Signal Persist</span>
+<span class="err">Initialized 8 connection handling threads</span>
+<span class="err">Started 8 connection handling threads</span>
+<span class="err">Starting main event loop.</span>
+</code></pre></div>
+
+
+<p>Di output line <code>Loaded CA</code> itu informasi CA yang saya pakai.</p>
+<p>Selanjutnya, parameter kernel untuk routing perlu diaktifkan sama nat tcp port 443 ke port 8443</p>
+<div class="codehilite"><pre><span></span><code><span class="err">echo 1 &gt;/proc/sys/net/ipv4/ip_forward</span>
+<span class="err">iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 8443</span>
+</code></pre></div>
+
+
+<p>Masalah bagaimana traffic packet IP bisa masuk ke interface dan di-<em>capture</em> tidak saya bahas karena tujuan tulisan ini buat 
+informasi ke user BBM sekligus pembuktian kalau BBM bisa disadap, bukan bagaimana cara attack MitM.</p>
+<p>Nah waktu buka BBM, di output debug SSLsplit ada informasi certificate yang original sama yang buatan seperti ini.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">===&gt; Original server certificate:</span>
+<span class="err">Subject DN: /C=CA/ST=Ontario/L=Waterloo/O=BlackBerry Ltd/OU=IT/CN=*.bbm.blackberry.com</span>
+<span class="err">Common Names: *.bbm.blackberry.com/*.bbm.blackberry.com</span>
+<span class="c">Fingerprint: 23:25:C7:DA:28:27:F9:54:AE:09D8:AD:C3:C9:9C:61:B5:3F:09:95</span>
+<span class="err">Certificate cache: HIT</span>
+<span class="err">===&gt; Forged server certificate:</span>
+<span class="err">Subject DN: /C=CA/ST=Ontario/L=Waterloo/O=BlackBerry Ltd/OU=IT/CN=*.bbm.blackberry.com</span>
+<span class="err">Common Names: *.bbm.blackberry.com/*.bbm.blackberry.com</span>
+<span class="c">Fingerprint: E6:C8:E4:AB:EC:C3:2D:43:EA:D035:2C:30:98:E0:E6:9C:DC:26:81</span>
+</code></pre></div>
+
+
+<p>Semuanya sama kecuali signature, atau fingerprint.</p>
+<p>Saya tidak tau apa BBM ini verifikasi CA sama certificate fingerprint atau tidak, yang jelas komunikasi tidak ada interupsi.</p>
+<p>Ini tes chatting BBM</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/networking/bbm.png" alt="Chat BBM" title="Chat BBM" />
+</div>
+
+<p>Dan ini log SSLsplit.</p>
+<div class="aimg">
+        <img src="//devnull.web.id/images/networking/sslsplit.png" alt="SSLsplit" title="SSLsplit" />
+</div>
+
+<p>Problem ini, saya sudah kirim email ke support BlackBerry, semoga saja mereka perbaiki. <br />
+Saran saya sebelum vulnerability ini hilang, sebaiknya tidak kirim informasi sensitif lewat BBM. Lewat WhatsApp atau Telegram saja yang lebih secure.</p>
+<p>Saya tidak tau apa lembaga semacam ID-SIRTII atau ID-CERT mereka juga lihat isi IP payload atau tidak, kalau iya kan berarti mereka bisa baca chatting pengguna BBM di Indonesia.</p>
+<p>Wheeww..!!</p>
+<p><br /></p>
+<p><strong>Artikel berkaitan:</strong><br />
+<a href="//devnull.web.id/misc/ssl-tls-letsencrypt.html">Tentang SSL/TLS + sertifikat TLS gratis dari Let&rsquo;s Encrypt</a><br />
+<em>Pembahasan yang lumayan komprehensif tentang Public Key Infrastructure atau PKI</em></p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'BlackBerry%20Messenger%20Rentan%20Mitm%20Attack%20//devnull.web.id/networking/bbm-mitm.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/networking/bbm-mitm.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/networking/bbm-mitm.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=BlackBerry%20Messenger%20Rentan%20Mitm%20Attack&amp;body=//devnull.web.id/networking/bbm-mitm.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/networking.html">Networking</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:         </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li class="active"><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>

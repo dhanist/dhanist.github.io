@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+        <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=endge, chrome=IE8" />
+    <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+    <title>Belajar Linux Dasar - File Permission — DevNull</title>
+    <!--[if lte IE 8]><script type="text/javascript" src="//devnull.web.id/theme/js/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/skeleton.css" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic,700,700italic|Open+Sans:400italic,400,700,700italic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/theme.css" />
+    <link rel="stylesheet" type="text/css" href="//devnull.web.id/theme/css/pastie.css" />
+<!--    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic,300,300italic' rel='stylesheet' type='text/css' /> -->
+    <link rel="shortcut icon" type="image/png" href="//devnull.web.id/favicon.png" />
+    <!--[if lte IE 8]><link rel="shortcut icon" type="image/x-icon" href="//devnull.web.id/favicon.ico" /><![endif]-->
+    <link rel="alternate" type="application/atom+xml"
+                           title="DevNull — Flux Atom"
+                           href="http://feeds.feedburner.com/blog/devnull" /> 
+
+    <meta name="author"   content="Dhani Setiawan" />
+    <meta name="keywords" content="Linux" />
+  </head>
+  <body>
+    <div id="page">
+      <header id="page-head">
+        <h1>
+          <a href="//devnull.web.id/index.html">DevNull</a>
+        </h1>
+      </header>
+      
+      <div id="page-body">
+        <article class="post" id="page-main" role="main">
+      <header class="post-header">
+        <h1>
+          <a rel="bookmark"
+             href="//devnull.web.id/linux-padawan/linux-dasar-4.html"
+             title="Bookmarks «Belajar Linux Dasar - File Permission»">
+             Belajar Linux Dasar - File Permission
+          </a>
+        </h1>
+        <div class="meta">
+<!-- includes/article_meta.html -->
+            Published by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a>
+            on <time datetime="2016-07-24T00:00:00+08:00">Sun 24 July 2016</time>
+            <br />Filed under: <a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>              Tags:              <a rel="tag" href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+      </header>
+      <div class="post-content"> 
+        <p>Selamat pagi, siang, atau malam teman-teman Linuxers. Tulisan ini yang keempat seri pembelajaran Linux dasar, buat teman-teman yang belum baca tulisan sebelumnya, ini link-nya:</p>
+<ol>
+<li><a href="//devnull.web.id/linux-padawan/linux-dasar-1.html">Belajar Linux Dasar - Pengenalan Input &amp; Output</a></li>
+<li><a href="//devnull.web.id/linux-padawan/linux-dasar-2.html">Belajar Linux Dasar - Manajemen file</a></li>
+<li><a href="//devnull.web.id/linux-padawan/linux-dasar-3.html">Belajar Linux Dasar - Manipulasi Teks dan Stream</a></li>
+</ol>
+<p>Yang keempat ini kita bakal belajar tentang permissions. Permission ini kurang lebih seperti cara mengatur siapa yang bisa berbuat apa di file tertentu. Satu orang cuma bisa baca saja, orang lainnya bisa baca sama edit file, dan sebagainya. </p>
+<p>Buat memahami permission, paling tidak ada dua hal yang perlu kita pahami, yaitu pengelompokan user sama mode akses nya. Cara manipulasi permission dan penjelasan tentang SUID, SGID, dan Sticky bit juga ada di tulisan ini.</p>
+<p>&nbsp;</p>
+<h2 id="user-group-dan-other">User, Group, dan Other.</h2>
+<p>Ada tiga jenis user di Unix dan Linux yang berhubungan dengan file permission; mereka itu <em>User</em>, <em>Group</em>, dan <em>Other</em>. Seperti apakah mereka? di bawah:</p>
+<p><strong>User</strong><br />
+Ini user yang punya file atau pemilik file. Kalau misalnya saya buat file bernama &ldquo;blah&rdquo; pakai command <code>touch blah</code>, maka file <code>blah</code> ini punya Saya, kecuali kepemilikan atau ownership file ini dialihkan ke user lain pakai command <code>chown</code>.</p>
+<p>Di Linux masing-masing user punya id yang unik. Kalau kita mau cek nama user kita yang lagi login, pakai command <code>whoami</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">whoami</span>
+</code></pre></div>
+
+
+<p>Kalau mau cek nomor id user kita yang lagi login:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">id -u $(whoami)</span>
+</code></pre></div>
+
+
+<p>Untuk nama-nama user yang lain bisa dilihat di file <code>/etc/passwd</code>.</p>
+<p><strong>Group</strong><br />
+Beberapa user bisa digabungkan ke dalam satu grup. Sama seperti <em>User</em>, <em>Group</em> ini masing-masing juga punya nama dan nomor id yang unik.</p>
+<p>Nama-nama grup bisa dilihat di file <code>/etc/group</code>. Kalau kita mau lihat user yang kita pakai sekarang tergabung di grup mana saja, ketik command <code>id</code>.</p>
+<p><strong>Other</strong><br />
+Kalau yang ini berlaku buat semua user yang bukan pemilik file, juga tidak tergabung dalam grup pemilik file.</p>
+<p>&nbsp;</p>
+<h2 id="mode-akses">Mode akses.</h2>
+<p>Berikutnya mode akses. Mode akses, atau permission ini yang menentukan hak akses masing-masing user yang sudah dijelaskan sebelumnya.<br />
+Setiap file, termasuk file direktori punya tiga mode akses seperti di bawah:</p>
+<ol>
+<li><strong>read</strong>. User yang punya akses <strong>read</strong> dia bisa melihat isi file atau melihat atribut file.</li>
+<li><strong>write</strong>. User yang punya akses <strong>write</strong> berarti dia bisa update, edit, rename, move dan hapus file.</li>
+<li><strong>execute</strong>. Mode akses yang ini biasanya cuma diterapkan ke file program atau script, file program atau script tidak bisa dieksekusi kalau tidak punya mode <strong>execute</strong>. Jadi user yang punya akses <strong>execute</strong> ke file, dia bisa mengeksekusi file program atau script itu.</li>
+</ol>
+<p>&nbsp;</p>
+<p>Berikutnya coba kita lihat contoh output command <code>ls -l</code></p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -l blah </span>
+<span class="err">-rwxr-xr-- 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>File <code>blah</code> di atas itu kepunyaan user <code>administrator</code> sama grup <code>admins</code>.<br />
+Permission-nya ada di kolom yang pertama, itu yang <code>-rwxr-xr--</code>.<br />
+bagaimana cara bacanya ini?</p>
+<div class="aimg">
+  <img src="//devnull.web.id/images/linux/lp/perm.png" />
+</div>
+
+<p>Keterangannya seperti ini:</p>
+<p><strong>1) File type</strong><br />
+Karakter yang pertama itu menunjukkan jenis file, ada beberapa tipe seperti list di bawah:</p>
+<ul>
+<li><code>-</code> : Regular file atau gampangnya file biasa.</li>
+<li><code>d</code> : File direktori atau folder, seperti yang dibuat pakai command <code>mkdir</code>.</li>
+<li><code>l</code> : Menunjukkan file jenis link seperti yang dibuat pakai command <code>ln -s</code>.</li>
+<li><code>b</code> : Block device, seperti flash disk, partisi hard drive, dsb.</li>
+<li><code>c</code> : File character class seperti serial console.</li>
+<li><code>s</code> : File socket jenis Unix.</li>
+</ul>
+<p><strong>2) User permission</strong><br />
+Permission ini berlaku buat pemilik file. Dalam contoh ini <code>rwx</code> yang berarti si user pemilik file bisa <strong>baca (r)</strong>, <strong>edit, rename, move dan hapus (w)</strong>, dan <strong>execute (x)</strong>.</p>
+<p><strong>3) Group Permission</strong><br />
+Permission yang ini berlaku buat grup pemilik file, grup ini isinya bisa nol user atau lebih. Di contoh, permission untuk grup <code>r-x</code> yang berarti para user yang tergabung di grup ini, mereka bisa <strong>baca (r)</strong> dan <strong>execute (x)</strong> tapi tidak bisa edit, rename, move atau hapus file karena grup ini tidak punya permission <strong>write (w)</strong>.</p>
+<p><strong>4) Other Permission</strong><br />
+Triad permission yang terakhir ini berlaku buat semua user selain nomor 2 dan nomor 3 di atas. Di contoh ini, para user yang tergolong <strong>other</strong> cuma bisa baca file karena cuma ada permission baca atau <strong>read (r)</strong>.</p>
+<p>&nbsp;</p>
+<h2 id="manipulasi-permission">Manipulasi Permission</h2>
+<p>Hak akses atau permission untuk ketiga jenis user; user, group, dan other itu tidak statik yang artinya permission ini bisa dirubah. Untuk merubah permission kita pakai command <code>chmod</code>.</p>
+<p>Kalau mau rubah permission, kita bisa pilih salah satu dari dua mode <code>chmod</code>, mode text sama numeric.<br />
+Kita lihat satu-satu.</p>
+<p><strong>Mode text</strong><br />
+Mode chmod yang ini pakai karakter huruf untuk masing-masing jenis user:</p>
+<ul>
+<li><code>u</code> : yang berarti user pemilik file.</li>
+<li><code>g</code> : grup pemilik file.</li>
+<li><code>o</code> : other.</li>
+<li><code>a</code> : semua user <code>u</code>, <code>g</code>, dan <code>o</code>. Kita bisa pakai <code>a</code> ini daripada harus ketik <code>ugo</code>.</li>
+</ul>
+<p>Contoh untuk set permission grup supaya bisa baca, edit dan hapus file:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod g=rw blah</span>
+<span class="err"># ls -l blah </span>
+<span class="err">-rwxrw-r-- 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Supaya <code>other</code> tidak punya permission apa-apa, tidak bisa baca, edit dan execute:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod o= blah</span>
+<span class="err"># ls -l blah </span>
+<span class="err">-rwxrw---- 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>User pemilik file dengan akses penuh:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod u=rwx blah</span>
+<span class="err"># ls -l blah </span>
+<span class="err">-rwxrw---- 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Semua user punya akses penuh:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod ugo=rwx blah</span>
+<span class="err"># ls -l blah </span>
+<span class="err">-rwxrwxrwx 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Selain <code>ugo</code> bisa juga pakai <code>a</code> untuk semua user.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod a=rwx blah</span>
+</code></pre></div>
+
+
+<p>Di mode ini, selain pakai tanda sama dengan <code>(=)</code>, kita juga bisa pakai tanda minus <code>(-)</code> atau plus <code>(+)</code>.<br />
+Misalnya kalau <code>g=rwx</code> itu berarti berikan hak akses penuh ke grup, <code>g-w</code> berarti hilangkan permission <code>w</code> dari grup. <code>g+w</code> berarti tambahkan permission <code>write (w)</code> ke grup.</p>
+<p>Contoh, kita hilangkan permission <code>w</code> dan <code>x</code> dari <em>group</em> dan <em>other</em>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod go-wx blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwxr--r-- 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>&nbsp;</p>
+<p><strong>Mode Numeric</strong><br />
+Kalau mode yang ini kita tidak pakai huruf-huruf seperti <code>u</code>, <code>g</code>, atau <code>o</code>, tapi pakai angka oktal. Oktal? Bilangan yang angkanya cuma 8, dari 0 sampai 7.</p>
+<p>Caranya begini, tiga permission <code>r</code>, <code>w</code>, dan <code>x</code> anggap saja seperti tiga kolom terus masing-masing kolom ini punya switch atau saklar on/off pakai bilangan biner yang bersifat boolean. Bilangan biner angkanya cuma <code>1</code> sama <code>0</code>, <code>1</code> berarti hidup dan <code>0</code> berarti mati.</p>
+<p>Contoh <strong><code>r-x</code></strong> berarti <strong><code>101</code></strong>, <strong><code>rwx</code></strong> berarti <strong><code>111</code></strong>, <strong><code>r--</code></strong> berarti <strong><code>100</code></strong>.<br />
+Angka <strong><code>101</code></strong> yang mewakili <strong><code>r-x</code></strong> itu bilangan biner, jadi angka <strong><code>101</code></strong> bukan berarti seratus satu, tapi <strong><code>5</code></strong> kalau dalam oktal.</p>
+<p><code>chmod</code> mode numeric pakai tiga angka oktal; angka pertama mewakili permission untuk user, angka kedua mewakili group, dan angka ketiga mewakili permission other.</p>
+<p>Contoh untuk set permission jadi <code>rwxr-xr--</code> :</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 754 blah</span>
+</code></pre></div>
+
+
+<p>command di atas kalau dalam mode text seperti ini :</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod u=rwx,g=rx,o=r blah</span>
+</code></pre></div>
+
+
+<p>Saya rasa gambar lebih bisa menjelaskan mode numeric ini.</p>
+<div class="aimg">
+  <img src="//devnull.web.id/images/linux/lp/754.png" />
+</div>
+
+<p>Gampangnya bisa kita ingat mode-mode permission-nya seperti ini :</p>
+<ul>
+<li><code>r</code> = 4, atau dalam biner ditulis <code>100</code>.</li>
+<li><code>w</code> = 2, dalam biner ditulis <code>010</code>.</li>
+<li><code>x</code> = 1, dalam biner ditulis <code>001</code>.</li>
+</ul>
+<p>Jadi <code>rwx</code> sama dengan <code>421</code> yang kalau angka-angka ini dijumlahkan sama dengan 7.<br />
+<code>r-x</code> berarti <code>401</code>, dijumlahkan jadi 5.
+<code>r--</code> berarti <code>400</code>, ketiga angka ini dijumlahkan hasilnya 4.</p>
+<p>Itulah kenapa <code>754</code> sama dengan <code>rwxr-xr--</code></p>
+<p>Contoh lain, mode <code>644</code> :</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 644 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rw-r--r-- 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Mode <code>644</code> dengan gambar.</p>
+<div class="aimg">
+  <img src="//devnull.web.id/images/linux/lp/644.png" />
+</div>
+
+<p>Mode <code>777</code></p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 777 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwxrwxrwx 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<div class="aimg">
+  <img src="//devnull.web.id/images/linux/lp/777.png" />
+</div>
+
+<p>Biar lebih gampang lagi, kita bisa lihat tabel di bawah:</p>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>chmod numeric</strong></th>
+<th align="center"><strong>Oktal</strong></th>
+<th align="center"><strong>Biner</strong></th>
+<th align="center"><strong>Teks</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"><code>0</code></td>
+<td align="center"><code>0+0+0</code></td>
+<td align="center"><code>000</code></td>
+<td align="center"><code>---</code></td>
+</tr>
+<tr>
+<td align="center"><code>1</code></td>
+<td align="center"><code>0+0+1</code></td>
+<td align="center"><code>001</code></td>
+<td align="center"><code>--x</code></td>
+</tr>
+<tr>
+<td align="center"><code>2</code></td>
+<td align="center"><code>0+2+0</code></td>
+<td align="center"><code>010</code></td>
+<td align="center"><code>-w-</code></td>
+</tr>
+<tr>
+<td align="center"><code>3</code></td>
+<td align="center"><code>0+2+1</code></td>
+<td align="center"><code>011</code></td>
+<td align="center"><code>-wx</code></td>
+</tr>
+<tr>
+<td align="center"><code>4</code></td>
+<td align="center"><code>4+0+0</code></td>
+<td align="center"><code>100</code></td>
+<td align="center"><code>r--</code></td>
+</tr>
+<tr>
+<td align="center"><code>5</code></td>
+<td align="center"><code>4+0+1</code></td>
+<td align="center"><code>101</code></td>
+<td align="center"><code>r-x</code></td>
+</tr>
+<tr>
+<td align="center"><code>6</code></td>
+<td align="center"><code>4+2+0</code></td>
+<td align="center"><code>110</code></td>
+<td align="center"><code>rw-</code></td>
+</tr>
+<tr>
+<td align="center"><code>7</code></td>
+<td align="center"><code>4+2+1</code></td>
+<td align="center"><code>111</code></td>
+<td align="center"><code>rwx</code></td>
+</tr>
+</tbody>
+</table>
+<p>Buat Saya, pakai numeric ini lebih ringkas daripada harus pakai <code>u</code>, <code>g</code>, atau <code>o</code>.</p>
+<p>&nbsp;</p>
+<h2 id="suid-sgid-sticky-bit">SUID, SGID, Sticky bit.</h2>
+<p>Pernah pakai command <code>sudo</code>? Ya, pakai command <code>sudo</code> kita bisa jalankan program pakai user lain, root misalnya.</p>
+<p><strong>SUID</strong> atau <em>Set User ID</em> ini kurang lebih seperti <code>sudo</code> tapi tanpa perlu pakai perintah <code>sudo</code>. SUID ini cuma bisa dipakai di file executable seperti file program. Artinya file program executable yang ada flag <em>suid</em> kalau dieksekusi, maka sistem Linux menjalankan prosesnya dengan user pemilik file, bukan user yang mengeksekusinya.</p>
+<p>Contoh file <code>/usr/bin/passwd</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -l /usr/bin/passwd</span>
+<span class="err">-rwsr-xr-x 1 root root 53112 Nov 20  2014 /usr/bin/passwd</span>
+</code></pre></div>
+
+
+<p>Coba kita perhatikan di permission yang pertama <code>(rws)</code>, karakter <code>s</code> menandakan SUID.<br />
+File itu punya user root dan dengan suid, siapapun bisa mengeksekusi file itu dan sistem akan menjalankannya dengan user <code>root</code>. Karena itu user reguler bisa mengganti passwordnya sendiri biarpun tidak punya akses <code>write</code> ke file <code>/etc/passwd</code>.</p>
+<p><strong>SGID</strong> atau <em>Set Group ID</em> kurang lebih seperti <code>SUID</code> hanya saja untuk <code>group</code>. Jadi program dengan sgid yang dijalankan oleh siapapun dianggap <code>group</code> yang mengeksekusinya.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -l /usr/bin/bsd-write </span>
+<span class="err">-rwxr-sr-x 1 root tty 9680 Oct 18  2014 /usr/bin/bsd-write</span>
+</code></pre></div>
+
+
+<p>Sama seperti SUID, karakter <code>s</code> menandakan sgid tapi di permission triad yang tengah.</p>
+<p><strong>Sticky bit</strong> ini berguna buat mencegah file dihapus oleh user yang bukan pemilik file, biarpun di dalam direktori publik yang open access.</p>
+<p>Contohnya direktori <code>/tmp</code>. Direktori ini punya mode <code>777</code> yang artinya siapa saja punya akses penuh ke file-file yang ada di direktori ini, siapa saja bisa buat dan hapus file. Tapi kalau ada <strong>Sticky bit</strong>, file tidak bisa dihapus, move, atau rename begitu saja oleh sembarang user, cuma user pemilik dan user <code>root</code> saja yang bisa hapus, move, atau rename.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">ls -ld /tmp</span>
+<span class="err">drwxrwxrwt 16 root root 4096 Jul 20 15:15 /tmp</span>
+</code></pre></div>
+
+
+<p>Karakter pertama <code>(d)</code> menandakan file <code>/tmp</code> itu file direktori. Tiga karakter berikutnya <code>(rwx)</code> artinya user pemilik folder <code>/tmp</code> punya akses penuh. Tiga karakter berikutnya untuk group <code>(rwx)</code> yang juga berarti akses penuh. Terakhir <code>(rwt)</code> untuk <em>Other</em> yang berarti <em>read</em>, <em>write</em>, dan <em>sticky bit</em>. Jadi karakter <code>t</code> itu menandakan <em>sticky bit</em>.</p>
+<p>&nbsp;</p>
+<h3 id="bagaimana-set-suid-sgid-atau-sticky-bit">Bagaimana set SUID, SGID atau Sticky bit?</h3>
+<p>Sama seperti setting permission hanya saja kita pakai 4 angka, angka pertama untuk suid, sgid, dan sticky bit, tiga angka berikutnya permission untuk user, group, dan other.</p>
+<p>Angka oktal kurang lebih sama seperti permission <code>rwx</code>.</p>
+<ul>
+<li>SUID : 4 atau dalam biner 100.</li>
+<li>SGID : 2 atau dalam biner 010, dan.</li>
+<li>Sticky bit : 1 atau 001 dalam angka biner.</li>
+</ul>
+<p>Contoh untuk set suid dan permission 755 di file <code>blah</code> :</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 4755 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwsr-xr-x 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Set SGID:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 2755 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwxr-sr-x 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Untuk Sticky bit:</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 1755 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwxr-xr-t 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Kita bisa set dua flag atau lebih, misal <code>suid + sgid</code> yang berarti <code>4 + 2 = 6</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 6755 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwsr-sr-x 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Atau <code>suid + sticky bit</code> yang berarti <code>4 + 1 = 5</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chmod 5755 blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">-rwsr-xr-t 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Selain mode numeric, kita juga bisa pakai mode text:</p>
+<ul>
+<li>SUID : s.</li>
+<li>SGID : s.</li>
+<li>Sticky bit : t.</li>
+</ul>
+<p><code>chmod u+s</code> untuk set suid, <code>chmod g+s</code> untuk set sgid, dan <code>chmod o+t</code> untuk set sticky bit.</p>
+<p>&nbsp;</p>
+<h2 id="merubah-ownership">Merubah Ownership</h2>
+<p>Ownership, atau kepemilikan file baik <em>user</em> atau <em>group</em> bisa diganti atau dialihkan ke user atau group lain.</p>
+<p>Untuk merubah user ownership pakai command <code>chown</code>. Contoh merubah kepemilikan file <code>blah</code> yang awalnya punya user <code>administrator</code> dialihkan ke user <code>root</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># ls -l blah</span>
+<span class="err">rwx-r-xr-x 1 administrator admins 0 Jul 19 13:45 blah</span>
+<span class="err"># chown root blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">rwx-r-xr-x 1 root admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Untuk mengganti <em>group</em> kita pakai command <code>chgrp</code>. Contoh rubah group admins ke group root.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chgrp root blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">rwx-r-xr-x 1 root root 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Kita juga bisa rubah user sama grupnya pakai satu command <code>chown</code>. Di bawah contoh buat rubah user ke <code>administrator</code> dan grup ke <code>admins</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="err"># chown administrator:admins blah</span>
+<span class="err"># ls -l blah</span>
+<span class="err">rwx-r-xr-x 1 administrator admins 0 Jul 19 13:45 blah</span>
+</code></pre></div>
+
+
+<p>Jadi, user dan grup dipisahkan dengan titik dua <code>(:)</code>.</p>
+<p>Semua command di atas; <code>chmod</code>, <code>chown</code>, dan <code>chgrp</code> bisa juga dipakai di direktori secara recursive. Artinya kalau kita rubah satu direktori, semua file sama direktori yang ada di dalamnya semua ikut berubah tanpa perlu eksekusi command ke file satu per satu.</p>
+<p>Untuk recursive pakai argumen <code>-R</code>. Contoh, supaya tidak ada yang bisa baca isi folder <code>Documents</code> selain yang punya.</p>
+<div class="codehilite"><pre><span></span><code><span class="err">chmod -R 600 Documents</span>
+</code></pre></div>
+
+
+<p>Dengan <code>-R</code> semua file dan folder termasuk isinya semua permission-nya berubah.</p>
+<p>&nbsp;</p>
+<p>Baik, semoga tulisan tentang Linux file permission ini bisa dipahami dengan mudah.<br />
+Silahkan dikomentari, kritik, share, atau abaikan.</p>
+<p>&nbsp;</p>
+<p>Terima kasih.</p>
+      </div>
+        <br />
+<section id="ending">
+        <div id="share">
+<!--    <p id="post-share-links"> -->
+            Sebarkan artikel ini :<br /> 
+                  <a href="http://twitter.com/home?status=b'Belajar%20Linux%20Dasar%20-%20File%20Permission%20//devnull.web.id/linux-padawan/linux-dasar-4.html'" target="_blank" title="Share on Twitter">
+                        <img src="/images/social/twitter.png" />
+                  </a>
+                  <a href="http://www.facebook.com/sharer/sharer.php?u=//devnull.web.id/linux-padawan/linux-dasar-4.html" target="_blank" title="Share on Facebook">
+                        <img src="/images/social/facebook.png" />
+                  </a>
+                  <a href="https://plus.google.com/share?url=//devnull.web.id/linux-padawan/linux-dasar-4.html" target="_blank" title="Share on Google Plus">
+                        <img src="/images/social/google-plus.png" />
+                  </a>
+                  <a href="mailto:?subject=Belajar%20Linux%20Dasar%20-%20File%20Permission&amp;body=//devnull.web.id/linux-padawan/linux-dasar-4.html" target="_blank" title="Share via Email">
+                        <img src="/images/social/email.png" />
+                  </a>
+        </div>
+        <br />
+</section>
+      <footer class="post-footer">
+      <br />
+      <hr />
+<!--
+      <div class="meta">
+            Categories «<a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a>» 
+            by <a href="//devnull.web.id/author/dhani-setiawan.html">Dhani Setiawan</a><br />
+            Mots-clés:  #<a href="//devnull.web.id/tag/linux.html">Linux</a>        </div>
+-->
+
+        <form style="border:1px solid #ccc;padding:3px;text-align:center;" 
+                action="https://feedburner.google.com/fb/a/mailverify" method="post" 
+                target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=blog/devnull', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+                <p>Anda tidak perlu repot-repot mengunjungi blog ini.<br />
+                Silahkan masukkan alamat email dan begitu ada post baru, Saya akan minta robot FeedBurner mengantarkannya ke email inbox Anda.</p>
+                <p><input type="text" style="width:140px" name="email"/></p>
+                <input type="hidden" value="blog/devnull" name="uri"/>
+                <input type="hidden" name="loc" value="en_US"/>
+                <input type="submit" value="Berlangganan" />
+                <p>Delivered by <a href="https://feedburner.google.com" target="_blank">FeedBurner</a></p>
+        </form>
+        <br />
+      </footer>
+
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'dhani-devnull'; // required: replace example with your forum shortname
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="//disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      </article> <!-- /#page-main -->
+
+        <aside id="page-side">
+          <!-- begin includes/sidebar.html -->
+          <nav>
+            <h3>Pages</h3>
+            <ul>
+<!--              <li><a href="//devnull.web.id">Accueil</a></li> -->
+              <li><a href="//devnull.web.id/categories.html">Categories</a></li>
+              <li><a href="//devnull.web.id/tags.html">Tags</a></li>
+              <li><a href="//devnull.web.id/archives.html">Archives</a></li>
+              <li><a href="//devnull.web.id/pages/about-me.html">About Me</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Categories</h3>
+            <ul>
+              <li><a href="//devnull.web.id/category/debian.html">Debian</a></li>
+              <li><a href="//devnull.web.id/category/esai.html">Esai</a></li>
+              <li><a href="//devnull.web.id/category/how-to.html">How-to</a></li>
+              <li class="active"><a href="//devnull.web.id/category/linux-padawan.html">Linux Padawan</a></li>
+              <li><a href="//devnull.web.id/category/misc.html">Misc</a></li>
+              <li><a href="//devnull.web.id/category/networking.html">Networking</a></li>
+              <li><a href="//devnull.web.id/category/openstack.html">OpenStack</a></li>
+              <li><a href="//devnull.web.id/category/programming.html">Programming</a></li>
+            </ul>
+          </nav>
+
+          <nav>
+            <h3>Links</h3>
+            <ul>
+<!--            
+              <li><a href="//devnull.web.id/feed">Subscribe</a></li>
+-->
+                <li><a href="/pages/subscribe.html">Berlangganan artikel</a></li>
+              <li><a href="https://github.com/dhanist" target="_blank">GitHub</a></li>
+              <li><a href="https://plus.google.com/+DhaniSetiawanYoda" target="_blank">Google+</a></li>
+              <li><a href="http://www.transkon.net.id" target="_blank">Transkon-Net</a></li>
+              <li><a href="https://www.debian.org/" target="_blank">Debian</a></li>
+              <li><a href="https://www.openstack.org" target="_blank">OpenStack</a></li>
+            </ul>
+          </nav>
+          <!-- end includes/sidebar.html --></aside> <!-- /#page-side -->
+      </div>  <!-- /#page-body -->
+
+      <footer id="page-foot">
+        <p> &copy; Dhani Setiawan. <a href="//devnull.web.id">devnull.web.id</a> is powered by <a href="http://getpelican.com" target="_blank">Pelican</a> and <a href="https://github.com/getpelican/pelican-themes/tree/master/dev-random2" target="_blank">dev-random2</a> theme</p>
+      </footer>
+    </div> <!-- /#page -->
+  </body>
+</html>
