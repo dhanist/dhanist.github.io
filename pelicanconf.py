@@ -24,7 +24,7 @@ AUTHOR_FEED_RSS = None
 LINKS = (
                 ('Transkon-Net', 'http://www.transkon.net.id', '_blank'),
                 ('Debian', 'https://www.debian.org/', '_blank'),
-                ('OpenStack', 'https://www.openstack.org', '_blank'),
+                ('BirdSend', 'https://birdsend.co', '_blank'),
         )
 
 # Social widget

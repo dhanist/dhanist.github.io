@@ -24,8 +24,9 @@ Komunitas Free & Open Source Software telah dan akan selalu memberikan sesuatu
 yang bernilai buat Saya, salah satu yang paling besar adalah pengetahuan, dan 
 itu semua saya dapat dengan bebas dan tidak mahal.
 
-Saya seorang yang _"Computer Geek"_, saat ini bekerja sebagai Linux System Administrator 
-di [Transkon-Net](http://www.transkon.net.id), sebuah ISP di kota Balikpapan.
+Saya seorang yang _"Computer Geek"_, saat ini bekerja sebagai Site Reliability Engineer 
+di [BirdSend](https://birdsend.co), an email marketing tool specifically designed 
+for content creators.
 
 Seperti para geek pada umumnya, juga menyukai dunia Teknologi dan
 Informasi, pengguna Debian GNU/Linux, dan penggemar film Star Wars. Selain itu,
