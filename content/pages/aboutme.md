@@ -25,7 +25,7 @@ yang bernilai buat Saya, salah satu yang paling besar adalah pengetahuan, dan
 itu semua saya dapat dengan bebas dan tidak mahal.
 
 Saya seorang yang _"Computer Geek"_, saat ini bekerja sebagai Site Reliability Engineer 
-di [BirdSend](https://birdsend.co), an email marketing tool specifically designed 
+di [BirdSend](https://birdsend.co), email marketing tool specifically designed 
 for content creators.
 
 Seperti para geek pada umumnya, juga menyukai dunia Teknologi dan
